@@ -1,0 +1,1 @@
+/home/vidushi/DEP/T13-GateApp/my_gate_app/build/app/intermediates/cxx/RelWithDebInfo/3j1t151a/obj/armeabi-v7a

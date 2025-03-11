@@ -1,0 +1,1 @@
+/home/vidushi/DEP/T13-GateApp/my_gate_app/build/app/intermediates/cxx/Debug/2w4j4m1i/obj/arm64-v8a

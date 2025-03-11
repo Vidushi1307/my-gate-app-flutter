@@ -15,7 +15,7 @@ import 'guard_tabs.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/screens/notificationPage/notification.dart';
-import 'package:qrscan/qrscan.dart' as scanner;
+import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
 // import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
 import 'package:my_gate_app/screens/profile2/validification_page.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
@@ -23,6 +23,28 @@ import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/guard/visitors/selectVisitor.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/guard/visitors/inviteeValidationPage.dart';
+
+class QRScannerScreen extends StatelessWidget {
+  const QRScannerScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text('Scan QR Code')),
+      body: scanner.MobileScanner(
+        onDetect: (capture) {
+          final List<scanner.Barcode> barcodes = capture.barcodes;
+          if (barcodes.isNotEmpty) {
+            String? scannedValue = barcodes.first.rawValue;
+            if (scannedValue != null) {
+              Navigator.pop(context, scannedValue);
+            }
+          }
+        },
+      ),
+    );
+  }
+}
 
 class EntryExit extends StatefulWidget {
   const EntryExit({
@@ -58,19 +80,23 @@ class _EntryExitState extends State<EntryExit> {
     });
   }
 
-  Future<String?> _qrScanner() async {
+  Future<String?> _qrScanner(BuildContext context) async {
     var cameraStatus = await Permission.camera.status;
-    if (cameraStatus.isGranted) {
-      String? qrdata = await scanner.scan();
-      return qrdata;
-    } else {
+    if (!cameraStatus.isGranted) {
       var isGrant = await Permission.camera.request();
-      if (isGrant.isGranted) {
-        String? qrdata = await scanner.scan();
-        return qrdata;
+      if (!isGrant.isGranted) {
+        return null;
       }
     }
-    return null;
+
+    if (!context.mounted) return null; // Fix for async gap issue
+
+    return await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => QRScannerScreen(), // Ensure this class exists
+      ),
+    );
   }
 
   @override
@@ -250,7 +276,7 @@ class _EntryExitState extends State<EntryExit> {
                     ),
                     MaterialButton(
                       onPressed: () async {
-                        String? qrdata = await _qrScanner();
+                        String? qrdata = await _qrScanner(context);
                         if (qrdata != null) {
                           // Do something with qrdata
                           // print("qrdata bhai=${qrdata}");

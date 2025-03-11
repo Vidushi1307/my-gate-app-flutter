@@ -28,9 +28,10 @@ class databaseInterface {
   static int PORT_NO_static = 8000;
 // 31.220.57.173
   static String complete_base_url_static =
-      // "http://localhost:$PORT_NO_static";
-      // "http://31.220.57.173:" + PORT_NO_static.toString();
-      "http://172.30.8.213:$PORT_NO_static";
+      "https://mygate-vercel-344yo0sqz-sankalps-projects-0ffb740e.vercel.app";
+  // "http://localhost:$PORT_NO_static";
+  // "http://31.220.57.173:" + PORT_NO_static.toString();
+  // "http://172.30.8.213:$PORT_NO_static";
   // "http://10.0.2.2:" + PORT_NO_static.toString();
   // "http://192.168.73.245:"+PORT_NO_static.toString();
   static Map<String, dynamic> retry = {

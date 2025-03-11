@@ -1,0 +1,1 @@
+/home/vidushi/DEP/T13-GateApp/my_gate_app/build/app/intermediates/cxx/Debug/j1gt2e5c/obj/x86

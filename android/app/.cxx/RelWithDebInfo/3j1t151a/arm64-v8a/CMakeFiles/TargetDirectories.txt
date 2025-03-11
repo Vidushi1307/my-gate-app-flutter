@@ -1,0 +1,2 @@
+/home/vidushi/DEP/T13-GateApp/my_gate_app/android/app/.cxx/RelWithDebInfo/3j1t151a/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/vidushi/DEP/T13-GateApp/my_gate_app/android/app/.cxx/RelWithDebInfo/3j1t151a/arm64-v8a/CMakeFiles/rebuild_cache.dir
