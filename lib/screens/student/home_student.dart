@@ -74,7 +74,7 @@ class _HomeStudentState extends State<HomeStudent> {
   int entries_length = 0;
   List<int> location_id = [];
   List<bool> pre_approvals = [];
-  List<String> studentStatus = ["IN", "OUT", "OUT", "IN", "OUT", "IN"];
+  List<String> studentStatus = ["OUT", "OUT", "OUT", "OUT", "OUT", "IN"];
   List<int> in_count = [0, 0, 0, 0, 0, 0];
 
   List<Color?> inkColors = [
@@ -736,7 +736,7 @@ class _HomeStudentState extends State<HomeStudent> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "Main Gate",
+                          "CS Block",
                           style: GoogleFonts.mPlusRounded1c(
                             fontSize: 27,
                             fontWeight: FontWeight.bold,
@@ -771,7 +771,7 @@ class _HomeStudentState extends State<HomeStudent> {
                         borderRadius: BorderRadius.circular(
                             10), // Same as container border radius
                         child: Image.asset(
-                          "assets/images/spiral.jpg", // Use your show_image function to provide the image path
+                          "assets/new_images/cse_block.jpeg", // Use your show_image function to provide the image path
                           fit: BoxFit.cover,
                         ),
                       ),

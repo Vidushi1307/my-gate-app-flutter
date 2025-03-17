@@ -317,12 +317,12 @@ class databaseInterface {
 
   static List<String> getLocationImagesPaths() {
     final List<String> entries = [
-      'assets/images/spiral.jpg',
-      'assets/new_images/cse_block1.jpeg',
-      'assets/new_images/mess.jpg',
-      'assets/new_images/library.jpeg',
-      'assets/new_images/hostel.jpeg',
-      'assets/new_images/cs_lab.jpg',
+      'assets/new_images/cse_block.jpeg',
+      'assets/new_images/SAP_Lab_2024.jpg',
+      'assets/new_images/Research_labs.jpg',
+      'assets/new_images/lecture-rooms.jpeg',
+      'assets/new_images/conf-rooms.jpeg',
+      // 'assets/new_images/cs_lab.jpg',
     ];
     return entries;
   }
@@ -1863,12 +1863,11 @@ class databaseInterface {
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
 
-        output.add(data['Main Gate']);
-        output.add(data['CS Department']);
-        output.add(data['Mess']);
-        output.add(data['Library']);
-        output.add(data['Hostel']);
-        output.add(data['CS Lab']);
+        output.add(data['CS Block']);
+        output.add(data['General Labs']);
+        output.add(data['Research Labs']);
+        output.add(data['Lecture Rooms']);
+        output.add(data['Conference rooms']);
 
         print("Location data");
         print(data);
