@@ -27,8 +27,7 @@ class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
 // 31.220.57.173
-  static String complete_base_url_static =
-      "https://mygate-vercel-344yo0sqz-sankalps-projects-0ffb740e.vercel.app";
+  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
   // "http://localhost:$PORT_NO_static";
   // "http://31.220.57.173:" + PORT_NO_static.toString();
   // "http://172.30.8.213:$PORT_NO_static";
