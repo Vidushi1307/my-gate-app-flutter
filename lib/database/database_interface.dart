@@ -2170,8 +2170,13 @@ class databaseInterface {
     }
   }
 
-  static Future<void> accept_generated_QR(String location, String is_approved,
-      String ticket_type, String date_time, String st_email) async {
+  static Future<void> accept_generated_QR(
+      String location,
+      String student_selected_location,
+      String is_approved,
+      String ticket_type,
+      String date_time,
+      String st_email) async {
     print("accept_QR@1@");
     ResultObj myobj = ResultObj();
     myobj.location = location;
@@ -2181,7 +2186,7 @@ class databaseInterface {
     myobj.email = st_email;
     myobj.student_name = "No student name";
     myobj.authority_status = "NO AUTH STATUS";
-    myobj.destination_address = "NO DEST ADDRESS";
+    myobj.destination_address = student_selected_location;
     myobj.vehicle_number = "PB XX";
 
     List<ResultObj> selectedTickets = [];

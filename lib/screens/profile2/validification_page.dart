@@ -432,11 +432,14 @@ class _Validification_pageState extends State<Validification_page> {
               // const SizedBox(height: 24),
               // builText(controller_gender, "Gender", false, 1),
               const SizedBox(height: 20),
-              builText(controller_destination_address, "Destination Address",
-                  true, 1),
+              builText(
+                  controller_destination_address,
+                  "Location Picked", //CHANGED BY VG
+                  true,
+                  1),
               const SizedBox(height: 20),
-              builText(controller_vehicle_reg_num,
-                  "Vehicle Registeration Number", true, 1),
+              builText(controller_vehicle_reg_num, "Purpose", true,
+                  1), //CHANGED BY VG
               const SizedBox(height: 20),
               builText(controller_ticket_type, "Ticket Type", false, 1),
               const SizedBox(height: 20),
@@ -502,6 +505,7 @@ class _Validification_pageState extends State<Validification_page> {
                               widget.guard_email);
                           await databaseInterface.accept_generated_QR(
                               widget.guard_location,
+                              controller_destination_address.text,
                               "Approved",
                               widget.ticket_type,
                               time,
@@ -555,6 +559,7 @@ class _Validification_pageState extends State<Validification_page> {
                               widget.guard_email);
                           await databaseInterface.accept_generated_QR(
                               widget.guard_location,
+                              controller_destination_address.text,
                               "Rejected",
                               widget.ticket_type,
                               time,

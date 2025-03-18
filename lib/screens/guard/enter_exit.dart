@@ -37,6 +37,7 @@ class QRScannerScreen extends StatelessWidget {
           if (barcodes.isNotEmpty) {
             String? scannedValue = barcodes.first.rawValue;
             if (scannedValue != null) {
+              scanner.MobileScannerController().stop();
               Navigator.pop(context, scannedValue);
             }
           }
