@@ -74,7 +74,7 @@ class _HomeStudentState extends State<HomeStudent> {
   int entries_length = 0;
   List<int> location_id = [];
   List<bool> pre_approvals = [];
-  List<String> studentStatus = ["OUT", "OUT", "OUT", "OUT", "OUT", "IN"];
+  List<String> studentStatus = ["Loading", "Loading", "Loading", "Loading", "Loading"];
   List<int> in_count = [0, 0, 0, 0, 0, 0];
 
   List<Color?> inkColors = [
@@ -100,9 +100,30 @@ class _HomeStudentState extends State<HomeStudent> {
     String welcome_message_local =
         await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
 
-    List<String> studentStatusDB =
+//    List<String> studentStatusDB =
+//        await databaseInterface.get_student_status_for_all_locations_2(
+//            LoggedInDetails.getEmail(), location_id);
+
+    // Call the updated function
+    Map<String, dynamic> statusMap =
         await databaseInterface.get_student_status_for_all_locations_2(
             LoggedInDetails.getEmail(), location_id);
+
+    // Define the keys you want to extract. TODO: Avoid hardcoding here
+    final locationKeys = [
+      'CS Block',
+      'General Labs',
+      'Research Labs',
+      'Lecture Rooms',
+      'Conference Rooms',
+    ];
+
+    // Extract the values dynamically
+    List<String> studentStatusDB = [];
+    for (var key in locationKeys) {
+      studentStatusDB.add(statusMap[key] ?? "DEFAULT_VALUE");
+    }
+
     print("welcome_message_local: $welcome_message_local");
     print("studentStatusDB:${studentStatusDB}");
     // print(studentStatusDB);
@@ -156,16 +177,36 @@ class _HomeStudentState extends State<HomeStudent> {
       print(value);
     }
 
-    List<String> status =
+//    List<String> status =
+//        await databaseInterface.get_student_status_for_all_locations_2(
+//            LoggedInDetails.getEmail(), location_id);
+
+    // Call the updated function
+    Map<String, dynamic> statusMap =
         await databaseInterface.get_student_status_for_all_locations_2(
             LoggedInDetails.getEmail(), location_id);
+
+    // Define the keys you want to extract. TODO: Avoid hardcoding here.
+    final locationKeys = [
+      'CS Block',
+      'General Labs',
+      'Research Labs',
+      'Lecture Rooms',
+      'Conference Rooms',
+    ];
+
+    // Extract the values dynamically
+    List<String> status = [];
+    for (var key in locationKeys) {
+      status.add(statusMap[key] ?? "DEFAULT_VALUE");
+    }
 
     setState(() {
       in_count = count;
       print("asdaasdasdasdasdasdasd");
       print(in_count);
       studentStatus = status;
-      print(studentStatus);
+      print("studentStatus= $studentStatus");
     });
   }
 
@@ -180,46 +221,6 @@ class _HomeStudentState extends State<HomeStudent> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      // bottomNavigationBar: Container(
-      //   margin: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      //   color: Colors.grey,
-      //   child: ClipRRect(
-      //     borderRadius: BorderRadius.circular(20),
-      //     child: BottomAppBar(
-      //       color: Colors.black,
-      //       elevation: 0, // Remove the default shadow
-      //
-      //       child: Container(
-      //         height: 60, // Adjust the height as needed
-      //         padding: EdgeInsets.symmetric(horizontal: 10),
-      //         margin: EdgeInsets.all(0.0),
-      //         child: Row(
-      //           mainAxisAlignment: MainAxisAlignment.spaceAround,
-      //           children: [
-      //             IconButton(
-      //               icon: Icon(Icons.home, color: Colors.white),
-      //               onPressed: () {
-      //                 // Navigate to Home screen
-      //               },
-      //             ),
-      //             IconButton(
-      //               icon: Icon(Icons.person, color: Colors.white),
-      //               onPressed: () {
-      //                 // Navigate to Profile screen
-      //               },
-      //             ),
-      //             IconButton(
-      //               icon: Icon(Icons.logout, color: Colors.white),
-      //               onPressed: () {
-      //                 // Perform logout action
-      //               },
-      //             ),
-      //           ],
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      // ),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(60.0),
         child: AppBar(
@@ -376,291 +377,6 @@ class _HomeStudentState extends State<HomeStudent> {
           ],
         ),
       ),
-      // body: Stack(
-      //   children: [
-      //     Container(
-      //       decoration: BoxDecoration(
-      //           borderRadius: BorderRadius.only(
-      //             topLeft: Radius.circular(35.0),
-      //             topRight: Radius.circular(35.0),
-      //           ),
-      //           color: Colors.orange.shade100,
-      //           boxShadow: [
-      //             BoxShadow(
-      //               color: Colors.orange.withOpacity(0.3),
-      //               blurRadius: 8,
-      //               spreadRadius: 2,
-      //               offset: Offset(0, 3),
-      //             ),
-      //           ],
-      //       ),
-      //
-      //       // padding: EdgeInsets.only(top: 30.0),
-      //       height: MediaQuery.of(context).size.height,
-      //       // decoration: BoxDecoration(
-      //       //   color: Color(0Xfff1e2cc),
-      //       // ),
-      //       // color: Colors.bla,
-      //       child: GridView.builder(
-      //         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-      //           crossAxisCount: 2,
-      //           // MediaQuery.of(context).orientation == Orientation.landscape
-      //           //     ? 3
-      //           //     : 2,
-      //           //crossAxisCount: 3,
-      //           crossAxisSpacing: 8,
-      //           mainAxisSpacing: 8,
-      //           // childAspectRatio: (1.2 / 1),
-      //           childAspectRatio: 1.0,
-      //           // crossAxisSpacing: 100,
-      //           // mainAxisSpacing: 100,
-      //           // crossAxisCount: 2,
-      //         ),
-      //         //primary: false,
-      //         //padding: const EdgeInsets.all(20),
-      //         //crossAxisSpacing: 10,
-      //         //mainAxisSpacing: 2,
-      //
-      //         itemCount: entries.length,
-      //         itemBuilder: (BuildContext context, int index) {
-      //           // default to 0 if data is null
-      //           return InkWell(
-      //             onTap: () {
-      //               // print("Email fetched from our own function: " + LoggedInDetails.getEmail());
-      //               if (pre_approvals[index] == true) {
-      //                 Navigator.push(
-      //                     context,
-      //                     MaterialPageRoute(
-      //                       // builder: (context) => StudentTicketTable(
-      //                       //   location: entries[index],
-      //                       // ),
-      //                       builder: (context) =>
-      //                           RaiseTicketForGuardOrAuthorities(
-      //                         location: entries[index],
-      //                         // TODO: fetch pre_approval_required from backend
-      //                         pre_approval_required: pre_approvals[index],
-      //                       ),
-      //                       // builder: (context) => EnterLocation(
-      //                       //       location: entries[index],
-      //                       //     )
-      //                     )).then((value) => fetchData());
-      //               } else {
-      //                 Navigator.push(
-      //                     context,
-      //                     MaterialPageRoute(
-      //                         builder: (context) => StudentTabs(
-      //                               location: entries[index],
-      //                               pre_approval_required: pre_approvals[index],
-      //                             ))).then((value) => fetchData());
-      //               }
-      //             },
-      //             child: Container(
-      //               height: MediaQuery.of(context).size.height * 0.02,
-      //               width: MediaQuery.of(context).size.height * 0.02,
-      //               //margin: EdgeInsets.only(bottom: 20),
-      //               margin: EdgeInsets.all(20),
-      //               decoration: BoxDecoration(
-      //
-      //                 color: Colors.orange.shade600,
-      //                 // border: Border.all(
-      //                 //   width: 2,
-      //                 //   color: Colors.black.withOpacity(0.5),
-      //                 // ),
-      //                 borderRadius: BorderRadius.only(
-      //                     topLeft: Radius.circular(20),
-      //                     topRight: Radius.circular(20),
-      //                     bottomLeft: Radius.circular(20),
-      //                     bottomRight: Radius.circular(20)),
-      //                     boxShadow: [
-      //                       BoxShadow(
-      //                         // color: inkColors[index % inkColors.length].withOpacity(0.5),
-      //                         color: Colors.grey.withOpacity(0.3),
-      //                         spreadRadius: 5,
-      //                         blurRadius: 7,
-      //                         offset: Offset(0, 3), // changes position of shadow
-      //                       ),
-      //                     ],
-      //               ),
-      //               // decoration: BoxDecoration(
-      //               //   shape: BoxShape.rectangle,
-      //               //   color: Colors.blue[100 * (index % 3 + 1)],
-      //               //   borderRadius: BorderRadius.circular(20),
-      //               // ),
-      //               //color: Colors.amber[colorCodes[index]],
-      //               child: Column(
-      //                 children: [
-      //                   SizedBox(
-      //                     width: MediaQuery.of(context).size.width * 0.03,
-      //                   ),
-      //
-      //                   Container(
-      //                     child: Column(
-      //                       mainAxisAlignment: MainAxisAlignment.start,
-      //                       crossAxisAlignment: CrossAxisAlignment.start,
-      //                       children: [
-      //                         SizedBox(
-      //                           height:
-      //                               MediaQuery.of(context).size.width * 0.01,
-      //                         ),
-      //                         Align(
-      //                           alignment: Alignment.center,
-      //                           child: FittedBox(
-      //                             fit: BoxFit.contain,
-      //                             child: Text(
-      //                               '  ${entries[index]}',
-      //                               overflow: TextOverflow.fade,
-      //                               maxLines: 1,
-      //                               style: GoogleFonts.poppins(
-      //                                 fontSize:
-      //                                     MediaQuery.of(context).size.width *
-      //                                         0.04,
-      //                                 fontWeight: FontWeight.w500
-      //                                 color: Colors.white,
-      //                               ),
-      //                             ),
-      //                           ),
-      //                         ),
-      //                         // Center(children )
-      //                         Center(
-      //                           child: Column(
-      //                               mainAxisAlignment: MainAxisAlignment.center,
-      //                               crossAxisAlignment:
-      //                                   CrossAxisAlignment.center,
-      //                               children: [
-      //                                 Container(
-      //                                   margin: EdgeInsets.only(
-      //                                       top: MediaQuery.of(context)
-      //                                               .size
-      //                                               .width *
-      //                                           0.01),
-      //                                   height:
-      //                                       MediaQuery.of(context).size.width *
-      //                                           0.19,
-      //
-      //                                   // child: Image.asset(location_images_paths[index]),
-      //                                   child: show_image(index),
-      //                                 ),
-      //                                 SizedBox(
-      //                                   height:
-      //                                       MediaQuery.of(context).size.height *
-      //                                           0.002,
-      //                                 ),
-      //                                 Row(
-      //                                   mainAxisAlignment:
-      //                                       MainAxisAlignment.center,
-      //                                   children: [
-      //                                     Icon(
-      //                                       Icons.location_on,
-      //                                       color: studentStatus[index]
-      //                                                   .toLowerCase() ==
-      //                                               "out"
-      //                                           ? Colors.red
-      //                                           : Colors.green,
-      //                                       size: MediaQuery.of(context)
-      //                                               .size
-      //                                               .width *
-      //                                           0.03,
-      //                                     ),
-      //                                     SizedBox(
-      //                                       width: MediaQuery.of(context)
-      //                                               .size
-      //                                               .width *
-      //                                           0.01,
-      //                                     ),
-      //                                     Text(
-      //                                       "Status: ${studentStatus[index]
-      //                                               .toUpperCase()}",
-      //                                       style: GoogleFonts.poppins(
-      //                                         fontSize: MediaQuery.of(context)
-      //                                                 .size
-      //                                                 .width *
-      //                                             0.03,
-      //                                         fontWeight: FontWeight.normal,
-      //                                         color:
-      //                                             // Color.fromARGB(255, 0, 0, 0),
-      //                                         Colors.white,
-      //                                       ),
-      //                                       textAlign: TextAlign.center,
-      //                                     ),
-      //                                   ],
-      //                                 ),
-      //                                 Row(
-      //                                   mainAxisAlignment:
-      //                                       MainAxisAlignment.center,
-      //                                   children: [
-      //                                     Icon(
-      //                                       Icons.person,
-      //                                       color: Colors.lightBlue,
-      //                                       size: MediaQuery.of(context)
-      //                                               .size
-      //                                               .width *
-      //                                           0.03,
-      //                                     ),
-      //                                     SizedBox(
-      //                                         width: MediaQuery.of(context)
-      //                                                 .size
-      //                                                 .width *
-      //                                             0.01),
-      //                                     Text(
-      //                                       "In Count: ${in_count[index]}",
-      //                                       style: GoogleFonts.roboto(
-      //                                         fontSize: MediaQuery.of(context)
-      //                                                 .size
-      //                                                 .width *
-      //                                             0.03,
-      //                                         fontWeight: FontWeight.normal,
-      //                                         color:
-      //                                             // Color.fromARGB(255, 0, 0, 0),
-      //                                         Colors.white,
-      //                                       ),
-      //                                       textAlign: TextAlign.right,
-      //                                     ),
-      //                                   ],
-      //                                 ),
-      //                                 // SizedBox(
-      //                                 //   height:
-      //                                 //       MediaQuery.of(context).size.height *
-      //                                 //           0.01,
-      //                                 // ),
-      //                               ]),
-      //                         )
-      //                       ],
-      //                     ),
-      //                   ),
-      //                   // Spacer(),
-      //                   // Icon(
-      //                   //   Icons.arrow_right,
-      //                   //   color: Colors.lightBlue,
-      //                   //   size: 50.0,
-      //                   // ),
-      //                 ],
-      //               ),
-      //             ),
-      //           );
-      //         },
-      //         // separatorBuilder: (BuildContext context, int index) =>
-      //         //     const Divider(),
-      //       ),
-      //     ),
-      //     // ValueListenableBuilder<bool>(
-      //     //   valueListenable: isLoading,
-      //     //   builder: (context, BisLoading, child) {
-      //     //     return Column(
-      //     //       mainAxisAlignment: MainAxisAlignment.center,
-      //     //       children: [
-      //     //         isLoading.value
-      //     //             ? Center(
-      //     //                 child: CircularProgressIndicator(),
-      //     //               )
-      //     //             : Container(),
-      //
-      //     //         // rest of the code
-      //     //       ],
-      //     //     );
-      //     //   },
-      //     // ),
-      //   ],
-      // ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -780,90 +496,6 @@ class _HomeStudentState extends State<HomeStudent> {
                 ),
               ),
             ),
-            // ListView.builder(
-            //   shrinkWrap: true,
-            //   physics: NeverScrollableScrollPhysics(),
-            //   itemCount: entries.length,
-            //   itemBuilder: (BuildContext context, int index) {
-            //     return Padding(
-            //       padding: const EdgeInsets.all(8.0),
-            //       child: Card(
-            //         color: Color(0xFFF3F3F3),
-            //         elevation: 3,
-            //         child: InkWell(
-            //           onTap: () {
-            //             // print("Email fetched from our own function: " + LoggedInDetails.getEmail());
-            //             if (pre_approvals[index] == true) {
-            //               Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(
-            //                     // builder: (context) => StudentTicketTable(
-            //                     //   location: entries[index],
-            //                     // ),
-            //                     builder: (context) => RaiseTicketForGuardOrAuthorities(
-            //                       location: entries[index],
-            //                       // TODO: fetch pre_approval_required from backend
-            //                       pre_approval_required: pre_approvals[index],
-            //                     ),
-            //                     // builder: (context) => EnterLocation(
-            //                     //       location: entries[index],
-            //                     //     )
-            //                   )).then((value) => fetchData());
-            //             } else {
-            //               Navigator.push(
-            //                   context,
-            //                   MaterialPageRoute(
-            //                       builder: (context) => StudentTabs(
-            //                         location: entries[index],
-            //                         pre_approval_required: pre_approvals[index],
-            //                       ))).then((value) => fetchData());
-            //             }
-            //           },
-            //           child: Column(
-            //             crossAxisAlignment: CrossAxisAlignment.stretch,
-            //             children: [
-            //               Image.asset(
-            //                 'assets/images/library.png',
-            //                 height: 150,
-            //                 fit: BoxFit.cover,
-            //               ),
-            //               Padding(
-            //                 padding: const EdgeInsets.all(8.0),
-            //                 child: Text(
-            //                   entries[index],
-            //                   style: TextStyle(
-            //                     fontSize: 20,
-            //                     fontWeight: FontWeight.bold,
-            //                     color: Colors.white,
-            //                   ),
-            //                 ),
-            //               ),
-            //               Padding(
-            //                 padding: const EdgeInsets.all(8.0),
-            //                 child: Row(
-            //                   children: [
-            //                     Text(
-            //                       "Status: ${studentStatus[index].toUpperCase()}",
-            //                       style: TextStyle(
-            //                         fontSize: 16,
-            //                         color: Colors.black,
-            //                       ),
-            //                     ),
-            //                     Spacer(),
-            //                     Icon(
-            //                       Icons.arrow_forward,
-            //                       color: Colors.black,
-            //                     ),
-            //                   ],
-            //                 ),
-            //               ),
-            //             ],
-            //           ),
-            //         ),
-            //       ),
-            //     );
-            //   },
-            // ),
             SizedBox(height: 25),
             SingleChildScrollView(
               scrollDirection: Axis.horizontal, // Scroll horizontally

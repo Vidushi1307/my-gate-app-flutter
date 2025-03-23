@@ -28,11 +28,9 @@ class databaseInterface {
   static int PORT_NO_static = 8000;
 // 31.220.57.173
   static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-  // "http://localhost:$PORT_NO_static";
-  // "http://31.220.57.173:" + PORT_NO_static.toString();
-  // "http://172.30.8.213:$PORT_NO_static";
-  // "http://10.0.2.2:" + PORT_NO_static.toString();
-  // "http://192.168.73.245:"+PORT_NO_static.toString();
+//  static String complete_base_url_static = "https://855f-164-100-193-243.ngrok-free.app";
+
+
   static Map<String, dynamic> retry = {
     "try": 1,
     "ifretry": false,
@@ -193,12 +191,11 @@ class databaseInterface {
   static List<String> getLoctions() {
     // TODO: get this list from the backend
     final List<String> entries = <String>[
-      'Main Gate',
-      'Mess',
-      'Library',
-      'Hostel',
-      'CS Lab',
-      'CS Department'
+      'CS Block',
+      'General Labs',
+      'Research Labs',
+      'Lecture Rooms',
+      'Conference Rooms'
     ];
     return entries;
   }
@@ -331,6 +328,8 @@ class databaseInterface {
       case "Main Gate":
         return 'assets/images/spiral.jpg';
       case "CS Department":
+        return 'assets/new_images/cse_block1.jpeg';
+      case "CS Block":
         return 'assets/new_images/cse_block1.jpeg';
       case "Mess":
         return 'assets/new_images/mess.jpg';
@@ -1126,7 +1125,9 @@ class databaseInterface {
 
     try {
       int length = 0;
-      // var response = await http.post(url, body: jsonEncode(data), headers: headers);
+//      var jsonPayload = jsonEncode(jsonEncode(selectedTickets.map((i) => i.toJson1()).toList()));
+//      print("JSON headers here ---------------->>>>>>>>>>>>>>>>>>\n $headers");
+//      print("JSON payload here ---------------->>>>>>>>>>>>>>>>>>\n $jsonPayload");
       var response = await http.post(Uri.parse(uri),
           body: jsonEncode(selectedTickets.map((i) => i.toJson1()).toList()),
           headers: headers);
@@ -1823,12 +1824,11 @@ class databaseInterface {
           }
         }
 
-        output.add(data['Main Gate']);
-        output.add(data['CS Department']);
-        output.add(data['Mess']);
-        output.add(data['Library']);
-        output.add(data['Hostel']);
-        output.add(data['CS Lab']);
+        output.add(data['CS Block']);
+        output.add(data['General Labs']);
+        output.add(data['Research Labs']);
+        output.add(data['Lecture Rooms']);
+        output.add(data['Conference Rooms']);
 
         print("Location data");
         print(data);
@@ -1844,10 +1844,16 @@ class databaseInterface {
     }
   }
 
-  static Future<List<String>> get_student_status_for_all_locations_2(
+  static Future<Map<String, dynamic>> get_student_status_for_all_locations_2(
       String email, List<int> location_ids) async {
     var uri = "$complete_base_url_static/students/get_status_for_all_locations";
-    List<String> output = [];
+    final errorMap = { //TODO: Avoid hardcoding here.
+      'CS Block': 'ERROR',
+      'General Labs': 'ERROR',
+      'Research Labs': 'ERROR',
+      'Lecture Rooms': 'ERROR',
+      'Conference Rooms': 'ERROR',
+    };
     try {
       print("location ids in db=$location_ids");
       var response = await makeAuthenticatedRequest(
@@ -1858,25 +1864,30 @@ class databaseInterface {
           'location_ids': json.encode(location_ids),
         },
       );
-      print("loc response=${response.body}");
-      if (response.statusCode == 200) {
+      print("loc response=${response}");
+      if (response.statusCode == 200 && response.body != null) {
         var data = json.decode(response.body);
+        return data;
+//        print("API Response: $data");
 
-        output.add(data['CS Block']);
-        output.add(data['General Labs']);
-        output.add(data['Research Labs']);
-        output.add(data['Lecture Rooms']);
-        output.add(data['Conference rooms']);
+        // Extract location names dynamically from the response
+//        final locationNames = data.keys.toList();
 
-        print("Location data");
-        print(data);
+        // Use a loop to process locations
+//        for (var location in locationNames) {
+//          output.add(data[location] ?? "ERROR");
+//        }
+
+//        print(output);
       } else {
-        print("Error occured while fetching the data from backend");
+        print("Error occurred while fetching status from backend");
+        return errorMap;
       }
-      return output;
+//      return output;
+
     } catch (e) {
-      print("Exception in insert_in_visitors_ticket_table: $e");
-      return output = ["IN", "OUT", "OUT", "IN", "OUT", "IN"];
+      print("Exception in get_student_status_for_all_locations_2: $e");
+      return errorMap;
       // return false;
       // return 500;
     }
@@ -2177,6 +2188,8 @@ class databaseInterface {
       String date_time,
       String st_email) async {
     print("accept_QR@1@");
+//    String params = "location:" + location + " student_selected_location:" + student_selected_location + " is_approved:" + is_approved + " ticket_type" + ticket_type + " date_time" + date_time + " st_email:" + st_email;
+//    print("Params here ----------------------->>>>>>>>>>>>>>>>>>\n" + params);
     ResultObj myobj = ResultObj();
     myobj.location = location;
     myobj.is_approved = is_approved;

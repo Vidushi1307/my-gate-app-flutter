@@ -226,7 +226,10 @@ class _AuthFormState extends State<AuthForm> {
       LoginScaffold(message);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      is_authenticated.person_type = prefs.getString("type")!;
+      String? type = prefs.getString("type");
+      if (type != null) {
+      	is_authenticated.person_type = type;
+      }
     }
   }
 
