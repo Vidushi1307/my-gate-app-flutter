@@ -10,6 +10,7 @@ import 'package:my_gate_app/screens/guard/visitors/visitor_form.dart';
 import 'package:my_gate_app/screens/profile2/admin_profile/admin_profile_page.dart';
 import 'package:my_gate_app/screens/profile2/model/menu_item.dart';
 import 'package:my_gate_app/screens/profile2/utils/menu_items.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ManageVisitors extends StatefulWidget {
@@ -74,7 +75,7 @@ class _ManageVisitorsState extends State<ManageVisitors> {
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.asset(
-                  'assets/images/admin.jpg',
+                  image_paths.admin,
                   height: 210,
                 ),
               ),

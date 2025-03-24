@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class AboutUsPage extends StatelessWidget {
   const AboutUsPage({super.key});
@@ -22,7 +23,7 @@ class AboutUsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/IIT_Ropar.png',
+              image_paths.iit_ropar,
               width: 200,
               height: 200,
             ),

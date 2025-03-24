@@ -15,7 +15,6 @@ class _DeleteGuardsState extends State<DeleteGuards> {
   String chosen_delete_guard_email = "None";
 
   final List<String> guard_names = databaseInterface.getGuardNames();
-  // final List<String> guard_emails = databaseInterface.getGuardLocations();
   List<String> guard_emails = [];
 
   @override
@@ -35,14 +34,6 @@ class _DeleteGuardsState extends State<DeleteGuards> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         decoration: const BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [
-          //     Colors.lightBlueAccent,
-          //     Colors.purple.shade200,
-          //   ],
-          // ),
             color: Color(0xfff0eded),
         ),
         child: Column(
@@ -57,26 +48,6 @@ class _DeleteGuardsState extends State<DeleteGuards> {
                   color: Colors.black,
                   fontSize: 30),
             ),
-            /* SizedBox(
-              height: 50,
-            ),
-
-            dropdown(
-              context,
-              this.guard_names,
-                  (String? s) {
-                if (s != null) {
-                  print("inside funciton:" + this.chosen_delete_guard_name);
-                  this.chosen_delete_guard_name = s;
-                  print(this.chosen_delete_guard_name);
-                }
-              },
-              "Guard Name",
-              Icon(
-                Icons.security,
-                color: Colors.black,
-              ),
-            ), */
             const SizedBox(
               height: 50,
             ),
@@ -85,9 +56,7 @@ class _DeleteGuardsState extends State<DeleteGuards> {
               guard_emails,
               (String? s) {
                 if (s != null) {
-                  print("inside funciton:$chosen_delete_guard_email");
                   chosen_delete_guard_email = s;
-                  print(chosen_delete_guard_email);
                 }
               },
               "Guard Email",

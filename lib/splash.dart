@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import 'auth/authscreen.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class Splash extends StatefulWidget {
   const Splash({super.key});
@@ -37,7 +38,7 @@ class _SplashState extends State<Splash> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Image.asset(
-                'assets/new_images/new_splash_logo.png',
+                image_paths.splash,
                 height: 300,
               ),
               Text(

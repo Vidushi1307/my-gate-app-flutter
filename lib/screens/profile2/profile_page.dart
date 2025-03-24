@@ -5,6 +5,7 @@ import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class ProfilePage extends StatefulWidget {
   final String? email;
@@ -31,10 +32,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> init() async {
     String? currEmail = widget.email;
-    print("Current Email: $currEmail");
     databaseInterface db = databaseInterface();
     User result = await db.get_student_by_email(currEmail);
-    // print("result obj image path" + result.imagePath);
     setState(() {
       user = result;
       controller_phone.text = result.phone;
@@ -42,16 +41,11 @@ class _ProfilePageState extends State<ProfilePage> {
       controller_year_of_entry.text = result.year_of_entry;
       controller_degree.text = result.degree;
       controller_gender.text = result.gender;
-      /* controller_gender.text=result. */
-      print("Gender in yo:${result.gender}");
-      // imagePath = result.imagePath;
-      print("image path inside setstate: $imagePath");
     });
 
     setState(() {
       pic = result.profileImage;
     });
-    /* print("Gender in yo:"+controller_gender.text); */
   }
 
   @override
@@ -66,16 +60,13 @@ class _ProfilePageState extends State<ProfilePage> {
     imagePath = UserPreferences.myUser.imagePath;
     pic = NetworkImage(imagePath);
     imagePicker = ImagePicker();
-    // print("image path in image widget: " + this.imagePath);
     init();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: Colors.white,
       backgroundColor: Colors.white,
-      // backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black, // Set the background color to black
         centerTitle: true, // Center-align the title
@@ -125,10 +116,6 @@ class _ProfilePageState extends State<ProfilePage> {
             const SizedBox(height: 24),
             builText(controller_gender, "Gender", false, 1),
             const SizedBox(height: 24),
-            /* ElevatedButton(
-              onPressed: (){},
-              child:Text('Edit '),
-            ), */
           ],
         ),
       ),
@@ -283,7 +270,7 @@ class _ProfilePageState extends State<ProfilePage> {
     var source = ImageSource.gallery;
     print(source);
     var filePath =
-        "assets/images/dummy_person.jpg"; // Replace with the actual file path
+        image_paths.dummy_person; // Replace with the actual file path
     XFile image = XFile(filePath);
     var widgetEmail = widget.email;
     if (widgetEmail != null) {
@@ -295,7 +282,7 @@ class _ProfilePageState extends State<ProfilePage> {
     User result = await db.get_student_by_email(widget.email);
 
     var picLocal = NetworkImage(result.imagePath);
-    var removeImage = const AssetImage('images/dummy_person.jpg');
+    var removeImage = const AssetImage(image_paths.dummy_person);
     setState(() {
       pic = removeImage;
     });
@@ -350,14 +337,8 @@ class _ProfilePageState extends State<ProfilePage> {
           Positioned(
             bottom: 0,
             right: 4,
-            // child: buildEditIcon(Theme.of(context).colorScheme.primary),
             child: buildEditIcon(Color(int.parse("0xFF344953"))),
           ),
-          /* Positioned(
-          bottom:0,
-          right: 50,
-          child: buildEditIcon_1(Color(int.parse("0xFF344953"))),
-        ), */
         ],
       ),
     );
@@ -370,10 +351,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ClipOval(
             child: Material(
               color: Colors.transparent,
-              // color: Colors.blue,
               child: Ink.image(
-                // image: AssetImage(image),
-                // image: NetworkImage(widget.imagePath),
                 image: pic,
                 fit: BoxFit.cover,
                 width: 180,
@@ -381,12 +359,6 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          // Positioned(
-          //   bottom: 0,
-          //   right: 4,
-          //   // child: buildEditIcon(Theme.of(context).colorScheme.primary),
-          //   child: buildEditIcon(Color(int.parse("0xFF344953"))),
-          // ),
         ],
       ),
     );

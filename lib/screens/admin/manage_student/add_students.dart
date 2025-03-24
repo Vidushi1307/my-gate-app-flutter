@@ -39,17 +39,6 @@ class _AddStudentsState extends State<AddStudents> {
   }
 
   Future<void> add_new_guard() async {
-    print("submit button of add new Guard pressed");
-    // int status code = await databaseInterface.add_new_location();
-    // String response = await databaseInterface.add_new_location();
-    // if(status_code = 200){
-    // if(response == "New location added successfully"){
-    // print("Display snackbar: New loction added successfully");
-    // }
-    // else{
-    // print("Display snackbar: Failed to add new location");
-    // print("Display snackbar: " + response);
-    // }
   }
 
   @override
@@ -107,9 +96,7 @@ class _AddStudentsState extends State<AddStudents> {
               this.gender_options,
                   (String? s) {
                 if (s != null) {
-                  // print("inside funciton:" + this.chosen_parent_location);
                   this.new_student_gender = s;
-                  // print(this.chosen_parent_location);
                 }
               },
               "Gender",
@@ -126,9 +113,7 @@ class _AddStudentsState extends State<AddStudents> {
               this.department_options,
                   (String? s) {
                 if (s != null) {
-                  // print("inside funciton:" + this.chosen_parent_location);
                   this.new_student_department = s;
-                  // print(this.chosen_parent_location);
                 }
               },
               "Department",
@@ -161,7 +146,6 @@ class _AddStudentsState extends State<AddStudents> {
                       this.new_student_name,
                       this.new_student_email,
                       this.chosen_guard_location);
-                  print("Response: $response");
                 }
                 add_new_guard();
               },

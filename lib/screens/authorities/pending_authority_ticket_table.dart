@@ -161,7 +161,6 @@ class _PendingAuthorityTicketTableState
             .where((ticket) =>
                 ticket.student_name.toLowerCase().contains(query.toLowerCase()))
             .toList();
-        // print('jj${ticketsFiltered}');
       }
     }
   }
@@ -228,297 +227,11 @@ class _PendingAuthorityTicketTableState
       backgroundColor: Color(0xffFFF0D2),
       body: Column(
         children: [
-          // // Image.asset(
-          // //   'assets/images/authority.png',
-          // //   height: 200,
-          // // ),
-          // SizedBox(
-          //   height: 10,
-          // ),
-          // Center(
-          //   child: Column(
-          //     mainAxisAlignment: MainAxisAlignment.center,
-          //     //Center Row contents horizontally,
-          //     crossAxisAlignment: CrossAxisAlignment.center,
-          //     //Center Row contents vertically,
-          //     children: [
-          //       Row(
-          //         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //         //Center Row contents horizontally,
-          //         crossAxisAlignment: CrossAxisAlignment.center,
-          //         //Center Row contents vertically,
-          //         children: [
-          //           Column(
-          //             children: [
-          //               Container(
-          //                 width: MediaQuery.of(context).size.width / 4,
-          //                 padding: EdgeInsets.all(5),
-          //                 child: ElevatedButton.icon(
-          //                   icon: Icon(
-          //                     Icons.check_circle_outlined,
-          //                     color: Colors.white,
-          //                     size:
-          //                         MediaQuery.of(context).size.width / 15,
-          //                   ),
-          //                   style: ElevatedButton.styleFrom(
-          //                       textStyle: const TextStyle(fontSize: 20),
-          //                       backgroundColor: Color.fromARGB(255, 9, 216, 9)),
-          //                   onPressed: () async {
-          //                     accept_selected_tickets_authorities();
-          //                   },
-          //                   label: Text(
-          //                     '',
-          //                     style: GoogleFonts.roboto(),
-          //                   ),
-          //                 ),
-          //                 //decoration: Decoration(),
-          //               ),
-          //               // Text(
-          //               //   ticket_accepted_message,
-          //               //   style: TextStyle(color: Colors.white),
-          //               // ),
-          //             ],
-          //           ),
-          //           Column(
-          //             children: [
-          //               Container(
-          //                 width: MediaQuery.of(context).size.width / 4,
-          //                 padding: EdgeInsets.all(5),
-          //                 //color: Colors.green,
-          //                 child: ElevatedButton.icon(
-          //                   icon: Icon(
-          //                     Icons.cancel,
-          //                     color: Colors.white,
-          //                     size:
-          //                         MediaQuery.of(context).size.width / 15,
-          //                   ),
-          //                   style: ElevatedButton.styleFrom(
-          //                       textStyle: const TextStyle(fontSize: 20),
-          //                       backgroundColor: Colors.red),
-          //                   onPressed: () {
-          //                     reject_selected_tickets_authorities();
-          //                   },
-          //                   label: Text(
-          //                     '',
-          //                     style: GoogleFonts.roboto(),
-          //                   ),
-          //                 ),
-          //                 //decoration: Decoration(),
-          //               ),
-          //               // Text(
-          //               //   ticket_rejected_message,
-          //               //   style: TextStyle(color: Colors.white),
-          //               // ),
-          //             ],
-          //           ),
-          //           Column(
-          //             children: [
-          //               Container(
-          //                 width: MediaQuery.of(context).size.width / 4,
-          //                 padding: EdgeInsets.all(5),
-          //                 child: ElevatedButton.icon(
-          //                   icon: Icon(
-          //                     Icons.refresh,
-          //                     color: Colors.white,
-          //                     size:
-          //                         MediaQuery.of(context).size.width / 15,
-          //                   ),
-          //                   onPressed: () async {
-          //                     init();
-          //                   },
-          //                   label: Text(""),
-          //                 ),
-          //               ),
-          //             ],
-          //           )
-          //         ],
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          //
-          // // Center(
-          // //   child: Container(
-          // //     padding: EdgeInsets.all(1),
-          // //     child: Text(
-          // //       // "Ticket Table",
-          // //       "",
-          // //       style: GoogleFonts.roboto(
-          // //           fontSize: 20, fontWeight: FontWeight.bold),
-          // //     ),
-          // //   ),
-          // // ),
-          // // SizedBox(
-          // //   height: 2,
-          // // ),
-          // // buildDataTable()
-          // // Text("No entries available in the ticket table"),
-          // // Testing()
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     SizedBox(
-          //       width: 20,
-          //     ),
-          //     SizedBox(
-          //       width: MediaQuery.of(context).size.width / 1.4,
-          //       child: InputDecorator(
-          //         isEmpty:
-          //             isFieldEmpty, // if true, the hint text is shown
-          //         decoration: InputDecoration(
-          //           hintText: '    Search by Name',
-          //           hintStyle: TextStyle(
-          //               color: Color.fromARGB(255, 96, 96,
-          //                   96)), // Set the desired color for the hint text
-          //         ),
-          //
-          //         child: TextField(
-          //           style: TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
-          //           decoration: InputDecoration(
-          //             // labelText: "Name",
-          //             // hintText: "Enter name to filter tickets",
-          //             // hintStyle: TextStyle(color: Colors.grey),
-          //             // helperText: "Enter name to filter tickets",
-          //             // helperStyle: TextStyle(color: Colors.grey),
-          //             enabledBorder: OutlineInputBorder(
-          //               borderSide: BorderSide(color: Colors.red),
-          //             ),
-          //             focusedBorder: OutlineInputBorder(
-          //               borderSide: BorderSide(color: Colors.red),
-          //             ),
-          //           ),
-          //           onChanged: (text) {
-          //             isFieldEmpty = text.isEmpty;
-          //
-          //             onSearchQueryChanged(text);
-          //           },
-          //         ),
-          //       ),
-          //     ),
-          //
-          //     SizedBox(
-          //       width: 3,
-          //     ),
-          //     IconButton(
-          //       icon: Icon(
-          //         Icons.filter_list,
-          //         color: Color.fromARGB(255, 0, 0, 0),
-          //         size: 30.0,
-          //       ),
-          //       onPressed: () => _selectDateRange(context),
-          //     ),
-          //     // IconButton(
-          //     //   icon: Icon(
-          //     //     Icons.search,
-          //     //     color: Color.fromARGB(255, 0, 0, 0),
-          //     //     size: 24.0,
-          //     //   ),
-          //     //   onPressed: () {
-          //     //     print(this.chosen_entry_number);
-          //     //     print(this.chosen_start_date);
-          //     //     print(this.chosen_end_date);
-          //     //     print(this.isSelected);
-          //     //   },
-          //     // ),
-          //     // SizedBox(
-          //     //   width: 340,
-          //     // )
-          //   ],
-          // ),
-          // SizedBox(
-          //   height: 25,
-          // ),
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     SizedBox(
-          //       width: 20,
-          //     ),
-          //     IntrinsicWidth(
-          //       child: Container(
-          //         decoration: BoxDecoration(
-          //           border: Border.all(
-          //               color:
-          //                   Colors.grey), // Set the desired border color
-          //           borderRadius: BorderRadius.circular(
-          //               8.0), // Set the desired border radius
-          //         ),
-          //         child: InkWell(
-          //           onTap: () {
-          //             setState(() {
-          //               enableDateFilter = !enableDateFilter;
-          //               print(enableDateFilter);
-          //               filterTickets(searchQuery);
-          //             });
-          //           },
-          //           child: Row(
-          //             children: [
-          //               Theme(
-          //                 data: ThemeData(
-          //                   unselectedWidgetColor: Colors
-          //                       .black, // Set the desired outline color
-          //                 ),
-          //                 child: Radio<bool>(
-          //                   activeColor: Colors
-          //                       .red, // Set the desired color for the radio button
-          //                   value: enableDateFilter,
-          //                   groupValue: true,
-          //                   onChanged: (value) {
-          //                     // setState(() {
-          //                     //   enableDateFilter = value!;
-          //                     // });
-          //                   },
-          //                 ),
-          //               ),
-          //               Text(
-          //                 'Date Filter  ',
-          //                 style: TextStyle(
-          //                   color: enableDateFilter
-          //                       ? Colors.blue
-          //                       : Colors
-          //                           .black, // Set the desired color for the label
-          //                 ),
-          //               ),
-          //             ],
-          //           ),
-          //         ),
-          //       ),
-          //     ),
-          //     SizedBox(
-          //       width: 20,
-          //     ),
-          //     Column(
-          //       crossAxisAlignment: CrossAxisAlignment.start,
-          //       children: [
-          //         Text(
-          //           "Start Date: ${chosen_start_date.split(" ")[0]}",
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 14,
-          //             color: Colors.black,
-          //           ),
-          //         ),
-          //         Text(
-          //           "End Date: ${chosen_end_date.split(" ")[0]}",
-          //           style: TextStyle(
-          //             fontWeight: FontWeight.bold,
-          //             fontSize: 14,
-          //             color: Colors.black,
-          //           ),
-          //         ),
-          //       ],
-          //     ),
-          //   ],
-          // ),
-          // SizedBox(
-          //   height: 20,
-          // ),
           Row(children: [
             SizedBox(
               width: MediaQuery.of(context).size.width * 0.03,
             ),
             Container(
-              // margin: EdgeInsets.all(16.0),
               width: MediaQuery.of(context).size.width * 0.73,
               height: 35,
               decoration: BoxDecoration(
@@ -547,9 +260,6 @@ class _PendingAuthorityTicketTableState
                     padding: EdgeInsets.zero,
                     icon: Icon(Icons.clear, color: Colors.black),
                     onPressed: () {
-                      // isFieldEmpty = text.isEmpty;
-                      //
-                      // onSearchQueryChanged(text);
                     },
                   ),
                   hintStyle: GoogleFonts.lato(
@@ -598,7 +308,6 @@ class _PendingAuthorityTicketTableState
                   setState(() {
                     enableDateFilter = !enableDateFilter;
                     resetFilter(searchQuery);
-                    // filterTickets(searchQuery);
                   });
                 },
               ),
@@ -616,25 +325,6 @@ class _PendingAuthorityTicketTableState
     );
   }
 
-  // Widget Testing() {
-  //   int len = tickets.length;
-  //   print("len of tickets " + len.toString());
-  //   if(len == 0){
-  //     return Text("No entries available in the ticket table");
-  //   }
-  //   // return Text("No entries available in the ticket table");
-
-  //   final columns = ['Serial No', 'Location ID', 'Time Stamp', 'Approve Status'];
-  //   return DataTable(
-  //     onSelectAll: (isSelectedAll) {
-  //       setState(() => selectedTickets = isSelectedAll! ? tickets : []);
-  //       // Utils.showSnackBar(context, 'All Selected: $isSelectedAll');
-  //     },
-  //     headingRowColor: MaterialStateProperty.all(Colors.red[200]),
-  //     columns: getColumns(columns),
-  //     rows: getRows(tickets),
-  //   );
-  // }
   Widget pendingStudentList(List<ResultObj2> mytickets) {
     return SingleChildScrollView(
       child: SizedBox(
@@ -663,9 +353,6 @@ class _PendingAuthorityTicketTableState
                             fontSize: 18,
                           ),
                         ),
-                        // subtitle: Text(mytickets[index]
-                        // .date_time_guard
-                        // .toString()),
 
                         children: <Widget>[
                           Center(
@@ -702,16 +389,6 @@ class _PendingAuthorityTicketTableState
                                           color: Colors.black,
                                           fontSize: 15,
                                         )),
-                                    // TextField(
-                                    //     onChanged: (text) {
-                                    //       this.tickets[index].authority_message = text;
-                                    //     },
-                                    //     "Authority_message :${tickets[index].authority_message}",
-                                    //     style: GoogleFonts.lato(
-                                    //       fontWeight: FontWeight.w600,
-                                    //       color: Colors.black,
-                                    //       fontSize: 15,
-                                    //     )),
                                     SizedBox(height: 8),
                                     Container(
                                       width: MediaQuery.of(context).size.width *

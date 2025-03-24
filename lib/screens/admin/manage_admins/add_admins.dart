@@ -31,14 +31,6 @@ class _AddAdminsState extends State<AddAdmins> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [
-          //     Colors.lightBlueAccent,
-          //     Colors.purple.shade200,
-          //   ],
-          // ),
            color: Color(0xfff0eded),
         ),
         child: Column(
@@ -103,9 +95,8 @@ class _AddAdminsState extends State<AddAdmins> {
                     this.new_admin_email != "None") {
                   String response = await databaseInterface.add_admin_form(
                       this.new_admin_name, this.new_admin_email);
-                  print("Response: $response");
                 } else {
-                  print("One of the fields in None");
+                  print("One of the fields is None");
                   print("value of new_admin_name: $new_admin_name");
                   print("value of new_admin_email: $new_admin_email");
                 }

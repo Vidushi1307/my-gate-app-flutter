@@ -27,12 +27,10 @@ class _FileUploadButtonState extends State<FileUploadButton> {
         children: [
           Container(
             padding: EdgeInsets.all(15),
-            // color: Colors.green,
             child: Container(
               height: 60,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    // ignore: prefer_const_literals_to_create_immutables
                     colors: [
                       Color.fromRGBO(255, 143, 158, 1),
                       Color.fromRGBO(255, 188, 143, 1),
@@ -62,7 +60,6 @@ class _FileUploadButtonState extends State<FileUploadButton> {
                     shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            // side: BorderSide(color: Colors.blue)
                         ))),
                 onPressed: () async {
                   FilePickerResult? picked =
@@ -71,20 +68,12 @@ class _FileUploadButtonState extends State<FileUploadButton> {
                     print(picked.files.first.name);
                     print(picked.files.first.extension);
                     if (picked.files.first.extension == 'csv') {
-                      // print("before error");
-                      // String? chosen_file_path = picked.files.first.path;
-                      // print("after error");
-                      // print(chosen_file_path);
-                      // if (chosen_file_path != null) {
-                      //   // this.chosen_file = File(chosen_file_path);
-                      // }
                       chosen_file = picked.files.first.bytes;
 
                       setState(() {
                         chosen_file_message =
                             "File: ${picked.files.first.name}";
                       });
-                      // print("File path in upload=${this.chosen_file_message}");
                     } else if (picked.files.first.extension != 'csv') {
                       setState(() {
                         chosen_file_message =
@@ -111,8 +100,7 @@ class _FileUploadButtonState extends State<FileUploadButton> {
                             color: Colors.white,
                             fontSize: 50),
                       )
-                      //Image.asset("images/enter_button.png"),
-                      ),
+                  ),
                 ),
               ),
             ),
@@ -131,7 +119,6 @@ class _FileUploadButtonState extends State<FileUploadButton> {
               height: 60,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    // ignore: prefer_const_literals_to_create_immutables
                     colors: [
                       Color.fromRGBO(255, 143, 158, 1),
                       Color.fromRGBO(255, 188, 143, 1),
@@ -165,7 +152,6 @@ class _FileUploadButtonState extends State<FileUploadButton> {
                             ))),
                 onPressed: () {
                   try {
-                    // send this.chosen_file to this.url_upload_file
                     if (chosen_file != null) {
                       setState(() {
                         upload_file_message = "File uploaded";
@@ -206,7 +192,6 @@ class _FileUploadButtonState extends State<FileUploadButton> {
                             color: Colors.white,
                             fontSize: 50),
                       )
-                      //Image.asset("images/enter_button.png"),
                       ),
                 ),
               ),
@@ -216,106 +201,6 @@ class _FileUploadButtonState extends State<FileUploadButton> {
             upload_file_message,
             style: TextStyle(color: Colors.red, fontSize: 20),
           ),
-          // Container(
-          //   padding: EdgeInsets.all(15),
-          //   //color: Colors.green,
-          //   child: Container(
-          //     height: 60,
-          //     decoration: BoxDecoration(
-          //         gradient: LinearGradient(
-          //           // ignore: prefer_const_literals_to_create_immutables
-          //           colors: [
-          //             Color.fromRGBO(255, 143, 158, 1),
-          //             Color.fromRGBO(255, 188, 143, 1),
-          //           ],
-          //           begin: Alignment.centerLeft,
-          //           end: Alignment.centerRight,
-          //         ),
-          //         borderRadius: const BorderRadius.all(
-          //           Radius.circular(25.0),
-          //         ),
-          //         boxShadow: [
-          //           BoxShadow(
-          //             color: Colors.pink.withOpacity(0.2),
-          //             spreadRadius: 4,
-          //             blurRadius: 10,
-          //             offset: Offset(0, 3),
-          //           )
-          //         ]),
-          //     child: ElevatedButton.icon(
-          //       icon: Icon(
-          //         Icons.file_copy_outlined,
-          //         color: Colors.white70,
-          //         size: 45.0,
-          //       ),
-          //       style: ButtonStyle(
-          //           backgroundColor: MaterialStateProperty.all(Colors.grey),
-          //           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-          //               RoundedRectangleBorder(
-          //                   borderRadius: BorderRadius.circular(18.0),
-          //                   side: BorderSide(color: Colors.blue)))),
-          //       onPressed: () async {
-          //         String? text = await showDialog(
-          //           context: context,
-          //           builder: (BuildContext context) {
-          //             TextEditingController _controller =
-          //                 TextEditingController();
-
-          //             return AlertDialog(
-          //               title: Text('Enter some text'),
-          //               content: TextField(
-          //                 controller: _controller,
-          //                 decoration: InputDecoration(
-          //                   hintText: 'Type something...',
-          //                 ),
-          //               ),
-          //               actions: <Widget>[
-          //                 TextButton(
-          //                   child: Text('Cancel'),
-          //                   onPressed: () {
-          //                     Navigator.of(context).pop(null);
-          //                   },
-          //                 ),
-          //                 TextButton(
-          //                   child: Text('OK'),
-          //                   onPressed: () {
-          //                     Navigator.of(context).pop(_controller.text);
-          //                   },
-          //                 ),
-          //               ],
-          //             );
-          //           },
-          //         );
-
-          //         // do some operations with the entered value
-          //         if (text != null && text.isNotEmpty) {
-          //           // perform some operations with the entered text
-          //           print('Entered text: $text');
-          //         } else {
-          //           // handle cancel button pressed
-          //           print('Cancelled');
-          //         }
-          //       },
-          //       label: FittedBox(
-          //         child: Container(
-          //             margin: EdgeInsets.all(30),
-          //             height: 100,
-          //             width: MediaQuery.of(context).size.width / 1.5,
-          //             child: Text(
-          //               'For one student',
-          //               textAlign: TextAlign.center,
-          //               style: TextStyle(
-          //                   fontWeight: FontWeight.bold,
-          //                   color: Colors.white,
-          //                   fontSize: 45),
-          //             )
-          //             //Image.asset("images/enter_button.png"),
-          //             ),
-          //         fit: BoxFit.fill,
-          //       ),
-          //     ),
-          //   ),
-          // )
         ],
       ),
     );

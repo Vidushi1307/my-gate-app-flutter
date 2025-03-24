@@ -6,6 +6,7 @@ import 'package:my_gate_app/screens/admin/utils/submit_button.dart';
 import 'package:my_gate_app/screens/admin/utils/textbox.dart';
 import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
 import 'package:my_gate_app/screens/utils/scrollable_widget.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class VisitorForm extends StatefulWidget {
   const VisitorForm({
@@ -96,7 +97,7 @@ class _VisitorFormState extends State<VisitorForm> {
               height: 10,
             ),
             Image.asset(
-              'assets/images/visitor.webp',
+              image_paths.visitor,
               // 'assets/images/ticket.jpg',
               height: 300,
               width: 300,

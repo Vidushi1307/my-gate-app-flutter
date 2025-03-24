@@ -15,12 +15,9 @@ class _ModifyGuardsState extends State<ModifyGuards> {
   String chosen_modify_guard_email = "None";
   String chosen_modify_guard_location = "None";
   final List<String> guard_names = databaseInterface.getGuardNames();
-  // final List<String> guard_emails = databaseInterface.getGuardLocations();
   List<String> guard_emails =[];
   
-  // List<String> guard_emails = [];
   List<String> locations=[];
-  // final List<String> locations = databaseInterface.getLoctions();
   
   @override
   void initState(){
@@ -57,26 +54,6 @@ class _ModifyGuardsState extends State<ModifyGuards> {
                   color: Colors.purple,
                   fontSize: 30),
             ),
-            /*SizedBox(
-              height: 50,
-            ),
-
-            dropdown(
-              context,
-              this.guard_names,
-                  (String? s) {
-                if (s != null) {
-                  print("inside funciton:" + this.chosen_modify_guard);
-                  this.chosen_modify_guard = s;
-                  print(this.chosen_modify_guard);
-                }
-              },
-              "Guard Name",
-              Icon(
-                Icons.security,
-                color: Colors.black,
-              ),
-            ), */
 
 
             const SizedBox(
@@ -106,9 +83,7 @@ class _ModifyGuardsState extends State<ModifyGuards> {
               locations,
                   (String? s) {
                 if (s != null) {
-                  // print("inside funciton:" + this.chosen_parent_location);
                   chosen_modify_guard_location = s;
-                  // print(this.chosen_parent_location);
                 }
               },
               "Guard Location",
@@ -123,7 +98,6 @@ class _ModifyGuardsState extends State<ModifyGuards> {
             SubmitButton(submit_function: () async {
                 if (chosen_modify_guard_email!="None" && chosen_modify_guard_location!="None"){
                   String response = await databaseInterface.modify_guard(chosen_modify_guard_email,chosen_modify_guard_location);
-                  print("Response: $response");
                 }
 
             }, button_text: "Update")

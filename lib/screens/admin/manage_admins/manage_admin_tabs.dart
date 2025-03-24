@@ -47,7 +47,6 @@ class _ManageAdminTabsState extends State<ManageAdminTabs>
             backgroundColor: Colors.black,
             bottom: TabBar(
               controller: controller,
-              // ignore: prefer_const_literals_to_create_immutables
               tabs: [
                 Tab(text: 'Add', icon: Icon(Icons.add)),
                 // Tab(text: 'Modify', icon: Icon(Icons.mode_edit)),
@@ -58,7 +57,6 @@ class _ManageAdminTabsState extends State<ManageAdminTabs>
           ),
           body: TabBarView(
             controller: controller,
-            // ignore: prefer_const_literals_to_create_immutables
             children: [
               AddAdmins(),
               // Text("TODO: Modify Admins"),

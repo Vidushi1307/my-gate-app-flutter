@@ -19,7 +19,6 @@ class _ModifyLocationsState extends State<ModifyLocations> {
   String chosen_pre_approval_needed = "None"; // Takes value "Yes"|"No"|"None"
   String automatic_exit_required = "None"; // Takes value "Yes"|"No"|"None"
   List<String> parent_locations = [];
-  // List<String> parent_locations = databaseInterface.getLoctions();
 
   @override
   void initState(){
@@ -81,14 +80,6 @@ class _ModifyLocationsState extends State<ModifyLocations> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [
-          //     Colors.lightBlueAccent,
-          //     Colors.purple.shade200,
-          //   ],
-          // ),
             color: Color(0xfff0eded),
         ),
           child: Column(

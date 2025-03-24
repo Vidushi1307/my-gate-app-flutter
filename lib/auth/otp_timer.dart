@@ -24,7 +24,6 @@ class _OtpTimerState extends State<OtpTimer> {
     Timer.periodic(duration, (timer) {
       if (mounted) {
         setState(() {
-          //print(timer.tick);
           currentSeconds = timer.tick;
           if (timer.tick >= timerMaxSeconds) timer.cancel();
         });

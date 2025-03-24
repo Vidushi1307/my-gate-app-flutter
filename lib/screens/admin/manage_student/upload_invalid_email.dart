@@ -12,10 +12,6 @@ class _UploadInvalidEmailState extends State<UploadInvalidEmail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Text('Manage Student'),
-        //   actions: [IconButton(onPressed: () {}, icon: Icon(Icons.logout))],
-        // ),
         body: Container(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,

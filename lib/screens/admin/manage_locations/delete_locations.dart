@@ -16,7 +16,6 @@ class DeleteLocations extends StatefulWidget {
 class _DeleteLocationsState extends State<DeleteLocations> {
   String chosen_delete_location = "None";
   List<String> parent_locations = [];
-  // List<String> parent_locations = databaseInterface.getLoctions();
   
   @override
   void initState(){
@@ -31,7 +30,6 @@ class _DeleteLocationsState extends State<DeleteLocations> {
   Future<void> delete_location() async {
     print("submit button of delete location pressed");
     
-    // chosen_delete_location = "Main Gate";
 
     if (chosen_delete_location == "None") {
       print("Display red warning message for chosen_delete_location: Cannot be None");
@@ -49,7 +47,6 @@ class _DeleteLocationsState extends State<DeleteLocations> {
       print("Display snackbar: Failed to delete location");
       final snackBar = get_snack_bar("Failed to delete location", Colors.red);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
-      // print("Display snackbar: " + response);
       return;
     }
   }
@@ -62,14 +59,6 @@ class _DeleteLocationsState extends State<DeleteLocations> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [
-          //     Colors.lightBlueAccent,
-          //     Colors.purple.shade200,
-          //   ],
-          // ),
               color: Color(0xfff0eded),
         ),
           child: Column(

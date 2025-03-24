@@ -13,12 +13,10 @@ class SubmitButton extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(15),
-            //color: Colors.green,
             child: Container(
               height: 60,
               decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    // ignore: prefer_const_literals_to_create_immutables
                     colors: [
                       Color.fromRGBO(255, 143, 158, 1),
                       Color.fromRGBO(255, 188, 143, 1),
@@ -44,7 +42,6 @@ class SubmitButton extends StatelessWidget {
                     shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            // side: BorderSide(color: Colors.blue)
                         ))),
                 onPressed: () {
                   submit_function();
@@ -63,16 +60,11 @@ class SubmitButton extends StatelessWidget {
                             color: Colors.white,
                             fontSize: 50),
                       )
-                      //Image.asset("images/enter_button.png"),
                       ),
                 ),
               ),
             ),
           ),
-          // Text(
-          //   this.enter_message,
-          //   style: TextStyle(color: Colors.white),
-          // ),
         ],
       ),
     );

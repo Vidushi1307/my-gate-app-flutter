@@ -15,7 +15,6 @@ class _DeleteGuardsState extends State<DeleteGuards> {
   String chosen_delete_guard_email = "None";
 
   final List<String> guard_names = databaseInterface.getGuardNames();
-  // final List<String> guard_emails = databaseInterface.getGuardLocations();
   List<String> guard_emails = [];
 
   @override
@@ -47,26 +46,6 @@ class _DeleteGuardsState extends State<DeleteGuards> {
                   color: Colors.purple,
                   fontSize: 30),
             ),
-            /* SizedBox(
-              height: 50,
-            ),
-
-            dropdown(
-              context,
-              this.guard_names,
-                  (String? s) {
-                if (s != null) {
-                  print("inside funciton:" + this.chosen_delete_guard_name);
-                  this.chosen_delete_guard_name = s;
-                  print(this.chosen_delete_guard_name);
-                }
-              },
-              "Guard Name",
-              Icon(
-                Icons.security,
-                color: Colors.black,
-              ),
-            ), */
             const SizedBox(height: 50,),
             dropdown(
               context,

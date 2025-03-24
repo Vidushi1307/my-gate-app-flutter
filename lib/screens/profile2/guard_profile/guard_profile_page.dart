@@ -7,6 +7,8 @@ import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
+
 
 class GuardProfilePage extends StatefulWidget {
   final String? email;
@@ -185,7 +187,7 @@ class _GuardProfilePageState extends State<GuardProfilePage> {
   Future<void> pick_image_blank() async {
     var source = ImageSource.gallery;
     var filePath =
-        "assets/images/dummy_person.jpg"; // Replace with the actual file path
+       image_paths.dummy_person; // Replace with the actual file path
     XFile image = XFile(filePath);
 
     var widgetEmail = widget.email;

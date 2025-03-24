@@ -6,6 +6,7 @@ import 'package:my_gate_app/get_email.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/screens/admin/utils/dropdown.dart';
 import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class GeneratePreApprovalTicket extends StatefulWidget {
   const GeneratePreApprovalTicket({super.key, required this.location});
@@ -38,11 +39,6 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
   void initState() {
     super.initState();
     get_authorities_list();
-    // if (widget.in_or_out == 'in') {
-    //   this.entry_or_exit_heading = "Generate Exit Preapproval";
-    // } else {
-    //   this.entry_or_exit_heading = "Generate Entry Preapproval";
-    // }
   }
 
   Future<void> clear_ticket_generated_message() async {
@@ -52,16 +48,9 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
   }
 
   Future<int> insert_in_authorities_ticket_table() async {
-    // ignore: todo
-    // TODO Add popup before button is pressed
-    // setState(() {
-    //   ticket_generated_message = "Generating Ticket";
-    // });
     print("submit button insert_in_authorities_ticket_table pressed");
     String email = LoggedInDetails.getEmail();
     String date_time = DateTime.now().toString();
-    // ticket_type = "enter";
-    // student_message = "Hello Sir, I want to go home for some urgent work. Please give me permission"
     int statusCode = await databaseInterface.insert_in_authorities_ticket_table(
         chosen_authority,
         ticket_type,
@@ -69,11 +58,7 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
         email,
         date_time,
         widget.location);
-    //String from_whom, String for_whom,
-    //String ticket_type, String location, String message
-    // print("Auth email=${chosen_authority},email= ${email}\n\n\n");
     String auth_email = chosen_authority.split("\n")[1];
-    // print("Auth email=${auth_email},email= ${email}\n\n\n");
     await databaseInterface.insert_notification_guard_accept_reject(
         email, auth_email, ticket_type, widget.location, student_message);
     return statusCode;
@@ -86,7 +71,6 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
           get_snack_bar("Ticket raised successfully", Colors.green);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     } else {
-      // snackbar
       final snackBar = get_snack_bar("Failed to raise ticket", Colors.red);
       ScaffoldMessenger.of(context).showSnackBar(snackBar);
     }
@@ -99,16 +83,6 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
         body: SingleChildScrollView(
             child: Container(
                 color: Colors.white,
-                // decoration: BoxDecoration(
-                //   gradient: LinearGradient(
-                //       begin: Alignment.topLeft,
-                //       end: Alignment.bottomRight,
-                //       colors: const [
-                //         Colors.white,
-                //         Color.fromARGB(255, 255, 255, 255)
-                //       ]),
-                // ),
-                // color: Colors.yellow,
                 child: Column(
                     children: [
                   Container(
@@ -124,7 +98,7 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
                       ),
                       image: DecorationImage(
                         image: AssetImage(
-                            'assets/images/spiral.jpg'), // Your image path
+                            image_paths.spiral), // Your image path
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -209,24 +183,6 @@ class _GeneratePreApprovalTicketState extends State<GeneratePreApprovalTicket> {
                   SizedBox(
                     height: 40,
                   ),
-                  // SubmitButton(
-                  //   submit_function: () async {
-                  //     print("auth ticket raised");
-                  //     print("");
-                  //     final student_message_validity =
-                  //         student_message_form_key.currentState?.validate();
-                  //     FocusScope.of(context).unfocus();
-                  //     if (student_message_validity != null &&
-                  //         student_message_validity) {
-                  //       student_message_form_key.currentState?.save();
-                  //     }
-                  //     int statusCode =
-                  //         await insert_in_authorities_ticket_table();
-                  //     display_further_status(statusCode);
-                  //   },
-                  //   button_text: "Generate",
-                  //
-                  // ),
                   MaterialButton(
                     onPressed: () async {
                       print("auth ticket raised");

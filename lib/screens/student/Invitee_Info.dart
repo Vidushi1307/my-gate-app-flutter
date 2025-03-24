@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/get_email.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-// import 'package:my_gate_app/screens/guard/utils/UI_statics.dart'; // Import necessary dependencies
 import 'package:share_plus/share_plus.dart' as myshare;
 import 'package:path_provider/path_provider.dart';
 import 'dart:typed_data';
@@ -143,10 +142,6 @@ class _InviteeFormState extends State<InviteeForm> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white, // Set background color to white
-      // appBar: AppBar(
-      //   title: Text('Invitee Form', style: GoogleFonts.mPlusRounded1c(color: Colors.black)), // Set app bar title color to black
-      //   backgroundColor: Colors.white, // Set app bar background color to white
-      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -361,8 +356,6 @@ class _InviteeFormState extends State<InviteeForm> {
                       int statusCode;
                       String formattedDate =
                           '${_selectedDate.day.toString().padLeft(2, '0')}/${_selectedDate.month.toString().padLeft(2, '0')}/${_selectedDate.year}';
-                      print('edgjkweq$formattedDate');
-                      print('edgjkweq$_durations');
                       statusCode = await db.GenerateRelativesTicket(
                         extractedStudent,
                         _name,
@@ -431,9 +424,6 @@ class _InviteeStatusState extends State<InviteeStatus> {
   @override
   void initState() {
     super.initState();
-    // tickets = _generateDummyData(); // Initialize tickets with dummy data
-    // ticketsFiltered = List.from(tickets);
-    // print("hhhhelllo");
     _fetchTickets();
   }
 

@@ -4,7 +4,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/screens/profile2/admin_profile/admin_edit_profile_page.dart';
 import 'package:my_gate_app/screens/profile2/authority_profile/authority_edit_profile_page.dart';
-// import 'package:my_gate_app/screens/profile2/guard_profile/guard_edit_profile_page.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/profile2/widget/appbar_widget.dart';
@@ -16,6 +15,8 @@ import 'package:my_gate_app/screens/profile2/widget/textfield_widget.dart';
 import 'package:my_gate_app/get_email.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
+
 
 class AdminProfilePage extends StatefulWidget {
   final String? email;
@@ -211,7 +212,7 @@ class _AdminProfilePageState extends State<AdminProfilePage> {
   Future<void> pick_image_blank() async {
     print("edit profile page image clicked 2");
     var source = ImageSource.gallery;
-    var filePath = "assets/images/dummy_person.jpg";
+    var filePath = image_paths.dummy_person;
     XFile image = XFile(filePath);
     var widgetEmail = widget.email;
     if (widgetEmail != null) {

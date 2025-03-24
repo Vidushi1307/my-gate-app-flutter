@@ -35,16 +35,6 @@ class _AddGuardsState extends State<AddGuards> {
 
   Future<void> add_new_guard() async {
     print("submit button of add new Guard pressed");
-    // int status code = await databaseInterface.add_new_location();
-    // String response = await databaseInterface.add_new_location();
-    // if(status_code = 200){
-    // if(response == "New location added successfully"){
-    // print("Display snackbar: New loction added successfully");
-    // }
-    // else{
-    // print("Display snackbar: Failed to add new location");
-    // print("Display snackbar: " + response);
-    // }
   }
 
   @override
@@ -54,14 +44,6 @@ class _AddGuardsState extends State<AddGuards> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [
-          //     Colors.lightBlueAccent,
-          //     Colors.purple.shade200,
-          //   ],
-          // ),
           color: Color(0xfff0eded),
         ),
         child: Column(
@@ -112,9 +94,7 @@ class _AddGuardsState extends State<AddGuards> {
               this.parent_locations,
               (String? s) {
                 if (s != null) {
-                  // print("inside funciton:" + this.chosen_parent_location);
                   this.chosen_guard_location = s;
-                  // print(this.chosen_parent_location);
                 }
               },
               "Guard Location",

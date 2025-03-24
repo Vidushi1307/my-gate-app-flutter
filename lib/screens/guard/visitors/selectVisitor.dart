@@ -29,9 +29,7 @@ class _selectVisitorState extends State<selectVisitor> {
 
   void getUsers() async {
     List<String> visitorList = await databaseInterface.get_list_of_visitors();
-    print("ooooooooooooooooooooooooooooooooooooooooooooooo");
     print(visitorList);
-    print("ooooooooooooooooooooooooooooooooooooooooooooooo");
     List<User> userList = visitorList.map((visitorString) {
       List<String> parts = visitorString.split(',');
       return User(

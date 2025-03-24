@@ -15,9 +15,7 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      // appBar: AppBar(title: Text('Authentication'),
       appBar: AppBar(
-      // backgroundColor: Color(0x44000000),
       backgroundColor: Colors.white,
       elevation: 0,
       toolbarHeight: 30,

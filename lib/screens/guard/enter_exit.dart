@@ -23,6 +23,7 @@ import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/guard/visitors/selectVisitor.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/guard/visitors/inviteeValidationPage.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class QRScannerScreen extends StatelessWidget {
   const QRScannerScreen({super.key});
@@ -264,7 +265,7 @@ class _EntryExitState extends State<EntryExit> {
                 // Image.asset('assets/images/enter_exit.webp'),
                 SizedBox(height: MediaQuery.of(context).size.width * 0.15),
                 ImageWithText(
-                  imagePath: 'assets/new_images/main_gate.jpeg',
+                  imagePath: image_paths.cs_block,
                   imageHeight: MediaQuery.of(context).size.width * 0.60,
                   imageWidth: MediaQuery.of(context).size.width * 0.70,
                   textContent: "Main Gate",

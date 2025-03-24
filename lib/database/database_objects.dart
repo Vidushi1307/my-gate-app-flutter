@@ -1,43 +1,5 @@
 // ignore_for_file: non_constant_identifier_names, unnecessary_new
 
-// class TicketResultObj {
-//   int location_id = -1;
-//   String date_time = "";
-//   String is_approved = "Pending";
-//   String ticket_type = "";
-
-//   void empty_table_entry(TicketResultObj obj){
-//     obj.location_id = 0;
-//     obj.date_time = "";
-//     obj.is_approved = "";
-//     obj.ticket_type = "";
-//   }
-
-//   static TicketResultObj fromJson(Map<String, dynamic> json_data) {
-//     // ignore: unnecessary_new
-//     return new TicketResultObj(json_data['location_id'], json_data['date_time'],
-//         json_data['is_approved'], json_data['ticket_type']);
-//   }
-
-//   Map<String,dynamic> toJson(){
-//     return {
-//       "location_id": this.location_id,
-//       "date_time": this.date_time,
-//       "is_approved": this.is_approved,
-//       "ticket_type": this.ticket_type
-//     };
-//   }
-
-//   TicketResultObj(int _location_id, String _date_time, String _is_approved,
-//       String ticket_type) {
-//     this.location_id = _location_id;
-//     this.date_time = _date_time;
-//     this.is_approved = _is_approved;
-//     this.ticket_type = ticket_type;
-//   }
-
-//   TicketResultObj.constructor1() {}
-// }
 
 class ResultObj {
   late String location;
@@ -319,30 +281,6 @@ class ResultObj4 {
     this.num_additional,
       );
 
-  // Usage
-  // 1. It is not used no where yet
-  // static ResultObj4 fromJson1(Map<String, dynamic> json_data) {
-  //   return new ResultObj4.constructor1(
-  //     json_data['visitor_name'],
-  //     json_data['mobile_no'],
-  //     json_data['current_status'],
-  //     json_data['car_number'],
-  //     json_data['authority_name'],
-  //     json_data['authority_email'],
-  //     json_data['authority_designation'],
-  //     json_data['purpose'],
-  //     json_data['authority_status'],
-  //     json_data['authority_message'],
-  //     json_data['date_time_of_ticket_raised'],
-  //     json_data['date_time_authority'],
-  //     json_data['date_time_guard'],
-  //     json_data['date_time_of_exit'],
-  //     json_data['guard_status'],
-  //     json_data['ticket_type'],
-  //     json_data['visitor_ticket_id'],
-  //     json_data['duration_of_stay'],
-  //   );
-  // }
 
   // Usage
   // 1. get_pending_tickets_for_visitors
@@ -618,8 +556,3 @@ class InviteeRecord {
     );
   }
 }
-
-
-
-
-

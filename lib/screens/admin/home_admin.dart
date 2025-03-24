@@ -15,6 +15,7 @@ import 'package:my_gate_app/screens/profile2/model/menu_item.dart';
 import 'package:my_gate_app/screens/profile2/utils/menu_items.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/screens/notificationPage/notification.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class HomeAdmin extends StatefulWidget {
   const HomeAdmin({super.key});
@@ -29,42 +30,42 @@ class _HomeAdminState extends State<HomeAdmin> {
   final List<Map<String, dynamic>> manageData = [
     {
       "title": "STUDENTS",
-      "image": "assets/images/Student.jpeg",
+      "image": image_paths.student,
       "navigate": "STUDENTS"
     },
     {
       "title": "GUARDS",
-      "image": "assets/images/Guard.jpg",
+      "image": image_paths.guard,
       "navigate": "GUARDS"
     },
     {
       "title": "ADMINS",
-      "image": "assets/images/admin.jpg",
+      "image": image_paths.admin,
       "navigate": "ADMINS"
     },
     {
       "title": "LOCATIONS",
-      "image": "assets/images/Location.jpg",
+      "image": image_paths.location,
       "navigate": "LOCATIONS"
     },
     {
       "title": "HOSTELS",
-      "image": "assets/images/Hostel.jpg",
+      "image": image_paths.hostel,
       "navigate": "HOSTELS"
     },
     {
       "title": "AUTHORITIES",
-      "image": "assets/images/Authorities.jpg",
+      "image": image_paths.authority,
       "navigate": "AUTHORITIES"
     },
     {
       "title": "DEPARTMENTS",
-      "image": "assets/images/Department.jpg",
+      "image": image_paths.department,
       "navigate": "DEPARTMENTS"
     },
     {
       "title": "PROGRAMS",
-      "image": "assets/images/Program.png",
+      "image": image_paths.program,
       "navigate": "PROGRAMS"
     },
   ];
@@ -72,7 +73,6 @@ class _HomeAdminState extends State<HomeAdmin> {
   Future<void> get_welcome_message() async {
     String welcome_message_local =
     await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
-    // print("welcome_message_local: " + welcome_message_local);
     setState(() {
       welcome_message = welcome_message_local;
     });
@@ -82,11 +82,6 @@ class _HomeAdminState extends State<HomeAdmin> {
   void initState() {
     super.initState();
     get_welcome_message();
-    // databaseInterface.getLoctions2().then((result){
-    //   setState(() {
-    //     entries=result;
-    //   });
-    // });
   }
 
   @override
@@ -107,14 +102,6 @@ class _HomeAdminState extends State<HomeAdmin> {
                   ),
                 ),
 
-                // Text(
-                //   welcome_message,
-                //   style: TextStyle(
-                //     fontSize: 15,
-                //     color: Colors.black,
-                //     fontWeight: FontWeight.bold,
-                //   ),
-                // ),
               ],
             ),
             actions: [
@@ -222,7 +209,7 @@ class _HomeAdminState extends State<HomeAdmin> {
                               // Background Image or Container with Black Blurring
                               Positioned.fill(
                                 child: Image.asset(
-                                  "assets/images/Statistics.jpg", // Use your show_image function to provide the image path
+                                  image_paths.statistics, // Use your show_image function to provide the image path
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -506,9 +493,6 @@ class _HomeAdminState extends State<HomeAdmin> {
                     ),
 
 
-                    // SizedBox(
-                    //   height: MediaQuery.of(context).size.height * 13 / 800,
-                    // ),
                   ],
                 ),
               ),
@@ -532,8 +516,6 @@ class _HomeAdminState extends State<HomeAdmin> {
     switch (item) {
       case MenuItems.itemProfile:
         Navigator.of(context).push(
-          // MaterialPageRoute(builder: (context) => ProfileController()),
-          // MaterialPageRoute(builder: (context) => GuardProfilePage(email: LoggedInDetails.getEmail())),
           MaterialPageRoute(
               builder: (context) =>
                   AdminProfilePage(email: LoggedInDetails.getEmail())),

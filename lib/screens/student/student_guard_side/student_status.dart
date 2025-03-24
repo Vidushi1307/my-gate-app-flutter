@@ -9,6 +9,7 @@ import 'package:my_gate_app/get_email.dart';
 import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class StudentStatus extends StatefulWidget {
   StudentStatus({
@@ -353,17 +354,6 @@ class _StudentStatusState extends State<StudentStatus> {
           SizedBox(height: 20),
         ],
       );
-//      } else {
-//        return Text(
-//          "Cannot enter this location if not entered its parent location - ${parent_location}",
-//          textAlign: TextAlign.center,
-//          style: GoogleFonts.mPlusRounded1c(
-//          color: Colors.black,
-//          fontSize: 20.0,
-//          fontWeight: FontWeight.bold,
-//         ),
-//        );
-//      }
     } else if (widget.in_or_out == 'out') {
       if (widget.exited_all_children == "true") {
         return Column(
@@ -754,7 +744,7 @@ class EnterButton extends StatelessWidget {
                   child: Container(
                     margin: EdgeInsets.all(10),
                     height: 100,
-                    child: Image.asset("assets/images/enter_button.png"),
+                    child: Image.asset(image_paths.enter_button),
                   ),
                 ),
               ),
@@ -821,7 +811,7 @@ class ExitButton extends StatelessWidget {
                   child: Container(
                     margin: EdgeInsets.all(10),
                     height: 100,
-                    child: Image.asset("assets/images/exit_button.jpeg"),
+                    child: Image.asset(image_paths.exit_button),
                   ),
                 ),
               ),

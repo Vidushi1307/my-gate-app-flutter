@@ -9,6 +9,7 @@ import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/database/database_objects.dart';
 import 'package:intl/intl.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 class StudentTicketTable extends StatefulWidget {
   StudentTicketTable({
@@ -760,7 +761,7 @@ class _Validification_pageState extends State<Validification_page> {
     var source = ImageSource.gallery;
     print(source);
     var filePath =
-        "assets/images/dummy_person.jpg"; // Replace with the actual file path
+        image_paths.dummy_person; // Replace with the actual file path
     XFile image = XFile(filePath);
     var widgetEmail = widget.email;
     await databaseInterface.send_image(
@@ -770,7 +771,7 @@ class _Validification_pageState extends State<Validification_page> {
     User result = await db.get_student_by_email(widget.email);
 
     var picLocal = NetworkImage(result.imagePath);
-    var removeImage = const AssetImage('images/dummy_person.jpg');
+    var removeImage = const AssetImage(image_paths.dummy_person);
     setState(() {
       pic = removeImage;
     });

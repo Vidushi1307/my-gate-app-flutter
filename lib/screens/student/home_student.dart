@@ -18,6 +18,7 @@ import 'package:my_gate_app/screens/student/Invitee_Info.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/notificationPage/notification.dart';
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 
 // This file calls StudentTicketTable
 
@@ -88,21 +89,15 @@ class _HomeStudentState extends State<HomeStudent> {
     // Colors.red[300],
   ];
 
-  // List<String> entries = databaseInterface.getLoctions();
   String welcome_message = "Welcome";
 
-  // Map<String, String> location_images_paths = databaseInterface.getLocationImagesPaths();
   final List<String> location_images_paths =
       databaseInterface.getLocationImagesPaths();
-  //final List<int> colorCodes = <int>[600, 500, 100,600, 500, 100,600, 500, 100,600, 500, 100,600, 500, 100,600, 500, 100,600, 500, 100,];
 
   Future<void> get_welcome_message() async {
     String welcome_message_local =
         await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
 
-//    List<String> studentStatusDB =
-//        await databaseInterface.get_student_status_for_all_locations_2(
-//            LoggedInDetails.getEmail(), location_id);
 
     // Call the updated function
     Map<String, dynamic> statusMap =
@@ -132,7 +127,6 @@ class _HomeStudentState extends State<HomeStudent> {
 
     setState(() {
       welcome_message = welcome_message_local;
-      print("Going here");
       studentStatus = studentStatusDB;
     });
   }
@@ -165,21 +159,11 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Future<void> fetchData() async {
     List<int> count = [];
-    print("LENGTH IS");
     for (int i = 0; i < entries.length; i++) {
-      print(entries.length);
-      print("=====================");
-      print(i);
       int value = await databaseInterface.count_inside_Location(location_id[i]);
       count.add(value);
-      print("ooooooooooooooooooo");
-      print(i);
-      print(value);
     }
 
-//    List<String> status =
-//        await databaseInterface.get_student_status_for_all_locations_2(
-//            LoggedInDetails.getEmail(), location_id);
 
     // Call the updated function
     Map<String, dynamic> statusMap =
@@ -203,7 +187,6 @@ class _HomeStudentState extends State<HomeStudent> {
 
     setState(() {
       in_count = count;
-      print("asdaasdasdasdasdasdasd");
       print(in_count);
       studentStatus = status;
       print("studentStatus= $studentStatus");
@@ -214,7 +197,7 @@ class _HomeStudentState extends State<HomeStudent> {
     if (index < 6) {
       return location_images_paths[index];
     }
-    return 'assets/images/spiral.jpg';
+    return image_paths.spiral;
   }
 
   @override
@@ -487,7 +470,7 @@ class _HomeStudentState extends State<HomeStudent> {
                         borderRadius: BorderRadius.circular(
                             10), // Same as container border radius
                         child: Image.asset(
-                          "assets/new_images/cse_block.jpeg", // Use your show_image function to provide the image path
+                          image_paths.cs_block, // Use your show_image function to provide the image path
                           fit: BoxFit.cover,
                         ),
                       ),

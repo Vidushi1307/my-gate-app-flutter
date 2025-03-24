@@ -18,7 +18,6 @@ class _AddLocationsState extends State<AddLocations> {
   String new_location_name = "None";
   List<String> parent_locations = [];
 
-  // List<String> parent_locations = databaseInterface.getLoctions();
   final location_name_form_key = GlobalKey<FormState>();
 
   String chosen_parent_location = "None";
@@ -36,11 +35,6 @@ class _AddLocationsState extends State<AddLocations> {
   }
 
   Future<void> add_new_location() async {
-    print("submit button of add new location pressed");
-    // new_location_name = "Main Gate";
-    // chosen_parent_location = "None";
-    // chosen_pre_approval_needed = "Yes";
-    // automatic_exit_required = "No";
 
     if (new_location_name == "None") {
       print(
@@ -90,14 +84,6 @@ class _AddLocationsState extends State<AddLocations> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-          // gradient: LinearGradient(
-          //   begin: Alignment.topLeft,
-          //   end: Alignment.bottomRight,
-          //   colors: [
-          //     Colors.lightBlueAccent,
-          //     Colors.purple.shade200,
-          //   ],
-          // ),
               color: Color(0xfff0eded),
         ),
           child: Column(
@@ -135,9 +121,7 @@ class _AddLocationsState extends State<AddLocations> {
                 this.parent_locations,
                 (String? s) {
                   if (s != null) {
-                    // print("inside funciton:" + this.chosen_parent_location);
                     this.chosen_parent_location = s;
-                    // print(this.chosen_parent_location);
                   }
                 },
                 "Parent Location",
