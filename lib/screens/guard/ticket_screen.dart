@@ -346,11 +346,11 @@ class _TicketScreenState extends State<TicketScreen> {
                     "Student",
                     style: (_person == User.student)
                         ? GoogleFonts.mPlusRounded1c(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Colors.black)
                         : GoogleFonts.mPlusRounded1c(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Colors.white),
                   ),
@@ -379,11 +379,11 @@ class _TicketScreenState extends State<TicketScreen> {
                     "Visitor",
                     style: (_person == User.visitor)
                         ? GoogleFonts.mPlusRounded1c(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Colors.black)
                         : GoogleFonts.mPlusRounded1c(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Colors.white),
                   ),
@@ -409,11 +409,11 @@ class _TicketScreenState extends State<TicketScreen> {
                     "Invitee",
                     style: (_person == User.invitee)
                         ? GoogleFonts.mPlusRounded1c(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Colors.black)
                         : GoogleFonts.mPlusRounded1c(
-                            fontSize: 16,
+                            fontSize: 14,
                             fontWeight: FontWeight.w800,
                             color: Colors.white),
                   ),
