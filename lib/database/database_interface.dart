@@ -26,8 +26,7 @@ class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
   static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-//  static String complete_base_url_static = "https://855f-164-100-193-243.ngrok-free.app";
-
+//  static String complete_base_url_static =  "https://bbab-2401-4900-8519-8a84-eb38-4edf-2cf9-b2d0.ngrok-free.app";
 
   static Map<String, dynamic> retry = {
     "try": 1,
@@ -596,7 +595,6 @@ class databaseInterface {
           .map((i) => ResultObj.fromJson1(i))
           .toList();
 
-
       if (response.statusCode == 200) {
         return tickets_list;
       } else {
@@ -823,7 +821,6 @@ class databaseInterface {
           .map((i) => ResultObj.fromJson1(i))
           .toList();
 
-
       if (response.statusCode == 200) {
         return tickets_list;
       } else {
@@ -897,6 +894,26 @@ class databaseInterface {
       print("error in get students=${e.toString()}");
       List<ResultObj> tickets_list = [];
       return tickets_list;
+    }
+  }
+  
+  static Future<bool> markLocationEmpty(String location) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$complete_base_url_static/guards/mark_location_empty'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'location': location}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Failed with status: ${response.statusCode}');
+        return false;
+      }
+    } catch (e) {
+      print('Error marking location empty: $e');
+      return false;
     }
   }
 
@@ -1121,9 +1138,7 @@ class databaseInterface {
       'Accept': 'application/json',
     };
 
-
     for (var ticket in selectedTickets) {
-
       await databaseInterface.insert_notification_guard_accept_reject(
           LoggedInDetails.getEmail(),
           ticket.email,
@@ -1234,7 +1249,6 @@ class databaseInterface {
     };
 
     for (var ticket in selectedTickets) {
-
       await databaseInterface.insert_notification_guard_accept_reject(
           LoggedInDetails.getEmail(),
           ticket.email,
@@ -1661,7 +1675,8 @@ class databaseInterface {
   static Future<Map<String, dynamic>> get_student_status_for_all_locations_2(
       String email, List<int> location_ids) async {
     var uri = "$complete_base_url_static/students/get_status_for_all_locations";
-    final errorMap = { //TODO: Avoid hardcoding here.
+    final errorMap = {
+      //TODO: Avoid hardcoding here.
       'CS Block': 'ERROR',
       'General Labs': 'ERROR',
       'Research Labs': 'ERROR',
@@ -1684,7 +1699,6 @@ class databaseInterface {
         print("Error occurred while fetching status from backend");
         return errorMap;
       }
-
     } catch (e) {
       print("Exception in get_student_status_for_all_locations_2: $e");
       return errorMap;
@@ -1818,8 +1832,7 @@ class databaseInterface {
       );
       if (response.statusCode != 200) {
         print("There is an error.");
-      } else {
-      }
+      } else {}
     } catch (e) {
       print(e.toString());
     }
@@ -1878,8 +1891,7 @@ class databaseInterface {
       );
       if (response.statusCode != 200) {
         print("There is an error.");
-      } else {
-      }
+      } else {}
     } catch (e) {
       print("database interface error************");
       print(e.toString());
@@ -1895,7 +1907,6 @@ class databaseInterface {
       String destination_addr,
       String location_name,
       String guard_email) async {
-
     var uri = "$complete_base_url_static/guards/insert_in_guard_ticket_table";
     try {
       var response = await http.post(
@@ -1916,8 +1927,7 @@ class databaseInterface {
       );
       if (response.statusCode != 200) {
         print("There is an error.");
-      } else {
-      }
+      } else {}
     } catch (e) {
       print("database interface error************");
       print(e.toString());
@@ -1989,7 +1999,7 @@ class databaseInterface {
             ", " +
             data[i]['email'] +
             ", " +
-            data[i]['mobile_no']; 
+            data[i]['mobile_no'];
         res.add(obj);
       }
       return res;
@@ -2099,7 +2109,6 @@ class databaseInterface {
       print("post request error");
       print(e.toString());
       throw Exception('Failed to load data');
-
     }
   }
 
@@ -2126,7 +2135,6 @@ class databaseInterface {
       print("post request error");
       print(e.toString());
       throw Exception('Failed to load data');
-
     }
   }
 
@@ -2150,7 +2158,6 @@ class databaseInterface {
       print("post request error");
       print(e.toString());
       throw Exception('Failed to load data');
-
     }
   }
 
@@ -2174,7 +2181,6 @@ class databaseInterface {
       print("post request error");
       print(e.toString());
       throw Exception('Failed to load data');
-
     }
   }
 

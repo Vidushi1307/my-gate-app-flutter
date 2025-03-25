@@ -1,11 +1,12 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, non_constant_identifier_names
 
 import 'dart:convert';
-
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+
 import 'package:my_gate_app/aboutus.dart';
 import 'package:my_gate_app/auth/authscreen.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/get_email.dart';
 import 'package:my_gate_app/screens/profile2/guard_profile/guard_profile_page.dart';
 import 'package:my_gate_app/screens/profile2/model/menu_item.dart';
@@ -16,7 +17,6 @@ import 'package:my_gate_app/database/database_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/screens/notificationPage/notification.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
-// import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
 import 'package:my_gate_app/screens/profile2/validification_page.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
@@ -24,6 +24,7 @@ import 'package:my_gate_app/screens/guard/visitors/selectVisitor.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/guard/visitors/inviteeValidationPage.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
+import 'package:my_gate_app/screens/guard/location_detail_page.dart';
 
 class QRScannerScreen extends StatelessWidget {
   const QRScannerScreen({super.key});
@@ -107,6 +108,77 @@ class _EntryExitState extends State<EntryExit> {
     get_welcome_message();
   }
 
+  final List<Map<String, String>> locations = [
+    {"name": "General Labs", "image": image_paths.cs_lab},
+    {"name": "Research Labs", "image": image_paths.research_lab},
+    {"name": "Lecture Rooms", "image": image_paths.lecture_room},
+    {"name": "Conference Room", "image": image_paths.conference_room},
+  ];
+
+// Add this helper method outside your build method
+  Widget _buildLocationCard(
+      BuildContext context, String locationName, String imagePath) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LocationDetailPage(
+                locationName: locationName,
+                imagePath: imagePath
+              ),
+            ),
+          );
+        },
+        child: Container(
+          width: 160,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                child: Image.asset(
+                  imagePath,
+                  height: 120,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  locationName,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,10 +196,7 @@ class _EntryExitState extends State<EntryExit> {
                   width: MediaQuery.of(context).size.width * 0.07,
                   height: MediaQuery.of(context).size.width * 0.07,
                   child: ClipOval(
-                    child: Image(
-                      image: NetworkImage(cur_guard.imagePath),
-                      fit: BoxFit.cover,
-                    ),
+                    child: Image.asset(image_paths.dummy_person),
                   ),
                 ),
               ),
@@ -268,7 +337,22 @@ class _EntryExitState extends State<EntryExit> {
                   imagePath: image_paths.cs_block,
                   imageHeight: MediaQuery.of(context).size.width * 0.60,
                   imageWidth: MediaQuery.of(context).size.width * 0.70,
-                  textContent: "Main Gate",
+                  textContent: "CS Block",
+                  locationName: "CS Block",
+                ),
+
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      SizedBox(width: 16),
+                      ...locations
+                          .map((location) => _buildLocationCard(
+                              context, location["name"]!, location["image"]!))
+                          .toList(),
+                      SizedBox(width: 16),
+                    ],
+                  ),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.width * 0.15),
                 Row(
@@ -584,6 +668,8 @@ class ImageWithText extends StatelessWidget {
   final double imageHeight;
   final double borderRadius;
   final String textContent;
+  final VoidCallback? onTap; // Optional tap callback
+  final String? locationName; // For navigation
 
   const ImageWithText({
     super.key,
@@ -592,55 +678,69 @@ class ImageWithText extends StatelessWidget {
     required this.imageHeight,
     this.borderRadius = 15,
     required this.textContent,
+    this.onTap,
+    this.locationName,
   });
+
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: imageWidth, // Adjust the width according to your requirement
-      height: imageHeight, // Adjust the height according to your requirement
-      child: Stack(
-        children: [
-          SizedBox(
-            // constraints: BoxConstraints(width:this.imageWidth),
-            width: imageWidth,
-            height: imageHeight,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(borderRadius),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: onTap ?? () {
+        if (locationName != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LocationDetailPage(
+                locationName: locationName!,
+                imagePath: imagePath,
               ),
             ),
-          ),
-          Positioned(
-            left: 10, // Adjust the left position of the text
-            bottom: 10, // Adjust the bottom position of the text
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                // color: Colors.black.withOpacity(0.5),
-                // borderRadius: BorderRadius.circular(5),
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.black.withOpacity(0.0),
-                    Colors.black.withOpacity(0.6),
-                  ],
-                ),
-              ),
-              child: Text(
-                textContent,
-                style: GoogleFonts.mPlusRounded1c(
-                  // color: Color.fromARGB(221, 255, 255, 255),
-                  color: Colors.white,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
+          );
+        }
+      },
+      child: SizedBox(
+        width: imageWidth,
+        height: imageHeight,
+        child: Stack(
+          children: [
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(borderRadius),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
                 ),
               ),
             ),
-          ),
-        ],
+            Positioned(
+              left: 10,
+              bottom: 10,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.6),
+                    ],
+                  ),
+                ),
+                child: Text(
+                  textContent,
+                  style: GoogleFonts.mPlusRounded1c(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
