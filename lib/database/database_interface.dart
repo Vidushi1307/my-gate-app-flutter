@@ -2279,4 +2279,41 @@ class databaseInterface {
       return null;
     }
   }
+  
+  
+  static Future<String> updateLocationStatus({
+    required String email,
+    required String newLocation,
+    required String purpose,
+  }) async {
+    String uri =
+        "$complete_base_url_static/update_location"; // Your backend endpoint
+    print("VGGGGGGGGGGG");
+    print(email);
+    print(newLocation);
+    print(purpose);
+
+    try {
+      print("NSSSSSSSSS");
+      var response = await http.post(Uri.parse(uri), body: {
+        'email': email,
+        'new_location': newLocation,
+        'purpose': purpose,
+      });
+      print(response.body);
+
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        String message = data['message'];
+        return message; // Assume backend sends confirmation message
+      } else {
+        print("Failed with status: ${response.statusCode}");
+        return "Failed to update location. Try again.";
+      }
+    } catch (e) {
+      print("Exception in updateLocationStatus: $e");
+      return "Error occurred during update.";
+    }
+  }
+  
 }
