@@ -7,6 +7,7 @@ import 'package:my_gate_app/auth/authscreen.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/get_email.dart';
 import 'package:my_gate_app/screens/profile2/profile_page.dart';
+import 'package:my_gate_app/screens/student/change_location.dart';
 import 'package:my_gate_app/screens/student/raise_ticket_for_guard_or_authorities.dart';
 import 'package:my_gate_app/screens/profile2/model/menu_item.dart';
 import 'package:my_gate_app/screens/profile2/utils/menu_items.dart';
@@ -617,7 +618,8 @@ class _HomeStudentState extends State<HomeStudent> {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => InviteeInfoPage()),
+                    MaterialPageRoute(
+                        builder: (context) => ChangeLocationPage()),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -628,7 +630,7 @@ class _HomeStudentState extends State<HomeStudent> {
                   ),
                 ),
                 child: Text(
-                  'Invite Guest',
+                  'Change location',
                   style: GoogleFonts.mPlusRounded1c(
                     fontSize: 20,
                     color: Colors.white,
