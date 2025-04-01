@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:my_gate_app/aboutus.dart';
 import 'package:my_gate_app/auth/authscreen.dart';
 import 'package:my_gate_app/get_email.dart';
@@ -109,11 +109,64 @@ class _EntryExitState extends State<EntryExit> {
   }
 
   final List<Map<String, String>> locations = [
-    {"name": "General Labs", "image": image_paths.cs_lab},
-    {"name": "Research Labs", "image": image_paths.research_lab},
-    {"name": "Lecture Rooms", "image": image_paths.lecture_room},
-    {"name": "Conference Rooms", "image": image_paths.conference_room},
+    {"name": "Lab 101", "image": image_paths.cs_lab},
+    {"name": "Lab 102", "image": image_paths.research_lab},
+    {"name": "Lab 202", "image": image_paths.lecture_room},
+    {"name": "Lab 203", "image": image_paths.conference_room},
   ];
+
+  void generateQRButton() {
+    //to reduce the data length of hte qr data for quick error less scan
+    Map<String, String> obj = {
+      "tic_ty": "exit",
+    };
+    String qrData = jsonEncode(obj);
+    showModalBottomSheet(
+      context: context,
+      builder: (builder) {
+        return Container(
+          color: Colors.transparent, // Set the container's color to transparent
+          child: Container(
+            padding: EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(10),
+                topRight: const Radius.circular(10),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  'Show QR code to the student',
+                  style: TextStyle(
+                    fontSize: 15,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                Text(
+                  'Ticket Type: exit',
+                  style: TextStyle(fontSize: 15, color: Colors.black),
+                ),
+                SizedBox(height: 16), // Add some spacing
+                Center(
+                  child: QrImageView(
+                    data: qrData,
+                    backgroundColor: Colors.white,
+                    size: 200,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 
 // Add this helper method outside your build method
   Widget _buildLocationCard(
@@ -126,9 +179,7 @@ class _EntryExitState extends State<EntryExit> {
             context,
             MaterialPageRoute(
               builder: (context) => LocationDetailPage(
-                locationName: locationName,
-                imagePath: imagePath
-              ),
+                  locationName: locationName, imagePath: imagePath),
             ),
           );
         },
@@ -342,6 +393,7 @@ class _EntryExitState extends State<EntryExit> {
                 ),
 
                 SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(vertical: 12),
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
@@ -354,165 +406,165 @@ class _EntryExitState extends State<EntryExit> {
                     ],
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.width * 0.15),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    MaterialButton(
-                      onPressed: () async {
-                        String? qrdata = await _qrScanner(context);
-                        if (qrdata != null) {
-                          // Do something with qrdata
-                          // print("qrdata bhai=${qrdata}");
-                          Map<String, dynamic> qrDataobj_ = jsonDecode(qrdata);
+                // SizedBox(height: MediaQuery.of(context).size.width * 0.15),
+                // Row(
+                //   children: [
+                //     SizedBox(
+                //       width: MediaQuery.of(context).size.width * 0.05,
+                //     ),
+                //     MaterialButton(
+                //       onPressed: () async {
+                //         String? qrdata = await _qrScanner(context);
+                //         if (qrdata != null) {
+                //           // Do something with qrdata
+                //           // print("qrdata bhai=${qrdata}");
+                //           Map<String, dynamic> qrDataobj_ = jsonDecode(qrdata);
 
-                          Map<String, String> qrDataobj = {};
-                          qrDataobj_.forEach((key, value) {
-                            qrDataobj[key] = value.toString();
-                          });
+                //           Map<String, String> qrDataobj = {};
+                //           qrDataobj_.forEach((key, value) {
+                //             qrDataobj[key] = value.toString();
+                //           });
 
-                          if (qrDataobj['type'] == 'student') {
-                            print("email of student${qrDataobj["eml"]}");
-                            String email_of_student = qrDataobj["eml"]!;
-                            String veh_reg = qrDataobj["v_n"]!;
-                            String dest_address = qrDataobj["add"]!;
-                            // String entry_no =
-                            String ticket_type = qrDataobj["tic_ty"]!;
-                            String location_of_student = qrDataobj["s_lc"]!;
+                //           if (qrDataobj['type'] == 'student') {
+                //             print("email of student${qrDataobj["eml"]}");
+                //             String email_of_student = qrDataobj["eml"]!;
+                //             String veh_reg = qrDataobj["v_n"]!;
+                //             String dest_address = qrDataobj["add"]!;
+                //             // String entry_no =
+                //             String ticket_type = qrDataobj["tic_ty"]!;
+                //             String location_of_student = qrDataobj["s_lc"]!;
 
-                            // String? location_name=qrDataList[4];
-                            // print("${}");
-                            if (widget.guard_location == location_of_student) {
-                              Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (context) => Validification_page(
-                                    email: email_of_student,
-                                    guard_location: widget.guard_location,
-                                    vehicle_reg: veh_reg,
-                                    ticket_type: ticket_type,
-                                    destination_addr: dest_address,
-                                    guard_email: LoggedInDetails.getEmail(),
-                                    isEditable: false,
-                                    student_location: location_of_student,
-                                  ),
-                                ),
-                              );
-                            } else {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                      'You are not authorized for $location_of_student Locations'),
-                                  backgroundColor: Colors
-                                      .red, // Set the background color to red
-                                ),
-                              );
-                            }
-                          } else if (qrDataobj['type'] == 'invited_visitor') {
-                            print("hello!");
-                            String ticket_id = qrDataobj['ticket_id']!;
-                            print("hello!");
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => InviteeValidationPage(
-                                  ticket_id: ticket_id,
-                                ),
-                              ),
-                            );
-                            print("bye");
-                          }
-                        } else {
-                          // Handle the case where qrdata is null
-                          print("qrdata bhai=$qrdata");
-                        }
-                      },
-                      padding: EdgeInsets.all(0.0),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          color: hexToColor(guardColors[2]),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.42,
-                              minHeight: 100.0),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.qr_code_rounded,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 10),
-                              Text(
-                                "Scan QR",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.06,
-                    ),
-                    MaterialButton(
-                      onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => selectVisitor(),
-                          ),
-                        );
-                      },
-                      padding: EdgeInsets.all(0.0),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          color: hexToColor(guardColors[2]),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.42,
-                              minHeight: 100.0),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.people_outline_outlined,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 10),
-                              ConstrainedBox(
-                                constraints: BoxConstraints(
-                                    maxWidth:
-                                        MediaQuery.of(context).size.width *
-                                            0.21),
-                                child: Text(
-                                  "Add Visitor Ticket",
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                //             // String? location_name=qrDataList[4];
+                //             // print("${}");
+                //             if (widget.guard_location == location_of_student) {
+                //               Navigator.of(context).push(
+                //                 MaterialPageRoute(
+                //                   builder: (context) => Validification_page(
+                //                     email: email_of_student,
+                //                     guard_location: widget.guard_location,
+                //                     vehicle_reg: veh_reg,
+                //                     ticket_type: ticket_type,
+                //                     destination_addr: dest_address,
+                //                     guard_email: LoggedInDetails.getEmail(),
+                //                     isEditable: false,
+                //                     student_location: location_of_student,
+                //                   ),
+                //                 ),
+                //               );
+                //             } else {
+                //               ScaffoldMessenger.of(context).showSnackBar(
+                //                 SnackBar(
+                //                   content: Text(
+                //                       'You are not authorized for $location_of_student Locations'),
+                //                   backgroundColor: Colors
+                //                       .red, // Set the background color to red
+                //                 ),
+                //               );
+                //             }
+                //           } else if (qrDataobj['type'] == 'invited_visitor') {
+                //             print("hello!");
+                //             String ticket_id = qrDataobj['ticket_id']!;
+                //             print("hello!");
+                //             Navigator.of(context).push(
+                //               MaterialPageRoute(
+                //                 builder: (context) => InviteeValidationPage(
+                //                   ticket_id: ticket_id,
+                //                 ),
+                //               ),
+                //             );
+                //             print("bye");
+                //           }
+                //         } else {
+                //           // Handle the case where qrdata is null
+                //           print("qrdata bhai=$qrdata");
+                //         }
+                //       },
+                //       padding: EdgeInsets.all(0.0),
+                //       child: Ink(
+                //         decoration: BoxDecoration(
+                //           color: hexToColor(guardColors[2]),
+                //           borderRadius: BorderRadius.circular(10.0),
+                //         ),
+                //         child: Container(
+                //           constraints: BoxConstraints(
+                //               maxWidth:
+                //                   MediaQuery.of(context).size.width * 0.42,
+                //               minHeight: 100.0),
+                //           alignment: Alignment.center,
+                //           child: Row(
+                //             mainAxisAlignment: MainAxisAlignment.center,
+                //             children: [
+                //               Icon(
+                //                 Icons.qr_code_rounded,
+                //                 color: Colors.white,
+                //               ),
+                //               SizedBox(width: 10),
+                //               Text(
+                //                 "Scan QR",
+                //                 textAlign: TextAlign.center,
+                //                 style: TextStyle(
+                //                   color: Colors.white,
+                //                   fontWeight: FontWeight.bold,
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //     SizedBox(
+                //       width: MediaQuery.of(context).size.width * 0.06,
+                //     ),
+                //     MaterialButton(
+                //       onPressed: () async {
+                //         Navigator.push(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => selectVisitor(),
+                //           ),
+                //         );
+                //       },
+                //       padding: EdgeInsets.all(0.0),
+                //       child: Ink(
+                //         decoration: BoxDecoration(
+                //           color: hexToColor(guardColors[2]),
+                //           borderRadius: BorderRadius.circular(10.0),
+                //         ),
+                //         child: Container(
+                //           constraints: BoxConstraints(
+                //               maxWidth:
+                //                   MediaQuery.of(context).size.width * 0.42,
+                //               minHeight: 100.0),
+                //           alignment: Alignment.center,
+                //           child: Row(
+                //             mainAxisAlignment: MainAxisAlignment.center,
+                //             children: [
+                //               Icon(
+                //                 Icons.people_outline_outlined,
+                //                 color: Colors.white,
+                //               ),
+                //               SizedBox(width: 10),
+                //               ConstrainedBox(
+                //                 constraints: BoxConstraints(
+                //                     maxWidth:
+                //                         MediaQuery.of(context).size.width *
+                //                             0.21),
+                //                 child: Text(
+                //                   "Add Visitor Ticket",
+                //                   textAlign: TextAlign.center,
+                //                   style: TextStyle(
+                //                     color: Colors.white,
+                //                     fontWeight: FontWeight.bold,
+                //                   ),
+                //                 ),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
                 SizedBox(height: MediaQuery.of(context).size.width * 0.08),
                 Row(
                   children: [
@@ -521,15 +573,7 @@ class _EntryExitState extends State<EntryExit> {
                     ),
                     MaterialButton(
                       onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => GuardTabs(
-                              location: widget.guard_location,
-                              enter_exit: "enter",
-                            ),
-                          ),
-                        );
+                        generateQRButton();
                       },
                       padding: EdgeInsets.all(0.0),
                       child: Ink(
@@ -539,75 +583,70 @@ class _EntryExitState extends State<EntryExit> {
                         ),
                         child: Container(
                           constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.42,
+                              maxWidth: MediaQuery.of(context).size.width * 0.9,
                               minHeight: 70.0),
                           alignment: Alignment.center,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(
-                                Icons.arrow_circle_down,
-                                color: Colors.white,
-                              ),
-                              SizedBox(width: 10),
+                              SizedBox(width: 12),
                               Text(
-                                "Enter Tickets",
+                                "Generate Exit QR",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 20),
                               ),
                             ],
                           ),
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.06,
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => GuardTabs(
-                              location: widget.guard_location,
-                              enter_exit: "exit",
-                            ),
-                          ),
-                        );
-                      },
-                      padding: EdgeInsets.all(0.0),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          color: hexToColor(guardColors[2]),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth:
-                                  MediaQuery.of(context).size.width * 0.42,
-                              minHeight: 70.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.arrow_circle_up, color: Colors.white),
-                              SizedBox(width: 10),
-                              Text(
-                                "Exit Tickets",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
+                    //     SizedBox(
+                    //       width: MediaQuery.of(context).size.width * 0.06,
+                    //     ),
+                    //     MaterialButton(
+                    //       onPressed: () {
+                    //         Navigator.push(
+                    //           context,
+                    //           MaterialPageRoute(
+                    //             builder: (context) => GuardTabs(
+                    //               location: widget.guard_location,
+                    //               enter_exit: "exit",
+                    //             ),
+                    //           ),
+                    //         );
+                    //       },
+                    //       padding: EdgeInsets.all(0.0),
+                    //       child: Ink(
+                    //         decoration: BoxDecoration(
+                    //           color: hexToColor(guardColors[2]),
+                    //           borderRadius: BorderRadius.circular(10.0),
+                    //         ),
+                    //         child: Container(
+                    //           constraints: BoxConstraints(
+                    //               maxWidth:
+                    //                   MediaQuery.of(context).size.width * 0.42,
+                    //               minHeight: 70.0),
+                    //           child: Row(
+                    //             mainAxisAlignment: MainAxisAlignment.center,
+                    //             children: [
+                    //               Icon(Icons.arrow_circle_up, color: Colors.white),
+                    //               SizedBox(width: 10),
+                    //               Text(
+                    //                 "Exit Tickets",
+                    //                 textAlign: TextAlign.center,
+                    //                 style: TextStyle(
+                    //                   color: Colors.white,
+                    //                   fontWeight: FontWeight.bold,
+                    //                 ),
+                    //               ),
+                    //             ],
+                    //           ),
+                    //         ),
+                    //       ),
+                    //     ),
                   ],
                 ),
 
@@ -685,19 +724,20 @@ class ImageWithText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ?? () {
-        if (locationName != null) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LocationDetailPage(
-                locationName: locationName!,
-                imagePath: imagePath,
-              ),
-            ),
-          );
-        }
-      },
+      onTap: onTap ??
+          () {
+            if (locationName != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LocationDetailPage(
+                    locationName: locationName!,
+                    imagePath: imagePath,
+                  ),
+                ),
+              );
+            }
+          },
       child: SizedBox(
         width: imageWidth,
         height: imageHeight,
