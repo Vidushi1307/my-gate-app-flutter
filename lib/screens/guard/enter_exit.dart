@@ -112,7 +112,7 @@ class _EntryExitState extends State<EntryExit> {
     {"name": "General Labs", "image": image_paths.cs_lab},
     {"name": "Research Labs", "image": image_paths.research_lab},
     {"name": "Lecture Rooms", "image": image_paths.lecture_room},
-    {"name": "Conference Room", "image": image_paths.conference_room},
+    {"name": "Conference Rooms", "image": image_paths.conference_room},
   ];
 
 // Add this helper method outside your build method

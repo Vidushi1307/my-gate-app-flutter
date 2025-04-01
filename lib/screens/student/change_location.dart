@@ -20,6 +20,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage> {
   final List<String> locations = [
     'Research Labs',
     'General Labs',
+    'Lecture Rooms',
     'Conference Rooms'
   ];
   String? selectedLocation;
@@ -115,6 +116,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage> {
                           selectedLocation = value;
                         });
                       },
+                      dropdownColor: Colors.white,
                       validator: (value) =>
                           value == null ? 'Please select a location' : null,
                     ),
