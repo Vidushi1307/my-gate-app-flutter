@@ -1,0 +1,2 @@
+/home/vidushi/DEP/T13-GateApp/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4e6k5c2z/x86/CMakeFiles/edit_cache.dir
+/home/vidushi/DEP/T13-GateApp/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4e6k5c2z/x86/CMakeFiles/rebuild_cache.dir

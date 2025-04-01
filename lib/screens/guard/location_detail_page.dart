@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart'; // Adjusted import path
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/database/database_interface.dart';
+import 'package:my_gate_app/screens/guard/current_students_page.dart'; // Adjusted import path
 
 class LocationDetailPage extends StatelessWidget {
   final String locationName;
@@ -45,7 +46,7 @@ class LocationDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          
+
           // Location Name
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -60,21 +61,43 @@ class LocationDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 30),
-          
+
           // "Mark Empty" Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
             child: ElevatedButton(
-                onPressed:  () => _markLocationAsEmpty(context),
-                style: ElevatedButton.styleFrom(
+              onPressed: () => _markLocationAsEmpty(context),
+              style: ElevatedButton.styleFrom(
                 backgroundColor: hexToColor(guardColors[2]),
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-            ),
               child: Text(
                 "Mark Empty",
+                style: GoogleFonts.poppins(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
+            child: ElevatedButton(
+              onPressed: () => _viewCurrentStudents(context),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: hexToColor(guardColors[2]),
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+              child: Text(
+                "View Current Students",
                 style: GoogleFonts.poppins(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -137,20 +160,33 @@ class LocationDetailPage extends StatelessWidget {
 
     if (confirmed == true) {
       final success = await databaseInterface.markLocationEmpty(locationName);
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
-            success 
-              ? "$locationName marked as empty"
-              : "Failed to mark location",
+            success
+                ? "$locationName marked as empty"
+                : "Failed to mark location",
             style: GoogleFonts.poppins(color: Colors.white),
           ),
-          backgroundColor: success 
-            ? hexToColor(guardColors[2])
-            : Colors.red,
+          backgroundColor: success ? hexToColor(guardColors[2]) : Colors.red,
         ),
       );
     }
+  }
+
+  void _viewCurrentStudents(BuildContext context) async {
+    final students = await databaseInterface.getCurrentStudents(locationName);
+    print(locationName);
+    print(students);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CurrentStudentsPage(
+          locationName: locationName,
+          students: students,
+        ),
+      ),
+    );
   }
 }

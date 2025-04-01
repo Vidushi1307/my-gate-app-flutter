@@ -896,7 +896,7 @@ class databaseInterface {
       return tickets_list;
     }
   }
-  
+
   static Future<bool> markLocationEmpty(String location) async {
     try {
       final response = await http.post(
@@ -2285,8 +2285,7 @@ class databaseInterface {
       return null;
     }
   }
-  
-  
+
   static Future<String> updateLocationStatus({
     required String email,
     required String newLocation,
@@ -2342,6 +2341,24 @@ class databaseInterface {
     } catch (e) {
         print("Error occured in checkOutLocation");
         return false;
+    }
+  }    
+
+  static Future<List<Map<String, dynamic>>> getCurrentStudents(
+      String locationName) async {
+    var url = "$complete_base_url_static/guards/get_students_in_location";
+    try {
+      var response = await http.post(
+        Uri.parse(url),
+        body: {'location': locationName},
+      );
+      print("VGGGGGGGG");
+      var data = json.decode(response.body);
+      print(data);
+      return List<Map<String, dynamic>>.from(data['students']);
+    } catch (e) {
+      debugPrint("Error getting current students: $e");
+      return [];
     }
   }
 }
