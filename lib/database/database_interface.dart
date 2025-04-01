@@ -179,10 +179,10 @@ class databaseInterface {
     // TODO: get this list from the backend
     final List<String> entries = <String>[
       'CS Block',
-      'General Labs',
-      'Research Labs',
-      'Lecture Rooms',
-      'Conference Rooms'
+      'Lab 101',
+      'Lab 102',
+      'Lab 202',
+      'Lab 203'
     ];
     return entries;
   }
@@ -1678,10 +1678,10 @@ class databaseInterface {
     final errorMap = {
       //TODO: Avoid hardcoding here.
       'CS Block': 'ERROR',
-      'General Labs': 'ERROR',
-      'Research Labs': 'ERROR',
-      'Lecture Rooms': 'ERROR',
-      'Conference Rooms': 'ERROR',
+      'Lab 101': 'ERROR',
+      'Lab 102': 'ERROR',
+      'Lab 202': 'ERROR',
+      'Lab 203': 'ERROR',
     };
     try {
       var response = await makeAuthenticatedRequest(
@@ -2321,5 +2321,27 @@ class databaseInterface {
       return "Error occurred during update.";
     }
   }
-  
+ 
+ 
+  static Future<bool> checkOutLocation(
+    String email,
+  ) async {
+    try {
+      String uri = "$complete_base_url_static/student_exit";
+      var response = await http.post(Uri.parse(uri), body: {
+        'email': email,
+      });
+      
+      if (response.statusCode == 200) {
+        var data = json.decode(response.body);
+        return true;
+      } else {
+        return false;
+      }
+    
+    } catch (e) {
+        print("Error occured in checkOutLocation");
+        return false;
+    }
+  }
 }

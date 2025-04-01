@@ -199,10 +199,10 @@ class _StudentStatusState extends State<StudentStatus> {
   String? _selectedOption;
   Widget getDropDownMenu() {
     final List<String> _options = [
-      'General Labs',
-      'Research Labs',
-      'Lecture Rooms',
-      'Conference Rooms',
+      'Lab 101',
+      'Lab 102',
+      'Lab 202',
+      'Lab 203',
     ];
     if (widget.in_or_out == 'in') {
       return Center(

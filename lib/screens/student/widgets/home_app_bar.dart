@@ -23,7 +23,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onNotificationsPressed,
     Key? key,
   }) : super(key: key);
-
+  
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -104,6 +104,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           top: 8,
           child: StreamBuilder<int>(
             stream: notificationStream,
+            initialData: notificationCount,
             builder: (context, snapshot) {
               final count = snapshot.data ?? notificationCount;
               return count > 0 

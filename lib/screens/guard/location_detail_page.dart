@@ -92,13 +92,13 @@ class LocationDetailPage extends StatelessWidget {
     switch (location) {
       case "CS Block":
         return image_paths.cs_block;
-      case "General Labs":
+      case "Lab 101":
         return image_paths.cs_lab;
-      case "Research Labs":
+      case "Lab 102":
         return image_paths.research_lab;
-      case "Lecture Rooms":
+      case "Lab 202":
         return image_paths.lecture_room;
-      case "Conference Room":
+      case "Lab 203":
         return image_paths.conference_room;
       default:
         return image_paths.cs_block;

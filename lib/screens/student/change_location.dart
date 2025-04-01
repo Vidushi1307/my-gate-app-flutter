@@ -18,10 +18,10 @@ class ChangeLocationPage extends StatefulWidget {
 
 class _ChangeLocationPageState extends State<ChangeLocationPage> {
   final List<String> locations = [
-    'Research Labs',
-    'General Labs',
-    'Lecture Rooms',
-    'Conference Rooms'
+    'Lab 101',
+    'Lab 102',
+    'Lab 202',
+    'Lab 203'
   ];
   String? selectedLocation;
   String purpose = '';
