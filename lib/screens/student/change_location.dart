@@ -58,7 +58,6 @@ class _ChangeLocationPageState extends State<ChangeLocationPage> {
         newLocation: selectedLocation!,
         purpose: purpose,
       );
-
       setState(() {
         isLoading = false;
         statusMessage = response;
@@ -110,6 +109,7 @@ class _ChangeLocationPageState extends State<ChangeLocationPage> {
                             child: Text(location,
                                 style: TextStyle(color: Colors.black)));
                       }).toList(),
+                      style: TextStyle(color: Colors.black),
                       value: selectedLocation,
                       onChanged: (value) {
                         setState(() {
