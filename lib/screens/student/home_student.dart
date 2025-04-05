@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_brace_in_string_interps, unnecessary_string_interpolations, non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_gate_app/screens/student/managers/location_data_manager.dart';
 import 'package:my_gate_app/screens/student/managers/notification_manager.dart';
 import 'package:my_gate_app/screens/student/managers/user_profile_manager.dart';
@@ -68,36 +69,25 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Future<void> _initializeData() async {
     setState(() => isLoading = true);
-  
-    final db = databaseInterface();
+    
+    // First load the user data since other managers might depend on it
     final user = await db.get_student_by_email(widget.email ?? UserPreferences.myUser.email);
     
     setState(() {
       _profileManager.user = user;
     });
-    print("profile manager done");
 
-/*    await Future.wait([
-      _loadWelcomeMessage(),
-      _locationManager.loadData(LoggedInDetails.getEmail()),
-      _notificationManager.refreshCount(LoggedInDetails.getEmail()),
-    ]);
- */
-    
-//    _notificationManager.initialize(LoggedInDetails.getEmail());
-
+    // Run all independent initialization tasks in parallel
     await Future.wait([
-      _profileManager.loadProfile(LoggedInDetails.getEmail()),
-
       _loadWelcomeMessage(),
-
       _locationManager.loadData(LoggedInDetails.getEmail()),
-
       _notificationManager.refreshCount(),
-      
+      _profileManager.loadProfile(LoggedInDetails.getEmail()),
     ]);
-    
+
+    // This depends on location data being loaded first
     await _locationManager.updateCurrentStatus(LoggedInDetails.getEmail());
+    
     if (!mounted) return;
     setState(() => isLoading = false);
   }
@@ -246,23 +236,32 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Widget _buildExitButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: ElevatedButton.icon(
-        icon: const Icon(Icons.logout),
-        label: const Text('CHECK OUT OF ALL LOCATIONS'),
+          icon: const Icon(
+          Icons.qr_code_scanner, 
+          color: Colors.white,
+          size: 28, // Increased icon size (default is 24)
+        ),
+        label: const Text(
+          'SCAN GUARD\'S QR TO EXIT',
+          style: TextStyle(
+            fontSize: 18, // Increased font size (default is typically 14)
+            fontWeight: FontWeight.bold, // Optional: makes text bolder
+          ),
+        ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red[400],
+          backgroundColor: Colors.black,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 50),
+          minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        onPressed: () => _handleCheckOut(),
+        onPressed: () => _openQRScanner(context),
       ),
     );
   }
-
 
   Widget _buildCurrentStatusCard() {
     return Padding(
@@ -446,8 +445,8 @@ class _HomeStudentState extends State<HomeStudent> {
         .then((_) async {
       final result = await db.get_student_by_email(widget.email ?? '');
       setState(() {
-        _profileManager.profileImage = NetworkImage(result.imagePath);
-        _profileManager.updateNotifier.value =
+        _profileManager.updateProfileImage(); // Then update the image provider
+        _profileManager.updateNotifier.value = 
             !_profileManager.updateNotifier.value;
       });
     });
@@ -462,6 +461,44 @@ class _HomeStudentState extends State<HomeStudent> {
         ),
       ),
     );
+  }
+
+  void _openQRScanner(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: AppBar(
+            title: const Text('Scan QR Code'),
+            backgroundColor: Colors.black,
+            foregroundColor: Colors.white,
+          ),
+          body: MobileScanner(
+            controller: MobileScannerController(
+              detectionSpeed: DetectionSpeed.normal,
+              facing: CameraFacing.back,
+              torchEnabled: false,
+            ),
+            onDetect: (capture) {
+              final List<Barcode> barcodes = capture.barcodes;
+              for (final barcode in barcodes) {
+                if (barcode.rawValue != null) {
+                  Navigator.pop(context); // Close scanner
+                  _processQRCode(barcode.rawValue!); // Process the scanned data
+                  break;
+                }
+              }
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _processQRCode(String qrData) {
+    // Handle the scanned QR code data
+    print('Scanned QR Code: $qrData');
+    // Add your logic here - validate the QR, check out locations, etc.
   }
 
   Widget _buildLocationImage(String path) {

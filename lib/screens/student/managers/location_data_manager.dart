@@ -28,12 +28,12 @@ class LocationDataManager {
         .get_student_status_for_all_locations_2(email, locationIds);
 
     statuses = [
-      'CS Block',
-      'Lab 101',
-      'Lab 102',
-      'Lab 202',
-      'Lab 203'
-    ].map((key) => statusMap[key] ?? "DEFAULT_VALUE").cast<String>().toList();
+      statusMap['CS Block'] ?? 'NOT FOUND',
+      statusMap['Lab 101'] ?? 'NOT FOUND',
+      statusMap['Lab 102'] ?? 'NOT FOUND',
+      statusMap['Lab 202'] ?? 'NOT FOUND',
+      statusMap['Lab 203'] ?? 'NOT FOUND'
+    ];
     print("Loading location data done");
   }
 

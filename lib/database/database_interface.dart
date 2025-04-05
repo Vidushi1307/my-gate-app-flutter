@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 import 'dart:io';
+import 'package:flutter/foundation.dart'; // Required for compute()
 import 'package:my_gate_app/myglobals.dart' as myglobals;
 import 'package:flutter/material.dart';
 import 'package:my_gate_app/get_email.dart';
@@ -20,6 +21,13 @@ enum HttpMethod {
   PUT,
   DELETE,
   // Add more HTTP methods as needed
+}
+
+// Temporary data holder
+class _UserData {
+  final Map<String, dynamic> data;
+  final Uint8List bytes;
+  _UserData(this.data, this.bytes);
 }
 
 class databaseInterface {
@@ -212,38 +220,26 @@ class databaseInterface {
     }
   }
 
-  static Future<LocationsAndPreApprovalsObjects>
-      getLoctionsAndPreApprovals() async {
-    LocationsAndPreApprovalsObjects blank_object =
-        LocationsAndPreApprovalsObjects([], [], []);
-    LocationsAndPreApprovalsObjects res =
-        LocationsAndPreApprovalsObjects([], [], []);
-
+  static Future<LocationsAndPreApprovalsObjects> getLoctionsAndPreApprovals() async {
     var url = "$complete_base_url_static/locations/get_all_locations";
     try {
-      var response = await http.post(Uri.parse(url));
-
-      var data = json.decode(response.body);
-      for (var location in data['output']) {
-        String location_name = location['location_name'];
-        bool pre_approval = location['pre_approval'];
-        int loc_id = location['location_id'];
-        res.locations.add(location_name);
-        res.location_id.add(loc_id);
-        res.preApprovals.add(pre_approval);
-      }
-      if (response.statusCode == 200) {
-        return res;
-      } else {
-        return blank_object;
-      }
+      final response = await http.post(Uri.parse(url)).timeout(Duration(seconds: 5));
+      
+      if (response.statusCode != 200) return LocationsAndPreApprovalsObjects([], [], []);
+      
+      // Move JSON parsing to isolate (minimal change)
+      final data = await compute(jsonDecode, response.body);
+      
+      return LocationsAndPreApprovalsObjects(
+        (data['output'] as List).map((loc) => loc['location_name'] as String).toList(),
+        (data['output'] as List).map((loc) => loc['location_id'] as int).toList(),
+        (data['output'] as List).map((loc) => loc['pre_approval'] as bool).toList(),
+      );
     } catch (e) {
-      print("Exception while getting locations");
-      print(e.toString());
-      return blank_object;
+      print("getLoctionsAndPreApprovals error: $e");
+      return LocationsAndPreApprovalsObjects([], [], []);
     }
   }
-
   static Future<List<String>> get_all_guard_emails() async {
     List<String> blank_list = [];
     List<String> output = [];
@@ -1283,33 +1279,43 @@ class databaseInterface {
   Future<User> get_student_by_email(String? email_) async {
     var uri = "$complete_base_url_static/students/get_student_by_email";
     try {
-      var response = await makeAuthenticatedRequest(
-          Uri.parse(uri), HttpMethod.POST,
-          body: {"email": email_});
-      var data = json.decode(response.body);
-      String img_base_url = complete_base_url_static;
+      // 1. Add timeout to prevent hanging
+      final response = await makeAuthenticatedRequest(
+        Uri.parse(uri),
+        HttpMethod.POST,
+        body: {"email": email_},
+      ).timeout(const Duration(seconds: 5));
 
-      Uint8List bytes = base64.decode(data["profile_img"]);
-      User user = User(
-        profileImage: MemoryImage(bytes),
-        imagePath: data["image_path"],
-        name: data["name"],
-        email: data["email"],
-        phone: data['mobile_no'],
-        degree: data['degree'],
-        department: data['department'],
-        year_of_entry: data['year_of_entry'],
-        gender: data['gender'],
+      // 2. Move JSON parsing and image decoding to a background isolate
+      final processedData = await compute(_parseUserData, response.body);
+      
+      return User(
+        profileImage: MemoryImage(processedData.bytes),
+        imagePath: processedData.data["image_path"],
+        name: processedData.data["name"],
+        email: processedData.data["email"],
+        phone: processedData.data['mobile_no'],
+        degree: processedData.data['degree'],
+        department: processedData.data['department'],
+        year_of_entry: processedData.data['year_of_entry'],
+        gender: processedData.data['gender'],
         isDarkMode: true,
       );
-      return user;
     } catch (e) {
-      print("post request error in get_student_by_email");
-      print(e.toString());
-      User user = UserPreferences.myUser;
-      return user;
+      print("Error in get_student_by_email: $e");
+      return UserPreferences.myUser; // Fallback
     }
   }
+
+  // Helper function to run in isolate
+  static _UserData _parseUserData(String responseBody) {
+    final data = jsonDecode(responseBody);
+    return _UserData(
+      data,
+      base64.decode(data["profile_img"]),
+    );
+  }
+
 
   static Future<String> get_parent_location_name(String location) async {
     var uri = "$complete_base_url_static/locations/get_parent_location_name";
@@ -1671,37 +1677,41 @@ class databaseInterface {
       return 500;
     }
   }
+  
+  static Map<String, dynamic> _parseJson(String jsonString) {
+    return jsonDecode(jsonString) as Map<String, dynamic>;
+  }
+
 
   static Future<Map<String, dynamic>> get_student_status_for_all_locations_2(
-      String email, List<int> location_ids) async {
+    String email, 
+    List<int> location_ids,
+  ) async {
     var uri = "$complete_base_url_static/students/get_status_for_all_locations";
-    final errorMap = {
-      //TODO: Avoid hardcoding here.
-      'CS Block': 'ERROR',
+    //TODO: Avoid hardcoding this map.
+    const _errorMap = {
+      'CS Block': 'ERROR', 
       'Lab 101': 'ERROR',
       'Lab 102': 'ERROR',
       'Lab 202': 'ERROR',
       'Lab 203': 'ERROR',
     };
+
     try {
-      var response = await makeAuthenticatedRequest(
+      final response = await makeAuthenticatedRequest(
         Uri.parse(uri),
         HttpMethod.POST,
         body: {
           'email': email,
           'location_ids': json.encode(location_ids),
         },
-      );
-      if (response.statusCode == 200 && response.body != null) {
-        var data = json.decode(response.body);
-        return data;
-      } else {
-        print("Error occurred while fetching status from backend");
-        return errorMap;
-      }
+      ).timeout(Duration(seconds: 5));
+
+      if (response.statusCode != 200) return _errorMap;
+      return await compute(_parseJson, response.body); // Parse in background
     } catch (e) {
-      print("Exception in get_student_status_for_all_locations_2: $e");
-      return errorMap;
+      print("get_student_status error: $e");
+      return _errorMap;
     }
   }
 
@@ -1812,13 +1822,17 @@ class databaseInterface {
   }
 
   static Future<int> return_total_notification_count_guard(String email) async {
-    var uri =
-        Uri.parse("$complete_base_url_static/notification/count_notification/");
-    late http.Response response;
+    const timeout = Duration(seconds: 3); // Fail fast
     try {
-      response = await http.get(uri.replace(queryParameters: {"email": email}));
-    } catch (e) {}
-    return json.decode(response.body)['count'];
+      final uri = Uri.parse("$complete_base_url_static/notification/count_notification/")
+          .replace(queryParameters: {"email": email});
+      
+      final response = await http.get(uri).timeout(timeout);
+      return jsonDecode(response.body)['count'] as int; // Explicit type cast
+    } catch (e) {
+      print("Notification count fetch failed: $e");
+      return 0; // Fallback value
+    }
   }
 
   static Future<void> mark_stakeholder_notification_as_false(
@@ -2010,9 +2024,14 @@ class databaseInterface {
     }
   }
 
-  static Stream<int> get_notification_count_stream(String email) =>
-      Stream.periodic(Duration(seconds: REFRESH_RATE * 5))
-          .asyncMap((_) => return_total_notification_count_guard(email));
+  static Stream<int> get_notification_count_stream(String email) {
+    // Emit 0 immediately, then periodic updates
+    return Stream.fromIterable([0]).asyncExpand(
+      (_) => Stream.periodic(Duration(seconds: REFRESH_RATE * 5))
+          .asyncMap((_) => return_total_notification_count_guard(email))
+          .handleError((e) => print("Stream error: $e"))
+    );
+  }
 
   static Future<String> jwt_login(String email, String password) async {
     var url = "$complete_base_url_static/login";
