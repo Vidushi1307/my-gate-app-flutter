@@ -52,12 +52,13 @@ class LocationDataManager {
 
     final activeEntry = statusMap.entries.firstWhere(
       (e) => e.key != 'CS Block' && e.value == 'in',
-      orElse: () => const MapEntry('', 'Not checked in'),
+      orElse: () => const MapEntry('No Registered Location', 'Not checked in'),
     );
 
     currentLocation = activeEntry.key;
     currentStatus = activeEntry.value;
     statusColor = _getStatusColor(activeEntry.value);
+    statuses[0] = statusMap['CS Block'];
   }
 
   Color _getStatusColor(String status) {

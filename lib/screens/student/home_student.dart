@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors, unnecessary_brace_in_string_interps, unnecessary_string_interpolations, non_constant_identifier_names
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_gate_app/screens/student/managers/location_data_manager.dart';
@@ -211,29 +213,6 @@ class _HomeStudentState extends State<HomeStudent> {
     );
   }
 
-  Widget _buildLocationGrid() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: List.generate(
-          _locationManager.locations.length -
-              1, // Skip CS Block (already shown)
-          (index) => Padding(
-            padding: const EdgeInsets.all(5.0),
-            child: LocationCard(
-              location: _locationManager.locations[index + 1],
-              status: _locationManager.statuses[index + 1],
-              imagePath: _locationManager.getImagePath(index + 1),
-              preApprovalRequired: _locationManager.preApprovals[index + 1],
-              onTap: () => _navigateToLocation(index + 1),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-
   Widget _buildExitButton() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
@@ -331,11 +310,13 @@ class _HomeStudentState extends State<HomeStudent> {
                     bottomLeft: Radius.circular(12),
                     bottomRight: Radius.circular(12),
                   ),
-                  child: Image.asset(
-                    _getLocationImage(_locationManager.currentLocation!),
-                    height: 120,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxHeight: 150), // Adjust as needed
+                    child: Image.asset(
+                      _getLocationImage(_locationManager.currentLocation!),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
                   ),
                 ),
               ),
@@ -464,6 +445,12 @@ class _HomeStudentState extends State<HomeStudent> {
   }
 
   void _openQRScanner(BuildContext context) {
+    final MobileScannerController controller = MobileScannerController(
+      detectionSpeed: DetectionSpeed.normal,
+      facing: CameraFacing.back,
+      torchEnabled: false,
+    );
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -471,36 +458,79 @@ class _HomeStudentState extends State<HomeStudent> {
           appBar: AppBar(
             title: const Text('Scan QR Code'),
             backgroundColor: Colors.black,
-            foregroundColor: Colors.white,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ],
           ),
-          body: MobileScanner(
-            controller: MobileScannerController(
-              detectionSpeed: DetectionSpeed.normal,
-              facing: CameraFacing.back,
-              torchEnabled: false,
-            ),
-            onDetect: (capture) {
-              final List<Barcode> barcodes = capture.barcodes;
-              for (final barcode in barcodes) {
-                if (barcode.rawValue != null) {
-                  Navigator.pop(context); // Close scanner
-                  _processQRCode(barcode.rawValue!); // Process the scanned data
-                  break;
-                }
-              }
-            },
+          body: Stack(
+            children: [
+              MobileScanner(
+                controller: controller,
+                onDetect: (capture) async {
+                  final List<Barcode> barcodes = capture.barcodes;
+                  for (final barcode in barcodes) {
+                    if (barcode.rawValue != null) {
+                      await controller.stop(); // Stop camera first
+                      if (mounted) {
+                        Navigator.pop(context); // Then close scanner
+                        _processQRCode(barcode.rawValue!);
+                      }
+                      return;
+                    }
+                  }
+                },
+              ),
+            ],
           ),
         ),
       ),
-    );
+    ).then((_) {
+      controller.dispose(); // Ensure controller is disposed
+    });
   }
 
   void _processQRCode(String qrData) {
-    // Handle the scanned QR code data
-    print('Scanned QR Code: $qrData');
-    // Add your logic here - validate the QR, check out locations, etc.
+    try {
+      // Try to decode the JSON
+      final decoded = jsonDecode(qrData) as Map<String, dynamic>;
+      
+      // Check if it has the required structure
+      if (decoded.containsKey('tic_ty') && decoded['tic_ty'] == 'exit') {
+        // Valid QR code - proceed with exit logic
+        print('Valid exit QR code scanned');
+        _handleCheckOut(); // Your method to handle successful validation
+      } else {
+        // Invalid QR code format
+        print('Invalid QR code format');
+        _showErrorDialog('The QR code is either invalid or expired');
+      }
+    } catch (e) {
+      // Handle JSON parsing errors or invalid format
+      print('Error processing QR code: $e');
+      _showErrorDialog('Invalid QR code format. Please scan a valid exit QR code.');
+    }
   }
 
+  void _showErrorDialog(String message) {
+    // You'll need BuildContext here - you might want to pass it from the scanner
+    // or use a global key/navigator if you're using one
+    showDialog(
+      context: context, // You'll need to make context available here
+      builder: (context) => AlertDialog(
+        title: const Text('Invalid QR Code'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
   Widget _buildLocationImage(String path) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),
