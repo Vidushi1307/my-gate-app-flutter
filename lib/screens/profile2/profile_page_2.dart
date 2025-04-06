@@ -32,7 +32,7 @@ class _ProfilePage2State extends State<ProfilePage2> {
     String? currEmail = widget.email;
     print("Current Email: $currEmail");
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(currEmail);
+    User result = await databaseInterface.get_student_by_email(currEmail);
     print("result obj image path${result.imagePath}");
     setState(() {
       user = result;
@@ -164,7 +164,7 @@ class _ProfilePage2State extends State<ProfilePage2> {
     }
 
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(widget.email);
+    User result = await databaseInterface.get_student_by_email(widget.email);
     
     var picLocal = NetworkImage(result.imagePath);
     setState(() {

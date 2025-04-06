@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/auth/forgot_password.dart';
+import 'package:my_gate_app/auth/signup.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/database/database_objects.dart';
 import 'package:my_gate_app/get_email.dart';
@@ -216,7 +217,7 @@ class _AuthFormState extends State<AuthForm> {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? type = prefs.getString("type");
       if (type != null) {
-      	is_authenticated.person_type = type;
+        is_authenticated.person_type = type;
       }
     }
   }
@@ -241,15 +242,12 @@ class _AuthFormState extends State<AuthForm> {
     return Container(
         color: Colors.white,
         height: MediaQuery.of(context).size.height,
-
-
         child: ListView(
           children: [
-
             Container(
               color: Color.fromARGB(255, 255, 255, 255),
               padding:
-                  EdgeInsets.only(left: 10, right: 10, top: 14, bottom: 100),
+                  EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
               height: MediaQuery.of(context).size.height,
               child: Form(
                 key: _formkey,
@@ -265,7 +263,7 @@ class _AuthFormState extends State<AuthForm> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 130),
+                    SizedBox(height: 50),
 
                     Text(
                       "Let's SignIn",
@@ -395,15 +393,14 @@ class _AuthFormState extends State<AuthForm> {
                       ),
                     ),
 
-                    SizedBox(
-                      height: 10,
-                    ),
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
 
-
-                    SizedBox(
-                      height: 10,
-                    ),
-                    //mark3
+                    // SizedBox(
+                    //   height: 10,
+                    // ),
+                    // //mark3
                     Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -438,7 +435,6 @@ class _AuthFormState extends State<AuthForm> {
                         padding: EdgeInsets.all(12),
                         width: double.infinity,
                         height: 65,
-
                         child: MaterialButton(
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
@@ -485,6 +481,36 @@ class _AuthFormState extends State<AuthForm> {
                           },
                           child: Text(
                             'SignIn',
+                            style: GoogleFonts.kodchasan(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // SignUp Button
+                    SizedBox(
+                      width: 250.0,
+                      child: Container(
+                        padding: EdgeInsets.all(12),
+                        width: double.infinity,
+                        height: 65,
+                        child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                          ),
+                          color: Color(0xFF827397), // Same color as SignIn
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => SignUpScreen(),
+                              ),
+                            );
+                          },
+                          child: Text(
+                            'Sign Up',
                             style: GoogleFonts.kodchasan(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,

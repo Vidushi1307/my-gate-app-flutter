@@ -33,7 +33,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> init() async {
     String? currEmail = widget.email;
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(currEmail);
+    User result = await databaseInterface.get_student_by_email(currEmail);
     setState(() {
       user = result;
       controller_phone.text = result.phone;
@@ -258,7 +258,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(widget.email);
+    User result = await databaseInterface.get_student_by_email(widget.email);
 
     var picLocal = result.profileImage;
     setState(() {
@@ -279,7 +279,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(widget.email);
+    User result = await databaseInterface.get_student_by_email(widget.email);
 
     var picLocal = NetworkImage(result.imagePath);
     var removeImage = const AssetImage(image_paths.dummy_person);

@@ -18,8 +18,6 @@ class MenuItems{
     text: 'Profile',
     icon: yo.Icons.account_circle,
   );
-  
-  
   static const itemLogOut = MenuItem(
     text: 'Log Out',
     icon: yo.Icons.logout,

@@ -44,7 +44,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     controller_degree = TextEditingController();
     imagePicker = ImagePicker();
     databaseInterface db = databaseInterface();
-    db.get_student_by_email(curr_email).then((User result) {
+    databaseInterface.get_student_by_email(curr_email).then((User result) {
       setState(() {
         user = result;
         controller_name.text = user.name;
@@ -256,7 +256,7 @@ class _ImageWidgetState extends State<ImageWidget> {
     //     print("Image path updated");
     //     pic = NetworkImage(widget.imagePath);
     //   });
-    User result = await db.get_student_by_email(LoggedInDetails.getEmail());
+    User result = await databaseInterface.get_student_by_email(LoggedInDetails.getEmail());
     print("Updated path before call to test_function: ${result.imagePath}");
 
     print("inside test_function, the value of image_path_:${result.imagePath}");

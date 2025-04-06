@@ -1276,7 +1276,7 @@ class databaseInterface {
     }
   }
 
-  Future<User> get_student_by_email(String? email_) async {
+  static Future<User> get_student_by_email(String? email_) async {
     var uri = "$complete_base_url_static/students/get_student_by_email";
     try {
       // 1. Add timeout to prevent hanging

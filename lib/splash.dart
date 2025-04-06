@@ -54,33 +54,5 @@ class _SplashState extends State<Splash> {
         ),
       ),
     );
-    return Scaffold(
-      body: Container(
-        color: Colors.black,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/splash.jpg"),
-            // fit: BoxFit.cover,
-          ),
-        ),
-        // child: Text(
-        //   "My Gate",
-        //   style: TextStyle(
-        //     // fontSize: 24,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ) /* add child content here */,
-      ),
-    );
-    // return Scaffold(
-    //   body: Center(
-    //     child: Container(
-    //       child: Text(
-    //         'My Gate',
-    //         style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-    //       ),
-    //     ),
-    //   ),
-    // );
   }
 }

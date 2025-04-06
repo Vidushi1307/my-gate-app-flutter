@@ -24,6 +24,9 @@ import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/screens/student/widgets/loading_screen.dart';
 
+import 'package:my_gate_app/aboutus.dart';
+import 'package:my_gate_app/myglobals.dart' as myglobals;
+
 // This file calls StudentTicketTable
 
 class HomeStudent extends StatefulWidget {
@@ -71,10 +74,11 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Future<void> _initializeData() async {
     setState(() => isLoading = true);
-    
+
     // First load the user data since other managers might depend on it
-    final user = await db.get_student_by_email(widget.email ?? UserPreferences.myUser.email);
-    
+    final user = await databaseInterface
+        .get_student_by_email(widget.email ?? UserPreferences.myUser.email);
+
     setState(() {
       _profileManager.user = user;
     });
@@ -89,7 +93,7 @@ class _HomeStudentState extends State<HomeStudent> {
 
     // This depends on location data being loaded first
     await _locationManager.updateCurrentStatus(LoggedInDetails.getEmail());
-    
+
     if (!mounted) return;
     setState(() => isLoading = false);
   }
@@ -97,7 +101,7 @@ class _HomeStudentState extends State<HomeStudent> {
   Future<void> _loadWelcomeMessage() async {
     welcomeMessage =
         await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
-        print("Loading welcome message done");
+    print("Loading welcome message done");
   }
 
   Future<void> _refreshData() async {
@@ -123,6 +127,8 @@ class _HomeStudentState extends State<HomeStudent> {
       notificationCount: _notificationManager.count,
       notificationStream: _notificationManager.notificationStream,
       onProfilePressed: _navigateToProfile,
+      onLogoutPressed: _navigateToLogout,
+      onAboutUsPressed: _navigateToAboutUs,
       onNotificationsPressed: _navigateToNotifications,
     );
   }
@@ -166,7 +172,6 @@ class _HomeStudentState extends State<HomeStudent> {
           _buildCurrentStatusCard(),
 //          _buildLocationGrid(),
           _buildChangeLocationButton(),
-          
         ],
       ),
     );
@@ -174,7 +179,7 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Widget _buildMainLocationCard() {
     return GestureDetector(
- //     onTap: () => _navigateToLocation(0),
+      //     onTap: () => _navigateToLocation(0),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
@@ -217,8 +222,8 @@ class _HomeStudentState extends State<HomeStudent> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 16.0),
       child: ElevatedButton.icon(
-          icon: const Icon(
-          Icons.qr_code_scanner, 
+        icon: const Icon(
+          Icons.qr_code_scanner,
           color: Colors.white,
           size: 28, // Increased icon size (default is 24)
         ),
@@ -264,7 +269,7 @@ class _HomeStudentState extends State<HomeStudent> {
                 ),
               ),
             ),
-            
+
             // Location Name
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -278,7 +283,7 @@ class _HomeStudentState extends State<HomeStudent> {
                 ),
               ),
             ),
-            
+
             // Refresh current location:
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -286,9 +291,10 @@ class _HomeStudentState extends State<HomeStudent> {
                 icon: Icon(Icons.refresh, color: _locationManager.statusColor),
                 onPressed: () async {
                   setState(() => isLoading = true);
-                  await _locationManager.updateCurrentStatus(LoggedInDetails.getEmail());
+                  await _locationManager
+                      .updateCurrentStatus(LoggedInDetails.getEmail());
                   setState(() => isLoading = false);
-                  
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('Location refreshed'),
@@ -300,7 +306,7 @@ class _HomeStudentState extends State<HomeStudent> {
                 splashRadius: 20, // Smaller splash effect
               ),
             ),
-            
+
             // Location Image
             if (_locationManager.currentLocation != null)
               Padding(
@@ -311,7 +317,8 @@ class _HomeStudentState extends State<HomeStudent> {
                     bottomRight: Radius.circular(12),
                   ),
                   child: ConstrainedBox(
-                    constraints: BoxConstraints(maxHeight: 150), // Adjust as needed
+                    constraints:
+                        BoxConstraints(maxHeight: 150), // Adjust as needed
                     child: Image.asset(
                       _getLocationImage(_locationManager.currentLocation!),
                       width: double.infinity,
@@ -349,7 +356,7 @@ class _HomeStudentState extends State<HomeStudent> {
     if (_locationManager.currentLocation == null) return;
 
     setState(() => isLoading = true);
-    
+
     final success = await databaseInterface.checkOutLocation(
       LoggedInDetails.getEmail(),
     );
@@ -360,7 +367,7 @@ class _HomeStudentState extends State<HomeStudent> {
         SnackBar(content: Text('Checked out successfully')),
       );
     }
-    
+
     setState(() => isLoading = false);
   }
 
@@ -405,6 +412,24 @@ class _HomeStudentState extends State<HomeStudent> {
     Navigator.push(context, route).then((_) => _refreshData());
   }
 
+  void _navigateToLogout() async {
+    LoggedInDetails.setEmail("");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    Navigator.of(context).pop(); // pop the current page
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => AuthScreen()),
+    );
+    print("lets logout and notify");
+    myglobals.auth!.logout();
+  }
+
+  void _navigateToAboutUs() {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (context) => AboutUsPage()),
+    );
+  }
+
   void _navigateToChangeLocation() {
     Navigator.push(
         context,
@@ -424,10 +449,11 @@ class _HomeStudentState extends State<HomeStudent> {
       ),
     )
         .then((_) async {
-      final result = await db.get_student_by_email(widget.email ?? '');
+      final result =
+          await databaseInterface.get_student_by_email(widget.email ?? '');
       setState(() {
         _profileManager.updateProfileImage(); // Then update the image provider
-        _profileManager.updateNotifier.value = 
+        _profileManager.updateNotifier.value =
             !_profileManager.updateNotifier.value;
       });
     });
@@ -496,7 +522,7 @@ class _HomeStudentState extends State<HomeStudent> {
     try {
       // Try to decode the JSON
       final decoded = jsonDecode(qrData) as Map<String, dynamic>;
-      
+
       // Check if it has the required structure
       if (decoded.containsKey('tic_ty') && decoded['tic_ty'] == 'exit') {
         // Valid QR code - proceed with exit logic
@@ -510,7 +536,8 @@ class _HomeStudentState extends State<HomeStudent> {
     } catch (e) {
       // Handle JSON parsing errors or invalid format
       print('Error processing QR code: $e');
-      _showErrorDialog('Invalid QR code format. Please scan a valid exit QR code.');
+      _showErrorDialog(
+          'Invalid QR code format. Please scan a valid exit QR code.');
     }
   }
 
@@ -531,6 +558,7 @@ class _HomeStudentState extends State<HomeStudent> {
       ),
     );
   }
+
   Widget _buildLocationImage(String path) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 10),

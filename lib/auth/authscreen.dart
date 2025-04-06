@@ -16,9 +16,9 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-      backgroundColor: Colors.white,
-      elevation: 0,
-      toolbarHeight: 30,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        toolbarHeight: 20,
       ),
       body: AuthForm(),
     );

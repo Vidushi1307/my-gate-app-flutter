@@ -268,7 +268,7 @@ class _Validification_pageState extends State<Validification_page> {
 
     print("Current Email in validification page: $currEmail");
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(currEmail);
+    User result = await databaseInterface.get_student_by_email(currEmail);
     // print("result obj image path" + result.imagePath);
     print("result in validification page=${result.name}");
     setState(() {
@@ -749,7 +749,7 @@ class _Validification_pageState extends State<Validification_page> {
         image, "/students/change_profile_picture_of_student", widgetEmail);
 
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(widget.email);
+    User result = await databaseInterface.get_student_by_email(widget.email);
 
     var picLocal = result.profileImage;
     setState(() {
@@ -768,7 +768,7 @@ class _Validification_pageState extends State<Validification_page> {
         image, "/students/change_profile_picture_of_student", widgetEmail);
 
     databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(widget.email);
+    User result = await databaseInterface.get_student_by_email(widget.email);
 
     var picLocal = NetworkImage(result.imagePath);
     var removeImage = const AssetImage(image_paths.dummy_person);

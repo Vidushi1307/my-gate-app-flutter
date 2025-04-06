@@ -17,7 +17,6 @@ import 'package:my_gate_app/myglobals.dart' as myglobals;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
       [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
   myglobals.auth = AuthState();
@@ -62,10 +61,9 @@ class Home extends StatelessWidget {
           if (type != null) {
             print("type: $type");
           }
-          // if (type == null) {
-          //   return Splash();
-          // } else
-          if (type == "Student" && email != null) {
+          if (email == null) {
+            return Splash();
+          } else if (type == "Student" && email != null) {
             LoggedInDetails.setEmail(email);
             return HomeStudent(email: LoggedInDetails.getEmail());
           } else if (type == "Authority" && email != null) {

@@ -26,7 +26,7 @@ class UserProfileManager {
   }
   Future<void> loadProfile(String email) async {
     final db = databaseInterface();
-    user = await db.get_student_by_email(email);
+    user = await databaseInterface.get_student_by_email(email);
     updateProfileImage();
     print("Loading profile done");
   }

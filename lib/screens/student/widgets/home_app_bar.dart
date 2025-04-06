@@ -11,6 +11,8 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final int notificationCount;
   final Stream<int>? notificationStream;
   final VoidCallback onProfilePressed;
+  final VoidCallback onLogoutPressed;
+  final VoidCallback onAboutUsPressed;
   final VoidCallback onNotificationsPressed;
 
   const HomeAppBar({
@@ -20,10 +22,12 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.notificationCount,
     required this.notificationStream,
     required this.onProfilePressed,
+    required this.onLogoutPressed,
+    required this.onAboutUsPressed,
     required this.onNotificationsPressed,
     Key? key,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return AppBar(
@@ -32,7 +36,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: _buildTitleRow(context),
       actions: [
         _buildNotificationButton(),
-        _buildMenuButton(),
+        _buildMenuButton(context),
       ],
     );
   }
@@ -107,7 +111,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             initialData: notificationCount,
             builder: (context, snapshot) {
               final count = snapshot.data ?? notificationCount;
-              return count > 0 
+              return count > 0
                   ? _buildNotificationBadge(count)
                   : const SizedBox.shrink();
             },
@@ -139,12 +143,14 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildMenuButton() {
+  Widget _buildMenuButton(BuildContext context) {
     return PopupMenuButton<MenuItem>(
-      onSelected: (item) => onProfilePressed(),
+      onSelected: (item) => _handleMenuItemSelection(item, context),
       icon: const Icon(Icons.more_vert, color: Colors.black),
       itemBuilder: (context) => [
         ...MenuItems.itemsFirst.map(_buildMenuItem),
+        const PopupMenuDivider(),
+        ...MenuItems.itemsSecond.map(_buildMenuItem),
         const PopupMenuDivider(),
         ...MenuItems.itemsThird.map(_buildMenuItem),
       ],
@@ -162,6 +168,17 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         ],
       ),
     );
+  }
+
+  void _handleMenuItemSelection(MenuItem item, BuildContext context) {
+    if (item == MenuItems.itemProfile) {
+      onProfilePressed();
+    } else if (item == MenuItems.itemLogOut) {
+      onLogoutPressed();
+    } else if (item == MenuItems.itemAboutUs) {
+      onAboutUsPressed();
+    }
+    // Add other cases as needed
   }
 
   @override

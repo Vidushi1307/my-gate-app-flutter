@@ -1,0 +1,1 @@
+/home/sankalp/Desktop/G16-MyGate/my-gate-app-flutter/build/app/intermediates/cxx/Debug/5ep543e4/obj/arm64-v8a
