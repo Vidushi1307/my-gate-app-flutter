@@ -13,6 +13,9 @@ class MenuItems{
   static const List<MenuItem> itemsThird = [
     itemAboutUs,
   ];
+  static const List<MenuItem> itemsFourth = [
+    itemViewStats,
+  ];
 
   static const itemProfile = MenuItem(
     text: 'Profile',
@@ -25,6 +28,10 @@ class MenuItems{
   static const itemAboutUs = MenuItem(
     text: 'About Us',
     icon: yo.Icons.info_outline,
+  );
+  static const itemViewStats = MenuItem(
+    text: 'View Stats',
+    icon: yo.Icons.query_stats_outlined,
   );
   
 }

@@ -19,7 +19,7 @@ import 'package:my_gate_app/screens/notificationPage/notification.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
-import 'package:my_gate_app/screens/guard/location_detail_page.dart';
+import 'package:my_gate_app/screens/authorities/location_detail_authority.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 
 class AuthorityMain extends StatefulWidget {
@@ -340,6 +340,8 @@ class _AuthorityMainState extends State<AuthorityMain> {
               PopupMenuDivider(),
               ...MenuItems.itemsThird.map(buildItem),
               PopupMenuDivider(),
+              ...MenuItems.itemsFourth.map(buildItem),
+              PopupMenuDivider(),
               ...MenuItems.itemsSecond.map(buildItem),
             ],
           )
@@ -384,47 +386,6 @@ class _AuthorityMainState extends State<AuthorityMain> {
                     ],
                   ),
                 ),
-                SizedBox(height: MediaQuery.of(context).size.width * 0.08),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        generateQRButton();
-                      },
-                      padding: EdgeInsets.all(0.0),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          color: hexToColor(guardColors[2]),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.9,
-                              minHeight: 70.0),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: 12),
-                              Text(
-                                "Generate Exit QR",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
                 SizedBox(height: 20),
 
                 // RaisedButton(onPressed: () {}, child: Text('Raise Ticket for Authorities'),), // your button beneath text
