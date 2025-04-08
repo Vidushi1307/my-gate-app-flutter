@@ -4,14 +4,14 @@
   ],
   "cleanCommandsComponents": [
     [
-      "/home/vidushi/Android/Sdk/cmake/3.18.1/bin/ninja",
+      "/usr/bin/ninja",
       "-C",
       "/home/vidushi/DEP/T13-GateApp/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4e6k5c2z/x86_64",
       "clean"
     ]
   ],
   "buildTargetsCommandComponents": [
-    "/home/vidushi/Android/Sdk/cmake/3.18.1/bin/ninja",
+    "/usr/bin/ninja",
     "-C",
     "/home/vidushi/DEP/T13-GateApp/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4e6k5c2z/x86_64",
     "{LIST_OF_TARGETS_TO_BUILD}"

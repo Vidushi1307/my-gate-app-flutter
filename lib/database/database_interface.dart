@@ -1063,6 +1063,33 @@ class databaseInterface {
     }
   }
 
+  static Future<bool> forceExitStudents(
+      String locationName, List<Map<String, dynamic>> students) async {
+    var url = Uri.parse('$complete_base_url_static/guards/force_exit_students');
+    print(students);
+    print(locationName);
+    try {
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "location": locationName,
+          "students": students,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Failed to force exit: ${response.body}");
+        return false;
+      }
+    } catch (e) {
+      print("Exception in forceExitStudents: $e");
+      return false;
+    }
+  }
+
   Future<int> accept_selected_tickets(List<ResultObj> selectedTickets) async {
     var uri = "$complete_base_url_static/guards/accept_selected_tickets";
     Map<String, String> headers = {
