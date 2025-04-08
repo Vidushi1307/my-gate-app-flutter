@@ -18,7 +18,16 @@ class _SplashState extends State<Splash> {
     _navigatetohome();
   }
 
+  bool _mounted = true;
+
+  @override
+  void dispose() {
+    _mounted = false;
+    super.dispose();
+  }
+
   _navigatetohome() async {
+    if (!_mounted) return;
     await Future.delayed(const Duration(milliseconds: 1500), () {});
     Navigator.pushReplacement(
       context,
@@ -34,22 +43,22 @@ class _SplashState extends State<Splash> {
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Image.asset(
-                image_paths.splash,
-                height: 300,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Image.asset(
+              image_paths.splash,
+              height: 300,
+            ),
+            Text(
+              "SWIFT ENTRY",
+              style: GoogleFonts.kodchasan(
+                fontSize: 30,
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
               ),
-              Text(
-                "SWIFT ENTRY",
-                style: GoogleFonts.kodchasan(
-                  fontSize: 30,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              SizedBox(height: MediaQuery.of(context).size.height*0.2),
+            ),
+            SizedBox(height: MediaQuery.of(context).size.height * 0.2),
           ],
         ),
       ),

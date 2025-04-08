@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/auth/forgot_password.dart';
+import 'package:my_gate_app/auth/otp_service.dart';
+import 'package:my_gate_app/auth/otp_timer.dart';
 
 class CustomTextFormField extends StatelessWidget {
   final String labelText;
@@ -79,6 +81,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  final OTPService _otpService = OTPService(databaseInterface);
+  bool _otpVerified = false;
+  String _otp = '';
 
   @override
   void dispose() {
@@ -87,6 +92,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  Widget _buildOTPVerification() {
+    return Column(
+      children: [
+        OtpTextField(
+          numberOfFields: 6,
+          fieldWidth: 40,
+          onSubmit: (code) => _otp = code,
+          // Copy your OTP field styling from forgot_password.dart
+        ),
+        const SizedBox(height: 10),
+        const OtpTimer(), // Reuse your existing widget
+        TextButton(
+          onPressed: _resendOTP,
+          child: const Text("Resend OTP"),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _sendOTP() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      final result = await _otpService.sendOTP(_email);
+      if (result == 'OTP sent to email') {
+        setState(() => _showOtpField = true);
+      }
+    }
+  }
+
+  Future<void> _verifyOTP() async {
+    final result = await _otpService.verifyOTP(_email, int.parse(_otp));
+    if (result == 'OTP Matched') {
+      setState(() => _otpVerified = true);
+    }
   }
 
   @override
@@ -191,7 +232,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                   const SizedBox(height: 30),
-
+                  if (_showOtpField) _buildOTPVerification(),
+                  ElevatedButton(
+                    onPressed: _otpVerified ? _submitForm : null,
+                    child: const Text('Complete Sign Up'),
+                  ),
                   // Sign Up Button
                   SizedBox(
                     width: 250,
@@ -204,7 +249,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           // Check if email ends with '@iitrpr.ac.in'
-                          if (!_emailController.text.endsWith('@iitrpr.ac.in')) {
+                          if (!_emailController.text
+                              .endsWith('@iitrpr.ac.in')) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -214,7 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             return;
                           }
 
-                          // Send OTP for email verification and navigate to
+                          // Send OTP for email verification and navigate to OTP verification screen
 
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(

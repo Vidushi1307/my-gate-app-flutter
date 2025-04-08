@@ -8,6 +8,7 @@ import 'package:my_gate_app/auth/reset_password.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:flutter/services.dart';
+import 'package:my_gate_app/auth/otp_service.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -18,6 +19,7 @@ class ForgotPassword extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPassword> {
   // TODO get both these fields from frontend
+  final OTPService _otpService = OTPService(databaseInterface());
   final email_form_key = GlobalKey<FormState>();
   String email = "mygateapp2022@gmail.com";
   int entered_otp = 459700;
@@ -27,9 +29,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Color snackbar_message_color = Colors.white;
 
   Future<void> forgot_password(int op) async {
-    String message =
-        await databaseInterface.forgot_password(email, op, entered_otp);
-    if (message == 'User email not found in database') {
+//    String message =
+//        await databaseInterface.forgot_password(email, op, entered_otp);
+    String message;
+    if (op == 1) {
+      message = await _otpService.sendOTP(email);
+      if (message == 'OTP sent to email') {
+        setState(() => otp_op = 2);
+      }
+    } else {
+      message = await _otpService.verifyOTP(email, entered_otp);
+    }    if (message == 'User email not found in database') {
       setState(() {
         this.snackbar_message = message;
         this.snackbar_message_color = Colors.red;

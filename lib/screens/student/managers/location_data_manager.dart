@@ -47,26 +47,38 @@ class LocationDataManager {
   Color statusColor = Colors.grey;
 
   Future<void> updateCurrentStatus(String email) async {
-    final statusMap = await databaseInterface
-        .get_student_status_for_all_locations_2(email, locationIds);
+    try {
+      final statusMap = await databaseInterface
+          .get_student_status_for_all_locations_2(email, locationIds);
 
-    final activeEntry = statusMap.entries.firstWhere(
-      (e) => e.key != 'CS Block' && e.value == 'in',
-      orElse: () => const MapEntry('No Registered Location', 'Not checked in'),
-    );
+      final activeEntry = statusMap.entries.firstWhere(
+        (e) => e.key != 'CS Block' && e.value.toString() == 'in',
+        orElse: () =>
+            const MapEntry('No Registered Location', 'Not checked in'),
+      );
 
-    currentLocation = activeEntry.key;
-    currentStatus = activeEntry.value;
-    statusColor = _getStatusColor(activeEntry.value);
-    statuses[0] = statusMap['CS Block'];
+      currentLocation = activeEntry.key;
+      currentStatus = activeEntry.value;
+      statusColor = _getStatusColor(activeEntry.value);
+      statuses[0] = statusMap['CS Block'];
+    } catch (e) {
+      print("Error updating current status: $e");
+      currentLocation = 'No Registered Location';
+      currentStatus = 'ERROR';
+      statusColor = Colors.grey;
+    }
   }
 
   Color _getStatusColor(String status) {
     switch (status.toLowerCase()) {
-      case 'checked in': return Colors.green;
-      case 'pending': return Colors.orange;
-      case 'restricted': return Colors.red;
-      default: return Colors.grey;
+      case 'checked in':
+        return Colors.green;
+      case 'pending':
+        return Colors.orange;
+      case 'restricted':
+        return Colors.red;
+      default:
+        return Colors.grey;
     }
   }
 }

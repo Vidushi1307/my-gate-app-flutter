@@ -220,26 +220,36 @@ class databaseInterface {
     }
   }
 
-  static Future<LocationsAndPreApprovalsObjects> getLoctionsAndPreApprovals() async {
+  static Future<LocationsAndPreApprovalsObjects>
+      getLoctionsAndPreApprovals() async {
     var url = "$complete_base_url_static/locations/get_all_locations";
     try {
-      final response = await http.post(Uri.parse(url)).timeout(Duration(seconds: 5));
-      
-      if (response.statusCode != 200) return LocationsAndPreApprovalsObjects([], [], []);
-      
+      final response =
+          await http.post(Uri.parse(url)).timeout(Duration(seconds: 5));
+
+      if (response.statusCode != 200)
+        return LocationsAndPreApprovalsObjects([], [], []);
+
       // Move JSON parsing to isolate (minimal change)
       final data = await compute(jsonDecode, response.body);
-      
+
       return LocationsAndPreApprovalsObjects(
-        (data['output'] as List).map((loc) => loc['location_name'] as String).toList(),
-        (data['output'] as List).map((loc) => loc['location_id'] as int).toList(),
-        (data['output'] as List).map((loc) => loc['pre_approval'] as bool).toList(),
+        (data['output'] as List)
+            .map((loc) => loc['location_name'] as String)
+            .toList(),
+        (data['output'] as List)
+            .map((loc) => loc['location_id'] as int)
+            .toList(),
+        (data['output'] as List)
+            .map((loc) => loc['pre_approval'] as bool)
+            .toList(),
       );
     } catch (e) {
       print("getLoctionsAndPreApprovals error: $e");
       return LocationsAndPreApprovalsObjects([], [], []);
     }
   }
+
   static Future<List<String>> get_all_guard_emails() async {
     List<String> blank_list = [];
     List<String> output = [];
@@ -1284,11 +1294,19 @@ class databaseInterface {
         Uri.parse(uri),
         HttpMethod.POST,
         body: {"email": email_},
-      ).timeout(const Duration(seconds: 5));
+      ).timeout(const Duration(seconds: 10));
+
+      if (response.statusCode != 200) {
+        print("Error: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        
+        throw Exception("Failed to load user data");
+      }
+
 
       // 2. Move JSON parsing and image decoding to a background isolate
       final processedData = await compute(_parseUserData, response.body);
-      
+
       return User(
         profileImage: MemoryImage(processedData.bytes),
         imagePath: processedData.data["image_path"],
@@ -1315,7 +1333,6 @@ class databaseInterface {
       base64.decode(data["profile_img"]),
     );
   }
-
 
   static Future<String> get_parent_location_name(String location) async {
     var uri = "$complete_base_url_static/locations/get_parent_location_name";
@@ -1677,20 +1694,19 @@ class databaseInterface {
       return 500;
     }
   }
-  
+
   static Map<String, dynamic> _parseJson(String jsonString) {
     return jsonDecode(jsonString) as Map<String, dynamic>;
   }
 
-
   static Future<Map<String, dynamic>> get_student_status_for_all_locations_2(
-    String email, 
+    String email,
     List<int> location_ids,
   ) async {
     var uri = "$complete_base_url_static/students/get_status_for_all_locations";
     //TODO: Avoid hardcoding this map.
     const _errorMap = {
-      'CS Block': 'ERROR', 
+      'CS Block': 'ERROR',
       'Lab 101': 'ERROR',
       'Lab 102': 'ERROR',
       'Lab 202': 'ERROR',
@@ -1824,9 +1840,10 @@ class databaseInterface {
   static Future<int> return_total_notification_count_guard(String email) async {
     const timeout = Duration(seconds: 3); // Fail fast
     try {
-      final uri = Uri.parse("$complete_base_url_static/notification/count_notification/")
+      final uri = Uri.parse(
+              "$complete_base_url_static/notification/count_notification/")
           .replace(queryParameters: {"email": email});
-      
+
       final response = await http.get(uri).timeout(timeout);
       return jsonDecode(response.body)['count'] as int; // Explicit type cast
     } catch (e) {
@@ -2026,11 +2043,10 @@ class databaseInterface {
 
   static Stream<int> get_notification_count_stream(String email) {
     // Emit 0 immediately, then periodic updates
-    return Stream.fromIterable([0]).asyncExpand(
-      (_) => Stream.periodic(Duration(seconds: REFRESH_RATE * 5))
-          .asyncMap((_) => return_total_notification_count_guard(email))
-          .handleError((e) => print("Stream error: $e"))
-    );
+    return Stream.fromIterable([0]).asyncExpand((_) =>
+        Stream.periodic(Duration(seconds: REFRESH_RATE * 5))
+            .asyncMap((_) => return_total_notification_count_guard(email))
+            .handleError((e) => print("Stream error: $e")));
   }
 
   static Future<String> jwt_login(String email, String password) async {
@@ -2339,8 +2355,7 @@ class databaseInterface {
       return "Error occurred during update.";
     }
   }
- 
- 
+
   static Future<bool> checkOutLocation(
     String email,
   ) async {
@@ -2349,19 +2364,18 @@ class databaseInterface {
       var response = await http.post(Uri.parse(uri), body: {
         'email': email,
       });
-      
+
       if (response.statusCode == 200) {
         var data = json.decode(response.body);
         return true;
       } else {
         return false;
       }
-    
     } catch (e) {
-        print("Error occured in checkOutLocation");
-        return false;
+      print("Error occured in checkOutLocation");
+      return false;
     }
-  }    
+  }
 
   static Future<List<Map<String, dynamic>>> getCurrentStudents(
       String locationName) async {
