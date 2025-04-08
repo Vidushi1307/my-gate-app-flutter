@@ -221,11 +221,16 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
+                          color: isSelected ? Colors.blue : Colors.black,
                         ),
                       ),
                       subtitle: Text(
                         student['email']!,
-                        style: GoogleFonts.poppins(),
+                        style: GoogleFonts.poppins(
+                          color: isSelected
+                              ? Colors.blue.shade700
+                              : Colors.black54,
+                        ),
                       ),
                       trailing: isSelected
                           ? const Icon(Icons.check_circle, color: Colors.green)
