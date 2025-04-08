@@ -21,6 +21,7 @@ import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/authorities/location_detail_authority.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
+import 'package:my_gate_app/screens/profile2/model/user.dart';
 
 class AuthorityMain extends StatefulWidget {
   const AuthorityMain({super.key});
@@ -31,17 +32,17 @@ class AuthorityMain extends StatefulWidget {
 }
 
 final List<Map<String, String>> locations = [
-    {"name": "Lab 101", "image": image_paths.cs_lab},
-    {"name": "Lab 102", "image": image_paths.research_lab},
-    {"name": "Lab 202", "image": image_paths.lecture_room},
-    {"name": "Lab 203", "image": image_paths.conference_room},
-  ];
+  {"name": "Lab 101", "image": image_paths.cs_lab},
+  {"name": "Lab 102", "image": image_paths.research_lab},
+  {"name": "Lab 202", "image": image_paths.lecture_room},
+  {"name": "Lab 203", "image": image_paths.conference_room},
+];
 
 class _AuthorityMainState extends State<AuthorityMain> {
   int notificationCount = 0;
   String welcome_message = "Dr.Ravi Kant";
 
-  var user = UserPreferences.myUser;
+  var user = UserPreferences.myAuthorityUser;
 
   late String imagePath;
 
@@ -74,7 +75,11 @@ class _AuthorityMainState extends State<AuthorityMain> {
     print("studentStatusDB:");
     notificationCount = await databaseInterface
         .return_total_notification_count_guard(LoggedInDetails.getEmail());
+    databaseInterface db = databaseInterface();
+    AuthorityUser result =
+        await db.get_authority_by_email(LoggedInDetails.getEmail());
     setState(() {
+      user = result;
       welcome_message = welcome_message_local;
       print("Going here");
     });
@@ -93,7 +98,7 @@ class _AuthorityMainState extends State<AuthorityMain> {
   }
 
   @override
-    Widget _buildLocationCard(
+  Widget _buildLocationCard(
       BuildContext context, String locationName, String imagePath) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -151,60 +156,6 @@ class _AuthorityMainState extends State<AuthorityMain> {
           ),
         ),
       ),
-    );
-  }
-
-
-  void generateQRButton() {
-    //to reduce the data length of hte qr data for quick error less scan
-    Map<String, String> obj = {
-      "tic_ty": "exit",
-    };
-    String qrData = jsonEncode(obj);
-    showModalBottomSheet(
-      context: context,
-      builder: (builder) {
-        return Container(
-          color: Colors.transparent, // Set the container's color to transparent
-          child: Container(
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(10),
-                topRight: const Radius.circular(10),
-              ),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  'Show QR code to the student',
-                  style: TextStyle(
-                    fontSize: 15,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                Text(
-                  'Ticket Type: exit',
-                  style: TextStyle(fontSize: 15, color: Colors.black),
-                ),
-                SizedBox(height: 16), // Add some spacing
-                Center(
-                  child: QrImageView(
-                    data: qrData,
-                    backgroundColor: Colors.white,
-                    size: 200,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 

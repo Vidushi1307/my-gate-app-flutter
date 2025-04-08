@@ -4,6 +4,7 @@ import 'package:my_gate_app/screens/guard/utils/UI_statics.dart'; // Adjusted im
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/screens/guard/current_students_page.dart'; // Adjusted import path
+import 'package:my_gate_app/screens/authorities/forced_exited_students.dart'; // Adjusted import path
 
 class LocationDetailPage extends StatelessWidget {
   final String locationName;
@@ -62,7 +63,6 @@ class LocationDetailPage extends StatelessWidget {
           ),
           const SizedBox(height: 30),
 
-
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
@@ -86,19 +86,26 @@ class LocationDetailPage extends StatelessWidget {
             ),
           ),
 
-          if(locationName == "CS Block")
+          if (locationName == "CS Block")
             Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),  
+                  const EdgeInsets.symmetric(horizontal: 40.0, vertical: 20.0),
               child: ElevatedButton(
-                onPressed: () => print("View Forced Exited Students"),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const ForcedExitedStudentsPage()),
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: hexToColor(guardColors[2]),
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
-                 ),
+                ),
                 child: Text(
                   "View Forced Exited Students",
                   style: GoogleFonts.poppins(
@@ -109,7 +116,7 @@ class LocationDetailPage extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
-            ), 
+            ),
         ],
       ),
     );

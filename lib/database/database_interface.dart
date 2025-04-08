@@ -1326,10 +1326,9 @@ class databaseInterface {
       if (response.statusCode != 200) {
         print("Error: ${response.statusCode}");
         print("Response body: ${response.body}");
-        
+
         throw Exception("Failed to load user data");
       }
-
 
       // 2. Move JSON parsing and image decoding to a background isolate
       final processedData = await compute(_parseUserData, response.body);
@@ -1460,6 +1459,24 @@ class databaseInterface {
       }
     } catch (e) {
       return "Failed to add new location";
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> getForcedExitedStudents() async {
+    var uri = "$complete_base_url_static/labsessions/forced_exit_students";
+
+    try {
+      var response = await http.get(Uri.parse(uri));
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        var data = List<Map<String, dynamic>>.from(jsonResponse['students']);
+        return data;
+      } else {
+        throw Exception("Failed to load forced exited students");
+      }
+    } catch (e) {
+      print("Error fetching forced exited students: $e");
+      return [];
     }
   }
 
