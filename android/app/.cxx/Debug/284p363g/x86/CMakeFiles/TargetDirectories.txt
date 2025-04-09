@@ -1,0 +1,2 @@
+C:/Users/nimis/OneDrive/Desktop/dep/my-gate-app-flutter/android/app/.cxx/Debug/284p363g/x86/CMakeFiles/edit_cache.dir
+C:/Users/nimis/OneDrive/Desktop/dep/my-gate-app-flutter/android/app/.cxx/Debug/284p363g/x86/CMakeFiles/rebuild_cache.dir

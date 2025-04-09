@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/auth/forgot_password.dart';
-import 'package:my_gate_app/auth/signup.dart';
+//import 'package:my_gate_app/auth/signup.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/database/database_objects.dart';
 import 'package:my_gate_app/get_email.dart';
@@ -503,11 +503,11 @@ class _AuthFormState extends State<AuthForm> {
                           ),
                           color: Color(0xFF827397), // Same color as SignIn
                           onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => SignUpScreen(),
-                              ),
-                            );
+                            // Navigator.of(context).push(
+                            //   MaterialPageRoute(
+                            //     builder: (context) => SignUpScreen(),
+                            //   ),
+                            // );
                           },
                           child: Text(
                             'Sign Up',

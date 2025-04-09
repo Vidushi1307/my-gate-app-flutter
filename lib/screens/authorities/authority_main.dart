@@ -1,10 +1,13 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, non_constant_identifier_names
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:my_gate_app/aboutus.dart';
 import 'package:my_gate_app/auth/authscreen.dart';
 import 'package:my_gate_app/get_email.dart';
+import 'package:my_gate_app/screens/profile2/guard_profile/guard_profile_page.dart';
 import 'package:my_gate_app/screens/authorities/authority_tabs.dart';
 import 'package:my_gate_app/screens/authorities/visitor/authorityVisitor.dart';
 import 'package:my_gate_app/screens/authorities/relatives/stu_relatives.dart';
@@ -14,8 +17,11 @@ import 'package:my_gate_app/screens/profile2/utils/menu_items.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/screens/notificationPage/notification.dart';
 import 'package:my_gate_app/database/database_interface.dart';
-
+import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
+import 'package:my_gate_app/screens/authorities/location_detail_authority.dart';
+import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
+import 'package:my_gate_app/screens/profile2/model/user.dart';
 
 class AuthorityMain extends StatefulWidget {
   const AuthorityMain({super.key});
@@ -25,11 +31,18 @@ class AuthorityMain extends StatefulWidget {
   State<AuthorityMain> createState() => _AuthorityMainState();
 }
 
+final List<Map<String, String>> locations = [
+  {"name": "Lab 101", "image": image_paths.cs_lab},
+  {"name": "Lab 102", "image": image_paths.research_lab},
+  {"name": "Lab 202", "image": image_paths.lecture_room},
+  {"name": "Lab 203", "image": image_paths.conference_room},
+];
+
 class _AuthorityMainState extends State<AuthorityMain> {
   int notificationCount = 0;
   String welcome_message = "Dr.Ravi Kant";
 
-  var user = UserPreferences.myUser;
+  var user = UserPreferences.myAuthorityUser;
 
   late String imagePath;
 
@@ -62,7 +75,11 @@ class _AuthorityMainState extends State<AuthorityMain> {
     print("studentStatusDB:");
     notificationCount = await databaseInterface
         .return_total_notification_count_guard(LoggedInDetails.getEmail());
+    databaseInterface db = databaseInterface();
+    AuthorityUser result =
+        await db.get_authority_by_email(LoggedInDetails.getEmail());
     setState(() {
+      user = result;
       welcome_message = welcome_message_local;
       print("Going here");
     });
@@ -81,47 +98,122 @@ class _AuthorityMainState extends State<AuthorityMain> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xffFCC150),
-        title: Row(
-          children: [
-            SizedBox(
-              width: 40,
-              height: 40,
-              child: ClipOval(
-                child: Image(
-                  image: pic,
+  Widget _buildLocationCard(
+      BuildContext context, String locationName, String imagePath) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => LocationDetailPage(
+                  locationName: locationName, imagePath: imagePath),
+            ),
+          );
+        },
+        child: Container(
+          width: 160,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.3),
+                spreadRadius: 2,
+                blurRadius: 5,
+                offset: Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+                child: Image.asset(
+                  imagePath,
+                  height: 120,
+                  width: double.infinity,
                   fit: BoxFit.cover,
                 ),
               ),
-            ),
-            SizedBox(width: 10),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Welcome',
-                    style: GoogleFonts.mPlusRounded1c(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      fontSize: MediaQuery.of(context).size.width * 0.04,
-                    ),
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Text(
+                  locationName,
+                  style: GoogleFonts.poppins(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
                   ),
-                  Text(
-                    welcome_message,
-                    style: GoogleFonts.mPlusRounded1c(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: MediaQuery.of(context).size.width * 0.057,
-                    ),
-                  ),
-                ],
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // backgroundColor: Color.fromARGB(255, 253, 253, 255),
+      appBar: AppBar(
+        backgroundColor: hexToColor(guardColors[0]),
+        centerTitle: true,
+        title: Padding(
+          padding: EdgeInsets.only(top: 35.0, bottom: 35.0),
+          child: Row(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
+                child: SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.07,
+                  height: MediaQuery.of(context).size.width * 0.07,
+                  child: ClipOval(
+                    child: Image.asset(image_paths.dummy_person),
+                  ),
+                ),
+              ),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+              Expanded(
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                          height: MediaQuery.of(context).size.width * 0.022),
+                      Text(
+                        'Welcome',
+                        style: GoogleFonts.lato(
+                          // color: Color.fromARGB(221, 255, 255, 255),
+                          color: Color(0xFF636060),
+                          fontWeight: FontWeight.w600,
+                          fontSize: MediaQuery.of(context).size.width * 0.036,
+                        ),
+                      ),
+                      Text(
+                        user.name,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        style: GoogleFonts.poppins(
+                          // color: Color.fromARGB(221, 255, 255, 255),
+                          color: Colors.black,
+                          fontWeight: FontWeight.w600,
+                          fontSize: MediaQuery.of(context).size.width * 0.040,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
         actions: [
           Stack(
@@ -129,17 +221,27 @@ class _AuthorityMainState extends State<AuthorityMain> {
               SizedBox(
                 height: kToolbarHeight,
                 child: IconButton(
-                  icon: Icon(Icons.notifications,
-                      color: Color.fromARGB(255, 0, 0, 0)),
-                  onPressed: () {
+                  icon: Icon(
+                    Icons.notifications,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    List<List<String>> messages = await databaseInterface
+                        .fetch_notification_guard(LoggedInDetails.getEmail());
+
+                    // print(messages);
+                    print("messages printed in page");
+                    print(messages);
+
+                    // await databaseInterface
+                    //     .mark_stakeholder_notification_as_false(
+                    //         LoggedInDetails.getEmail());
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NotificationsPage(
-                          notificationCount: notificationCount,
-                        ),
-                      ),
-                    );
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => NotificationsPage(
+                                  notificationCount: notificationCount,
+                                )));
                   },
                 ),
               ),
@@ -156,7 +258,7 @@ class _AuthorityMainState extends State<AuthorityMain> {
                           ? Container(
                               padding: EdgeInsets.all(1),
                               decoration: BoxDecoration(
-                                color: Colors.red,
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               constraints: BoxConstraints(
@@ -178,319 +280,65 @@ class _AuthorityMainState extends State<AuthorityMain> {
                     return Container();
                   }
                 },
-              ),
+              )
             ],
           ),
           PopupMenuButton<MenuItem>(
             onSelected: (item) => onSelected(context, item),
-            icon: Icon(Icons.more_vert, color: Color.fromARGB(255, 0, 0, 0)),
+            icon: Icon(Icons.menu, color: Colors.black),
             itemBuilder: (context) => [
               ...MenuItems.itemsFirst.map(buildItem),
               PopupMenuDivider(),
               ...MenuItems.itemsThird.map(buildItem),
               PopupMenuDivider(),
+              ...MenuItems.itemsFourth.map(buildItem),
+              PopupMenuDivider(),
               ...MenuItems.itemsSecond.map(buildItem),
             ],
-          ),
+          )
         ],
       ),
       body: SingleChildScrollView(
-        child: Container(
-          decoration: BoxDecoration(
-            color: Color(0xffFFF0D2),
-          ),
-          child: Center(
+        child: ConstrainedBox(
+          constraints:
+              BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
+          child: Container(
+            decoration: BoxDecoration(
+              // image: DecorationImage(
+              // image: AssetImage("assets/images/bulb.jpg"),
+              // fit: BoxFit.cover,
+              color: Colors.white,
+            ),
             child: Column(
               // add Column
-              mainAxisAlignment: MainAxisAlignment.center,
+              // mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                SizedBox(
-                  height: 60,
+                // Image.asset('assets/images/enter_exit.webp'),
+                SizedBox(height: MediaQuery.of(context).size.width * 0.15),
+                ImageWithText(
+                  imagePath: image_paths.cs_block,
+                  imageHeight: MediaQuery.of(context).size.width * 0.60,
+                  imageWidth: MediaQuery.of(context).size.width * 0.70,
+                  textContent: "CS Block",
+                  locationName: "CS Block",
                 ),
-                Text(
-                  "Let's Get Going: \n Today's Tickets Await Approval!",
-                  textAlign: TextAlign.center,
-                  style: GoogleFonts.mPlusRounded1c(
-                    color: Colors.black,
-                    fontSize: 30, // Adjust font size as needed
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(
-                  height: 100,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AuthorityTabs()),
-                    );
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width*0.9, // Set width to screen width
-                    height: MediaQuery.of(context).size.height * 0.215, // Set height to half of screen height
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),// Adjust border radius as needed
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2), // Shadow color
-                          spreadRadius: 4, // Spread radius
-                          blurRadius:7, // Blur radius
-                          offset: Offset(0, 3), // Offset from the container
-                        ),
-                      ],
-                    ),
-        
-        
-        
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        children: [
-                          // Background Image or Container with Black Blurring
-                          Positioned.fill(
-                            child: Image.network(
-                              "https://images.pexels.com/photos/7972534/pexels-photo-7972534.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2", // Use your show_image function to provide the image path
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: Container(
-                              color: Colors.black
-                                  .withOpacity(0.5), // Adjust opacity as needed
-                            ),
-                          ),
-        
-                          // Text at the Bottom Left with Colored Backdrop
-                          Positioned(
-                            left: 16,
-                            bottom: 16,
-                            child: Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white
-                                    .withOpacity(0), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                "Student Tickets",
-                                style: GoogleFonts.mPlusRounded1c(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-        
-                          // Arrow Icon at the Bottom Right
-                          Positioned(
-                            right: 16,
-                            bottom: 22,
-                            child: Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 35,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
 
-
-                  ),
-                ),
-        
-                SizedBox(height: 40),
-                // MaterialButton(
-                //   // Visitor Tickets
-                //   onPressed: () {
-                //     Navigator.push(
-                //         context,
-                //         MaterialPageRoute(
-                //             builder: (context) => AuthorityVisitor()));
-                //   },
-                //   shape: RoundedRectangleBorder(
-                //       borderRadius: BorderRadius.circular(80.0)),
-                //   padding: EdgeInsets.all(0.0),
-                //   child: Ink(
-                //     decoration: BoxDecoration(
-                //         gradient: LinearGradient(
-                //           colors: [Colors.greenAccent, Colors.lightBlueAccent],
-                //           // colors: [Color(0xff374ABE), Color(0xff64B6FF)],
-                //           begin: Alignment.centerLeft,
-                //           end: Alignment.centerRight,
-                //         ),
-                //         borderRadius: BorderRadius.circular(30.0)),
-                //     child: Container(
-                //       constraints:
-                //           BoxConstraints(maxWidth: 250.0, minHeight: 50.0),
-                //       alignment: Alignment.center,
-                //       child: Text(
-                //         "Visitor Tickets",
-                //         textAlign: TextAlign.center,
-                //         style: TextStyle(color: Colors.white),
-                //       ),
-                //     ),
-                //   ),
-                // ),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => AuthorityVisitor()),
-                    );
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width*0.9, // Set width to screen width
-                    height: MediaQuery.of(context).size.height * 0.215, // Set height to half of screen height
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20), // Adjust border radius as needed
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2), // Shadow color
-                          spreadRadius: 4, // Spread radius
-                          blurRadius: 7, // Blur radius
-                          offset: Offset(0, 3), // Offset from the container
-                        ),
-                      ],
-                    ),
-        
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        children: [
-                          // Background Image or Container with Black Blurring
-                          Positioned.fill(
-                            child: Image.network(
-                              "https://images.unsplash.com/photo-1525237621662-a70e88ad8387?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Use your show_image function to provide the image path
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: Container(
-                              color: Colors.black
-                                  .withOpacity(0.5), // Adjust opacity as needed
-                            ),
-                          ),
-        
-                          // Text at the Bottom Left with Colored Backdrop
-                          Positioned(
-                            left: 16,
-                            bottom: 16,
-                            child: Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white
-                                    .withOpacity(0), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                "Visitor Tickets",
-                                style: GoogleFonts.mPlusRounded1c(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-        
-                          // Arrow Icon at the Bottom Right
-                          Positioned(
-                            right: 16,
-                            bottom: 22,
-                            child: Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 35,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 40),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Stu_Relatives()),
-                    );
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width*0.9, // Set width to screen width
-                    height: MediaQuery.of(context).size.height * 0.215, // Set height to half of screen height
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20), // Adjust border radius as needed
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2), // Shadow color
-                          spreadRadius: 4, // Spread radius
-                          blurRadius: 7, // Blur radius
-                          offset: Offset(0, 3), // Offset from the container
-                        ),
-                      ],
-                    ),
-
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Stack(
-                        children: [
-                          // Background Image or Container with Black Blurring
-                          Positioned.fill(
-                            child: Image.network(
-                              "https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHN0dWRlbnRzJTIwZmFtaWx5fGVufDB8fDB8fHww", // Use your show_image function to provide the image path
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          Positioned.fill(
-                            child: Container(
-                              color: Colors.black
-                                  .withOpacity(0.5), // Adjust opacity as needed
-                            ),
-                          ),
-
-                          // Text at the Bottom Left with Colored Backdrop
-                          Positioned(
-                            left: 16,
-                            bottom: 16,
-                            child: Container(
-                              padding: EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white
-                                    .withOpacity(0), // Adjust opacity as needed
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                "Relatives Tickets",
-                                style: GoogleFonts.mPlusRounded1c(
-                                  fontSize: 25,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          // Arrow Icon at the Bottom Right
-                          Positioned(
-                            right: 16,
-                            bottom: 22,
-                            child: Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                              size: 35,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                SingleChildScrollView(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      SizedBox(width: 16),
+                      ...locations
+                          .map((location) => _buildLocationCard(
+                              context, location["name"]!, location["image"]!))
+                          .toList(),
+                      SizedBox(width: 16),
+                    ],
                   ),
                 ),
                 SizedBox(height: 20),
-        
+
                 // RaisedButton(onPressed: () {}, child: Text('Raise Ticket for Authorities'),), // your button beneath text
               ],
             ),
@@ -516,9 +364,10 @@ class _AuthorityMainState extends State<AuthorityMain> {
       case MenuItems.itemProfile:
         Navigator.of(context).push(
           // MaterialPageRoute(builder: (context) => ProfileController()),
+          // MaterialPageRoute(builder: (context) => GuardProfilePage(email: LoggedInDetails.getEmail())),
           MaterialPageRoute(
               builder: (context) =>
-                  AuthorityProfilePage(email: LoggedInDetails.getEmail())),
+                  GuardProfilePage(email: LoggedInDetails.getEmail())),
         );
         break;
       case MenuItems.itemLogOut:
@@ -530,12 +379,96 @@ class _AuthorityMainState extends State<AuthorityMain> {
           MaterialPageRoute(builder: (context) => AuthScreen()),
         );
         break;
-
       case MenuItems.itemAboutUs:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => AboutUsPage()),
         );
         break;
     }
+  }
+}
+
+class ImageWithText extends StatelessWidget {
+  final String imagePath;
+  final double imageWidth;
+  final double imageHeight;
+  final double borderRadius;
+  final String textContent;
+  final VoidCallback? onTap; // Optional tap callback
+  final String? locationName; // For navigation
+
+  const ImageWithText({
+    super.key,
+    required this.imagePath,
+    required this.imageWidth,
+    required this.imageHeight,
+    this.borderRadius = 15,
+    required this.textContent,
+    this.onTap,
+    this.locationName,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap ??
+          () {
+            if (locationName != null) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => LocationDetailPage(
+                    locationName: locationName!,
+                    imagePath: imagePath,
+                  ),
+                ),
+              );
+            }
+          },
+      child: SizedBox(
+        width: imageWidth,
+        height: imageHeight,
+        child: Stack(
+          children: [
+            SizedBox(
+              width: imageWidth,
+              height: imageHeight,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(borderRadius),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            Positioned(
+              left: 10,
+              bottom: 10,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withOpacity(0.0),
+                      Colors.black.withOpacity(0.6),
+                    ],
+                  ),
+                ),
+                child: Text(
+                  textContent,
+                  style: GoogleFonts.mPlusRounded1c(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
