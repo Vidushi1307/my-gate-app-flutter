@@ -458,32 +458,90 @@ class databaseInterface {
     }
   }
 
-  static Future<String> forgot_password(
-      String email, int op, int entered_otp) async {
+  static Future<String> registerUser({
+    required String email,
+    required String name,
+    required String password,
+  }) async {
     var url = "$complete_base_url_static/forgot_password";
     try {
       var response = await http.post(
         Uri.parse(url),
         body: {
           'email': email,
-          'op': op.toString(),
-          'entered_otp': entered_otp.toString(),
+          'name': name,
+          'password': password,
+          'op': '4',
         },
       );
       var data = json.decode(response.body);
       String message = data['message'];
-      if (op == 2 && response.statusCode == 200) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("reset_password_token", data['token']);
-        prefs.setString("reset_password_uid", data['uidb64']);
-      }
       return message;
     } catch (e) {
-      print("OTP error=${e.toString()}");
-      print(e);
-      return "Exception in forgot password";
+      print("Exception in registerUser: $e");
+      return "Registration Failed";
     }
   }
+
+static Future<String> forgot_password(
+    String email, int op, int entered_otp) async {
+  var url = "$complete_base_url_static/forgot_password";
+  try {
+    var response = await http.post(
+      Uri.parse(url),
+      body: {
+        'email': email,
+        'op': op.toString(),
+        'entered_otp': entered_otp.toString(),
+      },
+    );
+
+    // First try to parse as JSON
+    try {
+      dynamic data = json.decode(response.body);
+      
+      // Handle JSON object case
+      if (data is Map<String, dynamic>) {
+        String message = data['message']?.toString() ?? 'No message provided';
+        
+        if (op == 2 && response.statusCode == 200) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("reset_password_token", data['token']?.toString() ?? '');
+          prefs.setString("reset_password_uid", data['uidb64']?.toString() ?? '');
+        }
+        return message;
+      }
+      // Handle JSON array case
+      else if (data is List) {
+        return data.isNotEmpty ? data[0].toString() : 'Empty array response';
+      }
+    } catch (e) {
+      // If JSON parsing fails, treat as plain string
+      print('Response is not JSON, treating as plain text');
+    }
+
+    // Treat the response as plain text
+    String plainResponse = response.body;
+    
+    // Special case for op==2 if needed
+    if (op == 2 && response.statusCode == 200) {
+      // If you expect tokens in plain response, parse them here
+      // Example: "SUCCESS|token123|uid456"
+      var parts = plainResponse.split('|');
+      if (parts.length >= 3) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("reset_password_token", parts[1]);
+        prefs.setString("reset_password_uid", parts[2]);
+      }
+    }
+    
+    return plainResponse;
+
+  } catch (e) {
+    print("Error in forgot_password: ${e.toString()}");
+    return "Error: ${e.toString()}";
+  }
+}
 
   static Future<String> reset_password(String email, String password) async {
     var uri = "$complete_base_url_static/reset_password";
@@ -1299,10 +1357,9 @@ class databaseInterface {
       if (response.statusCode != 200) {
         print("Error: ${response.statusCode}");
         print("Response body: ${response.body}");
-        
+
         throw Exception("Failed to load user data");
       }
-
 
       // 2. Move JSON parsing and image decoding to a background isolate
       final processedData = await compute(_parseUserData, response.body);

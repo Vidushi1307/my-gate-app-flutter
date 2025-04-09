@@ -12,4 +12,24 @@ class OTPService {
   Future<String> verifyOTP(String email, int otp) async {
     return await databaseInterface.forgot_password(email, 2, otp);
   }
+
+  Future<String> sendOTPforRegister(String email) async {
+    return await databaseInterface.forgot_password(email, 3, 0);
+  }
+
+  Future<String> verifyOTPforRegister(String email, int otp) async {
+    return await databaseInterface.forgot_password(email, 4, otp);
+  }
+
+  Future<String> registerUser({
+    required String email,
+    required String name,
+    required String password,
+  }) async {
+    return await databaseInterface.registerUser(
+      email: email,
+      name: name,
+      password: password,
+    );
+  }
 }
