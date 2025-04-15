@@ -34,9 +34,9 @@ class _UserData {
 class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
-  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-  // static String complete_base_url_static =
-  //     "https://a0c4-117-220-161-117.ngrok-free.app";
+//  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
+   static String complete_base_url_static =
+       "https://e61c-164-100-193-243.ngrok-free.app";
 
   static Map<String, dynamic> retry = {"try": 1, "ifretry": false};
   databaseInterface();
@@ -484,12 +484,12 @@ class databaseInterface {
 
   static Future<String> registerUser({
     required String entryNo,
+    required String email,
     required String name,
     required String password,
   }) async {
     var url = "$complete_base_url_static/register_user";
     try {
-      var email = "$entryNo@iitrpr.ac.in";
       var response = await http.post(
         Uri.parse(url),
         body: {

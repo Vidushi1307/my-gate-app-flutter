@@ -78,6 +78,8 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  bool _useEmailLogin = false;
+  final _emailController = TextEditingController();
   final _nameController = TextEditingController();
   final _entryNoController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -111,8 +113,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       try {
+        var entryNo = _entryNoController.text;
+        var email = _emailController.text;
+        if (_useEmailLogin) {
+          entryNo = _emailController.text.split('@').first;
+        } else {
+          email = '$entryNo@iitrpr.ac.in';
+        }
+
         final result = await _otpService.registerUser(
-          entryNo: _entryNoController.text,
+          entryNo: entryNo,
+          email: email,
           name: _nameController.text,
           password: _passwordController.text,
           // Add any other required fields
@@ -151,17 +162,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
       // }
 
       // Check if entryNo is valid  (of form NNNNXXXNNNN where N is a digit and X is a letter)
-      final RegExp entryNoRegex = RegExp(r'^[0-9]{4}[A-Za-z]{3}[0-9]{4}$');
-      if (!entryNoRegex.hasMatch(_entryNoController.text)) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Please enter a valid entry number'),
-          ),
-        );
-        return;
+      // final RegExp entryNoRegex = RegExp(r'^[0-9]{4}[A-Za-z]{3}[0-9]{4}$');
+      var entryNo = _entryNoController.text;
+      var email = _emailController.text;
+      if (_useEmailLogin) {
+        entryNo = _emailController.text.split('@').first;
+      } else {
+        email = '$entryNo@iitrpr.ac.in';
+        // if (!entryNoRegex.hasMatch(entryNo)) {
+        //   // ScaffoldMessenger.of(context).showSnackBar(
+        //   // const SnackBar(
+        //   //   content: Text('Please enter a valid entry number'),
+        //   // ),
+        //   // );
+        //   return;
+        // }
       }
 
-      var email = '${_entryNoController.text}@iitrpr.ac.in';
+      // var email = '${_entryNoController.text}@iitrpr.ac.in';
       final result = await _otpService.sendOTPforRegister(email);
 
       if (result == 'OTP sent to email') {
@@ -187,7 +205,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       return;
     }
-    var email = '${_entryNoController.text}@iitrpr.ac.in';
+    var entryNo = _entryNoController.text;
+    var email = _emailController.text;
+    if (_useEmailLogin) {
+      entryNo = _emailController.text.split('@').first;
+    } else {
+      email = '$entryNo@iitrpr.ac.in';
+    }
     final result =
         await _otpService.verifyOTPforRegister(email, int.parse(_otp));
     if (!mounted) return;
@@ -261,19 +285,47 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // entryNo Field
-                  CustomTextFormField(
-                    labelText: "entryNo",
-                    // keyboardType: TextInputType.entryNo,
-                    controller: _entryNoController,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your entryNo';
-                        //   return 'Please enter a valid entryNo';
-                      }
-                      return null;
-                    },
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Use Email instead?'),
+                      Switch(
+                        value: _useEmailLogin,
+                        onChanged: (value) {
+                          setState(() {
+                            _useEmailLogin = value;
+                          });
+                        },
+                      ),
+                    ],
                   ),
+
+                  _useEmailLogin
+                      ? CustomTextFormField(
+                          labelText: "Email",
+                          keyboardType: TextInputType.emailAddress,
+                          controller: _emailController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            if (!value.contains('@')) {
+                              return 'Please enter a valid email';
+                            }
+                            return null;
+                          },
+                        )
+                      : CustomTextFormField(
+                          labelText: "entry number",
+                          controller: _entryNoController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your entry number';
+                            }
+                            return null;
+                          },
+                        ),
+
                   const SizedBox(height: 20),
 
                   // Password Field
