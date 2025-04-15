@@ -513,6 +513,7 @@ class databaseInterface {
     int op,
     int entered_otp,
   ) async {
+
     var url = "$complete_base_url_static/forgot_password";
     try {
       var response = await http.post(
@@ -535,13 +536,11 @@ class databaseInterface {
           if (op == 2 && response.statusCode == 200) {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString(
-              "reset_password_token",
-              data['token']?.toString() ?? '',
-            );
+
+                "reset_password_token", data['token']?.toString() ?? '');
             prefs.setString(
-              "reset_password_uid",
-              data['uidb64']?.toString() ?? '',
-            );
+                "reset_password_uid", data['uidb64']?.toString() ?? '');
+
           }
           return message;
         }
@@ -2678,6 +2677,76 @@ class databaseInterface {
     } catch (e) {
       debugPrint("Error getting current students: $e");
       return [];
+    }
+  }
+
+  // static Future<List<Map<String, dynamic>>> fetchLabStats() async {
+  //   try {
+  //     final response = await http
+  //         .get(Uri.parse("$complete_base_url_static/lab-session-stats"));
+  //     final List data = json.decode(response.body);
+  //     return data
+  //         .map((item) => {
+  //               "location_id": item["location_id"],
+  //               "location_name": item["location_name"],
+  //               "session_count": item["session_count"]
+  //             })
+  //         .toList();
+  //   } catch (e) {
+  //     debugPrint("Error getting current students: $e");
+  //     return [];
+  //   }
+  // }
+
+  static Future<List<Map<String, dynamic>>> fetchLabUtilizationStats(
+      String filter) async {
+    try {
+      final response = await http.get(Uri.parse(
+          '$complete_base_url_static/lab-utilization-stats/?range=$filter'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception("Failed to load lab utilization stats");
+      }
+    } catch (e) {
+      throw Exception("Error fetching lab utilization stats: $e");
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> fetchLabUtilPerBatch(
+      String lab) async {
+    try {
+      print(lab);
+      final response = await http.get(Uri.parse(
+          '$complete_base_url_static/lab-utilization-batch/?lab=$lab'));
+      if (response.statusCode == 200) {
+        print("hello");
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        print("vggg");
+        throw Exception("Failed to load batch utilization stats");
+      }
+    } catch (e) {
+      throw Exception("Error fetching batch utilization stats: $e");
+    }
+  }
+
+  static Future<List<Map<String, dynamic>>> LabSessionStats() async {
+    try {
+      final response = await http
+          .get(Uri.parse('$complete_base_url_static/lab-session-stats'));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception("Failed to load lab utilization stats");
+      }
+    } catch (e) {
+      throw Exception("Error fetching lab utilization stats: $e");
     }
   }
 }

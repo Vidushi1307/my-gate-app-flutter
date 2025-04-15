@@ -22,6 +22,7 @@ import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/authorities/location_detail_authority.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
+import 'package:my_gate_app/screens/authorities/lab_stats.dart';
 
 class AuthorityMain extends StatefulWidget {
   const AuthorityMain({super.key});
@@ -382,6 +383,10 @@ class _AuthorityMainState extends State<AuthorityMain> {
       case MenuItems.itemAboutUs:
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => AboutUsPage()),
+        );
+      case MenuItems.itemViewStats:
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => LabStatsPage()),
         );
         break;
     }
