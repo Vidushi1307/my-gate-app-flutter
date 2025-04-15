@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, avoid_print, unused_local_variable
 import 'dart:io';
+import 'dart:core';
 import 'package:flutter/foundation.dart'; // Required for compute()
 import 'package:my_gate_app/myglobals.dart' as myglobals;
 import 'package:flutter/material.dart';
@@ -33,8 +34,9 @@ class _UserData {
 class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
-  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-//  static String complete_base_url_static =  "https://bbab-2401-4900-8519-8a84-eb38-4edf-2cf9-b2d0.ngrok-free.app";
+  // static String complete_base_url_static = "https://mygate-vercel.vercel.app";
+  static String complete_base_url_static =
+      "https://a0c4-117-220-161-117.ngrok-free.app";
 
   static Map<String, dynamic> retry = {
     "try": 1,
@@ -459,19 +461,20 @@ class databaseInterface {
   }
 
   static Future<String> registerUser({
-    required String email,
+    required String entryNo,
     required String name,
     required String password,
   }) async {
-    var url = "$complete_base_url_static/forgot_password";
+    var url = "$complete_base_url_static/register_user";
     try {
+      var email = "$entryNo@iitrpr.ac.in";
       var response = await http.post(
         Uri.parse(url),
         body: {
+          'entry_no': entryNo,
           'email': email,
           'name': name,
           'password': password,
-          'op': '4',
         },
       );
       var data = json.decode(response.body);
@@ -483,65 +486,66 @@ class databaseInterface {
     }
   }
 
-static Future<String> forgot_password(
-    String email, int op, int entered_otp) async {
-  var url = "$complete_base_url_static/forgot_password";
-  try {
-    var response = await http.post(
-      Uri.parse(url),
-      body: {
-        'email': email,
-        'op': op.toString(),
-        'entered_otp': entered_otp.toString(),
-      },
-    );
-
-    // First try to parse as JSON
+  static Future<String> forgot_password(
+      String email, int op, int entered_otp) async {
+    var url = "$complete_base_url_static/forgot_password";
     try {
-      dynamic data = json.decode(response.body);
-      
-      // Handle JSON object case
-      if (data is Map<String, dynamic>) {
-        String message = data['message']?.toString() ?? 'No message provided';
-        
-        if (op == 2 && response.statusCode == 200) {
-          SharedPreferences prefs = await SharedPreferences.getInstance();
-          prefs.setString("reset_password_token", data['token']?.toString() ?? '');
-          prefs.setString("reset_password_uid", data['uidb64']?.toString() ?? '');
+      var response = await http.post(
+        Uri.parse(url),
+        body: {
+          'email': email,
+          'op': op.toString(),
+          'entered_otp': entered_otp.toString(),
+        },
+      );
+
+      // First try to parse as JSON
+      try {
+        dynamic data = json.decode(response.body);
+
+        // Handle JSON object case
+        if (data is Map<String, dynamic>) {
+          String message = data['message']?.toString() ?? 'No message provided';
+
+          if (op == 2 && response.statusCode == 200) {
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.setString(
+                "reset_password_token", data['token']?.toString() ?? '');
+            prefs.setString(
+                "reset_password_uid", data['uidb64']?.toString() ?? '');
+          }
+          return message;
         }
-        return message;
+        // Handle JSON array case
+        else if (data is List) {
+          return data.isNotEmpty ? data[0].toString() : 'Empty array response';
+        }
+      } catch (e) {
+        // If JSON parsing fails, treat as plain string
+        print('Response is not JSON, treating as plain text');
       }
-      // Handle JSON array case
-      else if (data is List) {
-        return data.isNotEmpty ? data[0].toString() : 'Empty array response';
+
+      // Treat the response as plain text
+      String plainResponse = response.body;
+
+      // Special case for op==2 if needed
+      if (op == 2 && response.statusCode == 200) {
+        // If you expect tokens in plain response, parse them here
+        // Example: "SUCCESS|token123|uid456"
+        var parts = plainResponse.split('|');
+        if (parts.length >= 3) {
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          prefs.setString("reset_password_token", parts[1]);
+          prefs.setString("reset_password_uid", parts[2]);
+        }
       }
+
+      return plainResponse;
     } catch (e) {
-      // If JSON parsing fails, treat as plain string
-      print('Response is not JSON, treating as plain text');
+      print("Error in forgot_password: ${e.toString()}");
+      return "Error: ${e.toString()}";
     }
-
-    // Treat the response as plain text
-    String plainResponse = response.body;
-    
-    // Special case for op==2 if needed
-    if (op == 2 && response.statusCode == 200) {
-      // If you expect tokens in plain response, parse them here
-      // Example: "SUCCESS|token123|uid456"
-      var parts = plainResponse.split('|');
-      if (parts.length >= 3) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        prefs.setString("reset_password_token", parts[1]);
-        prefs.setString("reset_password_uid", parts[2]);
-      }
-    }
-    
-    return plainResponse;
-
-  } catch (e) {
-    print("Error in forgot_password: ${e.toString()}");
-    return "Error: ${e.toString()}";
   }
-}
 
   static Future<String> reset_password(String email, String password) async {
     var uri = "$complete_base_url_static/reset_password";
@@ -1797,17 +1801,17 @@ static Future<String> forgot_password(
     }
   }
 
-  static Map<String, dynamic> _parseJson(String jsonString) {
-    return jsonDecode(jsonString) as Map<String, dynamic>;
+  static Map<String, String> _parseJson(String jsonString) {
+    return jsonDecode(jsonString) as Map<String, String>;
   }
 
-  static Future<Map<String, dynamic>> get_student_status_for_all_locations_2(
+  static Future<Map<String, String>> get_student_status_for_all_locations_2(
     String email,
     List<int> location_ids,
   ) async {
     var uri = "$complete_base_url_static/students/get_status_for_all_locations";
     //TODO: Avoid hardcoding this map.
-    const _errorMap = {
+    const Map<String, String> errorMap = {
       'CS Block': 'ERROR',
       'Lab 101': 'ERROR',
       'Lab 102': 'ERROR',
@@ -1823,13 +1827,14 @@ static Future<String> forgot_password(
           'email': email,
           'location_ids': json.encode(location_ids),
         },
-      ).timeout(Duration(seconds: 5));
+      ).timeout(Duration(seconds: 10));
 
-      if (response.statusCode != 200) return _errorMap;
-      return await compute(_parseJson, response.body); // Parse in background
+      if (response.statusCode != 200) return errorMap;
+      final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+      return decoded.map((key, value) => MapEntry(key, value.toString()));
     } catch (e) {
       print("get_student_status error: $e");
-      return _errorMap;
+      return errorMap;
     }
   }
 

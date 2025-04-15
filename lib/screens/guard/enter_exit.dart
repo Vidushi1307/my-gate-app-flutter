@@ -69,8 +69,8 @@ class _EntryExitState extends State<EntryExit> {
   Future<void> get_welcome_message() async {
     String welcome_message_local =
         await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
-    notificationCount = await databaseInterface
-        .return_total_notification_count_guard(LoggedInDetails.getEmail());
+//    notificationCount = await databaseInterface
+//        .return_total_notification_count_guard(LoggedInDetails.getEmail());
     // getting the details of the guard
     databaseInterface db = databaseInterface();
     GuardUser result = await db.get_guard_by_email(LoggedInDetails.getEmail());
@@ -297,12 +297,12 @@ class _EntryExitState extends State<EntryExit> {
                     color: Colors.black,
                   ),
                   onPressed: () async {
-                    List<List<String>> messages = await databaseInterface
-                        .fetch_notification_guard(LoggedInDetails.getEmail());
+//                    List<List<String>> messages = await databaseInterface
+//                        .fetch_notification_guard(LoggedInDetails.getEmail());
 
                     // print(messages);
                     print("messages printed in page");
-                    print(messages);
+                    // print(messages);
 
                     // await databaseInterface
                     //     .mark_stakeholder_notification_as_false(

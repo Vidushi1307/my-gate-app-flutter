@@ -4,7 +4,6 @@ import 'package:my_gate_app/auth/forgot_password.dart';
 import 'package:my_gate_app/auth/otp_service.dart';
 import 'package:my_gate_app/auth/otp_timer.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
-import 'package:my_gate_app/get_email.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 import 'package:my_gate_app/auth/authscreen.dart';
 
@@ -80,7 +79,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _emailController = TextEditingController();
+  final _entryNoController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -94,7 +93,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _emailController.dispose();
+    _entryNoController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -113,7 +112,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       try {
         final result = await _otpService.registerUser(
-          email: _emailController.text,
+          entryNo: _entryNoController.text,
           name: _nameController.text,
           password: _passwordController.text,
           // Add any other required fields
@@ -141,18 +140,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
 
-      // Check if email ends with '@iitrpr.ac.in'
-      if (!_emailController.text.endsWith('@iitrpr.ac.in')) {
+      // Check if entryNo ends with '@iitrpr.ac.in'
+      // if (!_entryNoController.text.endsWith('@iitrpr.ac.in')) {
+      //   ScaffoldMessenger.of(context).showSnackBar(
+      //     const SnackBar(
+      //       content: Text('Please use your IIT Ropar entryNo address'),
+      //     ),
+      //   );
+      //   return;
+      // }
+
+      // Check if entryNo is valid  (of form NNNNXXXNNNN where N is a digit and X is a letter)
+      final RegExp entryNoRegex = RegExp(r'^[0-9]{4}[A-Za-z]{3}[0-9]{4}$');
+      if (!entryNoRegex.hasMatch(_entryNoController.text)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please use your IIT Ropar email address'),
+            content: Text('Please enter a valid entry number'),
           ),
         );
         return;
       }
 
-      final result =
-          await _otpService.sendOTPforRegister(_emailController.text);
+      var email = '${_entryNoController.text}@iitrpr.ac.in';
+      final result = await _otpService.sendOTPforRegister(email);
+
       if (result == 'OTP sent to email') {
         setState(() {
           _otpSent = true;
@@ -176,9 +187,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
       return;
     }
-
+    var email = '${_entryNoController.text}@iitrpr.ac.in';
     final result =
-        await _otpService.verifyOTP(_emailController.text, int.parse(_otp));
+        await _otpService.verifyOTPforRegister(email, int.parse(_otp));
+    if (!mounted) return;
     if (result == 'OTP Matched') {
       setState(() => _otpVerified = true);
       ScaffoldMessenger.of(context).showSnackBar(
@@ -249,14 +261,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Email Field
+                  // entryNo Field
                   CustomTextFormField(
-                    labelText: "Email",
-                    keyboardType: TextInputType.emailAddress,
-                    controller: _emailController,
+                    labelText: "entryNo",
+                    // keyboardType: TextInputType.entryNo,
+                    controller: _entryNoController,
                     validator: (value) {
-                      if (value == null || !value.contains('@')) {
-                        return 'Please enter a valid email';
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your entryNo';
+                        //   return 'Please enter a valid entryNo';
                       }
                       return null;
                     },

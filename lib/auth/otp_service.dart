@@ -22,12 +22,12 @@ class OTPService {
   }
 
   Future<String> registerUser({
-    required String email,
+    required String entryNo,
     required String name,
     required String password,
   }) async {
     return await databaseInterface.registerUser(
-      email: email,
+      entryNo: entryNo,
       name: name,
       password: password,
     );
