@@ -369,9 +369,9 @@ class _LabStatsPageState extends State<LabStatsPage> {
             title: '${percentage.toStringAsFixed(0)}%',
             radius: 80,
             titleStyle: const TextStyle(
-              fontSize: 12,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Color.fromARGB(135, 71, 71, 71),
+              color: Colors.black,
               fontStyle: FontStyle.italic,
             ),
           );
