@@ -239,12 +239,11 @@ class databaseInterface {
   }
 
   static Future<LocationsAndPreApprovalsObjects>
-  getLoctionsAndPreApprovals() async {
+      getLoctionsAndPreApprovals() async {
     var url = "$complete_base_url_static/locations/get_all_locations";
     try {
-      final response = await http
-          .post(Uri.parse(url))
-          .timeout(Duration(seconds: 5));
+      final response =
+          await http.post(Uri.parse(url)).timeout(Duration(seconds: 5));
 
       if (response.statusCode != 200)
         return LocationsAndPreApprovalsObjects([], [], []);
@@ -376,8 +375,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['authority_name'] +
+        String obj = data[i]['authority_name'] +
             ", " +
             data[i]['authority_designation'] +
             "\n" +
@@ -399,8 +397,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['entry_no'] +
+        String obj = data[i]['entry_no'] +
             ", " +
             data[i]['st_name'] +
             "\n" +
@@ -421,8 +418,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['mobile_no'] +
+        String obj = data[i]['mobile_no'] +
             ", " +
             data[i]['visitor_name'] +
             ", " +
@@ -459,8 +455,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['authority_name'] +
+        String obj = data[i]['authority_name'] +
             ", " +
             data[i]['authority_designation'] +
             "\n" +
@@ -513,7 +508,6 @@ class databaseInterface {
     int op,
     int entered_otp,
   ) async {
-
     var url = "$complete_base_url_static/forgot_password";
     try {
       var response = await http.post(
@@ -536,11 +530,9 @@ class databaseInterface {
           if (op == 2 && response.statusCode == 200) {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString(
-
                 "reset_password_token", data['token']?.toString() ?? '');
             prefs.setString(
                 "reset_password_uid", data['uidb64']?.toString() ?? '');
-
           }
           return message;
         }
@@ -677,9 +669,10 @@ class databaseInterface {
   static Stream<List<ResultObj>> get_tickets_for_student(
     String email,
     String location,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_tickets_for_student_util(email, location));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap((_) => get_tickets_for_student_util(email, location));
 
   // This fetches guard tickets
   static Future<List<ResultObj>> get_tickets_for_student_util(
@@ -692,10 +685,9 @@ class databaseInterface {
         Uri.parse(uri),
         body: {'email': email, 'location': location},
       );
-      List<ResultObj> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj.fromJson1(i))
-              .toList();
+      List<ResultObj> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -713,9 +705,11 @@ class databaseInterface {
   static Stream<List<ResultObj7>> get_authority_tickets_for_student(
     String email,
     String location,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_authority_tickets_for_student_util(email, location));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap(
+          (_) => get_authority_tickets_for_student_util(email, location));
 
   static Future<List<ResultObj7>> get_authority_tickets_for_student_util(
     String email,
@@ -728,10 +722,9 @@ class databaseInterface {
         Uri.parse(uri),
         body: {'email': email, 'location': location},
       );
-      List<ResultObj7> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj7.fromJson(i))
-              .toList();
+      List<ResultObj7> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj7.fromJson(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -748,9 +741,10 @@ class databaseInterface {
 
   static Stream<List<ResultObj>> get_pending_tickets_for_guard_stream(
     String location,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_pending_tickets_for_guard_stream_util(location));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap((_) => get_pending_tickets_for_guard_stream_util(location));
 
   static Future<List<ResultObj>> get_pending_tickets_for_guard_stream_util(
     String location,
@@ -934,9 +928,11 @@ class databaseInterface {
     String location,
     String is_approved,
     String enter_exit,
-  ) => Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
-    (_) => get_tickets_for_guard_stream_util(location, is_approved, enter_exit),
-  );
+  ) =>
+      Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
+        (_) => get_tickets_for_guard_stream_util(
+            location, is_approved, enter_exit),
+      );
 
   static Future<List<ResultObj>> get_tickets_for_guard_stream_util(
     String location,
@@ -955,10 +951,9 @@ class databaseInterface {
         },
       );
 
-      List<ResultObj> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj.fromJson1(i))
-              .toList();
+      List<ResultObj> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -978,10 +973,11 @@ class databaseInterface {
   static Stream<List<ResultObj2>> get_tickets_for_authorities_stream(
     String authority_email,
     String is_approved,
-  ) => Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
-    (_) =>
-        get_tickets_for_authorities_stream_util(authority_email, is_approved),
-  );
+  ) =>
+      Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
+        (_) => get_tickets_for_authorities_stream_util(
+            authority_email, is_approved),
+      );
 
   static Future<List<ResultObj2>> get_tickets_for_authorities_stream_util(
     String authority_email,
@@ -995,10 +991,9 @@ class databaseInterface {
         body: {'authority_email': authority_email, 'is_approved': is_approved},
       );
 
-      List<ResultObj2> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj2.fromJson1(i))
-              .toList();
+      List<ResultObj2> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj2.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -1028,10 +1023,9 @@ class databaseInterface {
           'enter_exit': enter_exit,
         },
       );
-      List<ResultObj> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj.fromJson1(i))
-              .toList();
+      List<ResultObj> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -1113,9 +1107,10 @@ class databaseInterface {
 
   static Stream<List<ReadTableObject>> get_data_for_admin_tables_stream(
     String table_name,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_data_for_admin_tables_stream_util(table_name));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap((_) => get_data_for_admin_tables_stream_util(table_name));
 
   static Future<List<ReadTableObject>> get_data_for_admin_tables_stream_util(
     String table_name,
@@ -1172,10 +1167,9 @@ class databaseInterface {
         body: {'authority_email': authority_email, 'is_approved': is_approved},
       );
 
-      List<ResultObj2> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj2.fromJson1(i))
-              .toList();
+      List<ResultObj2> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj2.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -2284,10 +2278,9 @@ class databaseInterface {
         uri,
         body: {"is_approved": is_approved, "enter_exit": enter_exit},
       );
-      List<ResultObj4> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj4.fromJson2(i))
-              .toList();
+      List<ResultObj4> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj4.fromJson2(i))
+          .toList();
       if (response.statusCode == 200) {
         return tickets_list;
       } else {
@@ -2311,8 +2304,7 @@ class databaseInterface {
       var data = json.decode(response.body)['output'];
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['name'] +
+        String obj = data[i]['name'] +
             ", " +
             data[i]['email'] +
             ", " +

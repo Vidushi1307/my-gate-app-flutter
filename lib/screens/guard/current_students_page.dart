@@ -111,6 +111,30 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
     });
   }
 
+  String _sortBy = 'Name';
+  List<Map<String, dynamic>> _sortedStudents = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _sortedStudents = List.from(widget.students); // Make a local copy to sort
+    _sortStudents();
+  }
+
+  void _sortStudents() {
+    setState(() {
+      if (_sortBy == 'Name') {
+        _sortedStudents.sort((a, b) => a['name'].compareTo(b['name']));
+      } else if (_sortBy == 'Entry Time') {
+        _sortedStudents.sort((a, b) {
+          final at = DateTime.tryParse(a['entry_time'] ?? '') ?? DateTime.now();
+          final bt = DateTime.tryParse(b['entry_time'] ?? '') ?? DateTime.now();
+          return at.compareTo(bt);
+        });
+      }
+    });
+  }
+
   void clearSelection() {
     setState(() => selectedEmails.clear());
   }
@@ -156,14 +180,40 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
           ),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
-        actions: isSelectionMode
-            ? [
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: clearSelection,
-                )
-              ]
-            : null,
+        actions: [
+          if (!isSelectionMode)
+            Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: DropdownButton<String>(
+                  dropdownColor: Colors.black,
+                  value: _sortBy,
+                  icon: const Icon(Icons.sort, color: Colors.black),
+                  underline: Container(),
+                  style: const TextStyle(
+                      color: Colors.white), // Color of dropdown items
+                  selectedItemBuilder: (BuildContext context) {
+                    return ['Name', 'Entry Time'].map((e) {
+                      return Center(
+                        child: Text(
+                          e,
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: Colors.black), // Selected item color
+                        ),
+                      );
+                    }).toList();
+                  },
+                  items: ['Name', 'Entry Time']
+                      .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                      .toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      _sortBy = value;
+                      _sortStudents();
+                    }
+                  },
+                ))
+        ],
       ),
       floatingActionButton: isSelectionMode
           ? FloatingActionButton.extended(
@@ -184,7 +234,7 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
               padding: const EdgeInsets.all(16),
               itemCount: widget.students.length,
               itemBuilder: (context, index) {
-                final student = widget.students[index];
+                final student = _sortedStudents[index];
                 final isSelected = selectedEmails.contains(student['email']);
 
                 return GestureDetector(
