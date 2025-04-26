@@ -16,6 +16,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 
+import 'package:jwt_decoder/jwt_decoder.dart';
+
 enum HttpMethod {
   GET,
   POST,
@@ -34,9 +36,9 @@ class _UserData {
 class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
-  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-  //  static String complete_base_url_static =
-  //      "https://e61c-164-100-193-243.ngrok-free.app";
+//  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
+//  static String complete_base_url_static = "https://69.62.84.91:8000";  
+  static String complete_base_url_static = "https://e1fc-164-100-193-243.ngrok-free.app";
 
   static Map<String, dynamic> retry = {"try": 1, "ifretry": false};
   databaseInterface();
@@ -59,19 +61,19 @@ class databaseInterface {
   // Function to get access token from shared preferences
   static Future<String?> getAccessToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('access_token');
+    return prefs.getString('accessToken');
   }
 
   // Function to get refresh token from shared preferences
   static Future<String?> getRefreshToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('refresh_token');
+    return prefs.getString('refreshToken');
   }
 
   // Function to save access token to shared preferences
   static Future<void> saveAccessToken(String accessToken) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    prefs.setString('access_token', accessToken);
+    prefs.setString('accessToken', accessToken);
   }
 
   static Future<http.Response> makeAuthenticatedRequest(
@@ -239,12 +241,11 @@ class databaseInterface {
   }
 
   static Future<LocationsAndPreApprovalsObjects>
-  getLoctionsAndPreApprovals() async {
+      getLoctionsAndPreApprovals() async {
     var url = "$complete_base_url_static/locations/get_all_locations";
     try {
-      final response = await http
-          .post(Uri.parse(url))
-          .timeout(Duration(seconds: 5));
+      final response =
+          await http.post(Uri.parse(url)).timeout(Duration(seconds: 5));
 
       if (response.statusCode != 200)
         return LocationsAndPreApprovalsObjects([], [], []);
@@ -376,8 +377,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['authority_name'] +
+        String obj = data[i]['authority_name'] +
             ", " +
             data[i]['authority_designation'] +
             "\n" +
@@ -399,8 +399,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['entry_no'] +
+        String obj = data[i]['entry_no'] +
             ", " +
             data[i]['st_name'] +
             "\n" +
@@ -421,8 +420,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['mobile_no'] +
+        String obj = data[i]['mobile_no'] +
             ", " +
             data[i]['visitor_name'] +
             ", " +
@@ -459,8 +457,7 @@ class databaseInterface {
       var data = json.decode(response.body) as List;
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['authority_name'] +
+        String obj = data[i]['authority_name'] +
             ", " +
             data[i]['authority_designation'] +
             "\n" +
@@ -513,7 +510,6 @@ class databaseInterface {
     int op,
     int entered_otp,
   ) async {
-
     var url = "$complete_base_url_static/forgot_password";
     try {
       var response = await http.post(
@@ -536,11 +532,9 @@ class databaseInterface {
           if (op == 2 && response.statusCode == 200) {
             SharedPreferences prefs = await SharedPreferences.getInstance();
             prefs.setString(
-
                 "reset_password_token", data['token']?.toString() ?? '');
             prefs.setString(
                 "reset_password_uid", data['uidb64']?.toString() ?? '');
-
           }
           return message;
         }
@@ -677,9 +671,10 @@ class databaseInterface {
   static Stream<List<ResultObj>> get_tickets_for_student(
     String email,
     String location,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_tickets_for_student_util(email, location));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap((_) => get_tickets_for_student_util(email, location));
 
   // This fetches guard tickets
   static Future<List<ResultObj>> get_tickets_for_student_util(
@@ -692,10 +687,9 @@ class databaseInterface {
         Uri.parse(uri),
         body: {'email': email, 'location': location},
       );
-      List<ResultObj> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj.fromJson1(i))
-              .toList();
+      List<ResultObj> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -713,9 +707,11 @@ class databaseInterface {
   static Stream<List<ResultObj7>> get_authority_tickets_for_student(
     String email,
     String location,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_authority_tickets_for_student_util(email, location));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap(
+          (_) => get_authority_tickets_for_student_util(email, location));
 
   static Future<List<ResultObj7>> get_authority_tickets_for_student_util(
     String email,
@@ -728,10 +724,9 @@ class databaseInterface {
         Uri.parse(uri),
         body: {'email': email, 'location': location},
       );
-      List<ResultObj7> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj7.fromJson(i))
-              .toList();
+      List<ResultObj7> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj7.fromJson(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -748,9 +743,10 @@ class databaseInterface {
 
   static Stream<List<ResultObj>> get_pending_tickets_for_guard_stream(
     String location,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_pending_tickets_for_guard_stream_util(location));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap((_) => get_pending_tickets_for_guard_stream_util(location));
 
   static Future<List<ResultObj>> get_pending_tickets_for_guard_stream_util(
     String location,
@@ -934,9 +930,11 @@ class databaseInterface {
     String location,
     String is_approved,
     String enter_exit,
-  ) => Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
-    (_) => get_tickets_for_guard_stream_util(location, is_approved, enter_exit),
-  );
+  ) =>
+      Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
+        (_) => get_tickets_for_guard_stream_util(
+            location, is_approved, enter_exit),
+      );
 
   static Future<List<ResultObj>> get_tickets_for_guard_stream_util(
     String location,
@@ -955,10 +953,9 @@ class databaseInterface {
         },
       );
 
-      List<ResultObj> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj.fromJson1(i))
-              .toList();
+      List<ResultObj> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -978,10 +975,11 @@ class databaseInterface {
   static Stream<List<ResultObj2>> get_tickets_for_authorities_stream(
     String authority_email,
     String is_approved,
-  ) => Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
-    (_) =>
-        get_tickets_for_authorities_stream_util(authority_email, is_approved),
-  );
+  ) =>
+      Stream.periodic(Duration(seconds: REFRESH_RATE)).asyncMap(
+        (_) => get_tickets_for_authorities_stream_util(
+            authority_email, is_approved),
+      );
 
   static Future<List<ResultObj2>> get_tickets_for_authorities_stream_util(
     String authority_email,
@@ -995,10 +993,9 @@ class databaseInterface {
         body: {'authority_email': authority_email, 'is_approved': is_approved},
       );
 
-      List<ResultObj2> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj2.fromJson1(i))
-              .toList();
+      List<ResultObj2> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj2.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -1028,10 +1025,9 @@ class databaseInterface {
           'enter_exit': enter_exit,
         },
       );
-      List<ResultObj> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj.fromJson1(i))
-              .toList();
+      List<ResultObj> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -1113,9 +1109,10 @@ class databaseInterface {
 
   static Stream<List<ReadTableObject>> get_data_for_admin_tables_stream(
     String table_name,
-  ) => Stream.periodic(
-    Duration(seconds: REFRESH_RATE),
-  ).asyncMap((_) => get_data_for_admin_tables_stream_util(table_name));
+  ) =>
+      Stream.periodic(
+        Duration(seconds: REFRESH_RATE),
+      ).asyncMap((_) => get_data_for_admin_tables_stream_util(table_name));
 
   static Future<List<ReadTableObject>> get_data_for_admin_tables_stream_util(
     String table_name,
@@ -1172,10 +1169,9 @@ class databaseInterface {
         body: {'authority_email': authority_email, 'is_approved': is_approved},
       );
 
-      List<ResultObj2> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj2.fromJson1(i))
-              .toList();
+      List<ResultObj2> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj2.fromJson1(i))
+          .toList();
 
       if (response.statusCode == 200) {
         return tickets_list;
@@ -1499,12 +1495,21 @@ class databaseInterface {
         body: {"email": email_},
       ).timeout(const Duration(seconds: 10));
 
+      
+      if (response.statusCode == 401) {
+        print("Error: ${response.statusCode}");
+        print("Response body: ${response.body}");
+        
+      }
+      
+      
       if (response.statusCode != 200) {
         print("Error: ${response.statusCode}");
         print("Response body: ${response.body}");
 
         throw Exception("Failed to load user data");
       }
+      
 
       // 2. Move JSON parsing and image decoding to a background isolate
       final processedData = await compute(_parseUserData, response.body);
@@ -1800,14 +1805,37 @@ class databaseInterface {
       return "Failed to add guard";
     }
   }
+  
+  
+  static Future<String> delete_authority(String email) async {
+    String uri = "$complete_base_url_static/forms/delete_authority_form";
+    try {
+      print("Sending request to backend:  ");
+      print(email);
+      var response = await http.post(Uri.parse(uri), body: {'email': email});
+      print("Received response from backend");
+      print(response.toString());
+      return response.body.toString();
+    } catch (e) {
+      return "Failed to remove authority";
+    }
+  }
+
+
+
+
 
   static Future<String> delete_guard(String email) async {
     String uri = "$complete_base_url_static/forms/delete_guard_form";
     try {
+      print("Sending request to backend:  ");
+      print(email);
       var response = await http.post(Uri.parse(uri), body: {'email': email});
+      print("Received response from backend");
+      print(response.toString());
       return response.body.toString();
     } catch (e) {
-      return "Failed to add guard";
+      return "Failed to remove guard";
     }
   }
 
@@ -2284,10 +2312,9 @@ class databaseInterface {
         uri,
         body: {"is_approved": is_approved, "enter_exit": enter_exit},
       );
-      List<ResultObj4> tickets_list =
-          (json.decode(response.body) as List)
-              .map((i) => ResultObj4.fromJson2(i))
-              .toList();
+      List<ResultObj4> tickets_list = (json.decode(response.body) as List)
+          .map((i) => ResultObj4.fromJson2(i))
+          .toList();
       if (response.statusCode == 200) {
         return tickets_list;
       } else {
@@ -2311,8 +2338,7 @@ class databaseInterface {
       var data = json.decode(response.body)['output'];
       List<String> res = [];
       for (var i = 0; i < data.length; i++) {
-        String obj =
-            data[i]['name'] +
+        String obj = data[i]['name'] +
             ", " +
             data[i]['email'] +
             ", " +
@@ -2350,11 +2376,13 @@ class databaseInterface {
         final String accessToken = data['access_token'];
         final String refreshToken = data['refresh_token'];
         final String type = data['type'];
+        final DateTime expiry = JwtDecoder.getExpirationDate(accessToken);
 
         // Save tokens to shared preferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
-        await prefs.setString('access_token', accessToken);
-        await prefs.setString('refresh_token', refreshToken);
+        await prefs.setString('accessToken', accessToken);
+        await prefs.setString('accessTokenExpiry',expiry.toIso8601String());
+        await prefs.setString('refreshToken', refreshToken);
         await prefs.setString('email', email);
         await prefs.setString('type', type);
         LoggedInDetails.setEmail(email);

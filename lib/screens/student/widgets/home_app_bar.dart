@@ -8,23 +8,23 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String welcomeMessage;
   final ImageProvider? profileImage;
   final ValueNotifier<bool> updateNotifier;
-  final int notificationCount;
-  final Stream<int>? notificationStream;
+//  final int notificationCount;
+//  final Stream<int>? notificationStream;
   final VoidCallback onProfilePressed;
   final VoidCallback onLogoutPressed;
   final VoidCallback onAboutUsPressed;
-  final VoidCallback onNotificationsPressed;
+//  final VoidCallback onNotificationsPressed;
 
   const HomeAppBar({
     required this.welcomeMessage,
     required this.profileImage,
     required this.updateNotifier,
-    required this.notificationCount,
-    required this.notificationStream,
+//    required this.notificationCount,
+//    required this.notificationStream,
     required this.onProfilePressed,
     required this.onLogoutPressed,
     required this.onAboutUsPressed,
-    required this.onNotificationsPressed,
+//    required this.onNotificationsPressed,
     Key? key,
   }) : super(key: key);
 
@@ -35,7 +35,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       title: _buildTitleRow(context),
       actions: [
-        _buildNotificationButton(),
+ //       _buildNotificationButton(),
         _buildMenuButton(context),
       ],
     );
@@ -95,7 +95,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildNotificationButton() {
+/*  Widget _buildNotificationButton() {
     return Stack(
       clipBehavior: Clip.none,
       children: [
@@ -141,7 +141,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
         textAlign: TextAlign.center,
       ),
     );
-  }
+  }*/
 
   Widget _buildMenuButton(BuildContext context) {
     return PopupMenuButton<MenuItem>(

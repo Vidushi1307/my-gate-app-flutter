@@ -16,6 +16,9 @@ class MenuItems{
   static const List<MenuItem> itemsFourth = [
     itemViewStats,
   ];
+  static const List<MenuItem> itemsFifth = [
+    itemDeleteAccount,
+  ];
 
   static const itemProfile = MenuItem(
     text: 'Profile',
@@ -32,6 +35,11 @@ class MenuItems{
   static const itemViewStats = MenuItem(
     text: 'View Stats',
     icon: yo.Icons.query_stats_outlined,
+  );
+  static const itemDeleteAccount = MenuItem(
+    text: 'Delete Account',
+    icon: yo.Icons.delete,
+    color: yo.Colors.red,
   );
   
 }

@@ -5,14 +5,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_gate_app/screens/student/managers/location_data_manager.dart';
-import 'package:my_gate_app/screens/student/managers/notification_manager.dart';
+//import 'package:my_gate_app/screens/student/managers/notification_manager.dart';
 import 'package:my_gate_app/screens/student/managers/user_profile_manager.dart';
 import 'package:my_gate_app/screens/student/widgets/home_app_bar.dart';
 import 'package:my_gate_app/screens/student/widgets/location_card.dart';
 import 'package:my_gate_app/screens/student/change_location.dart';
 import 'package:my_gate_app/screens/student/raise_ticket_for_guard_or_authorities.dart';
 import 'package:my_gate_app/screens/student/student_guard_side/student_tabs.dart';
-import 'package:my_gate_app/screens/notificationPage/notification.dart';
+//import 'package:my_gate_app/screens/notificationPage/notification.dart';
 import 'package:my_gate_app/screens/profile2/profile_page.dart';
 import 'package:my_gate_app/auth/authscreen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -51,7 +51,7 @@ Color getColorFromHex(String hexColor) {
 class _HomeStudentState extends State<HomeStudent> {
   late final UserProfileManager _profileManager;
   late final LocationDataManager _locationManager;
-  late final NotificationManager _notificationManager;
+//  late final NotificationManager _notificationManager;
   final db = databaseInterface();
 
   String welcomeMessage = "Welcome"; // Welcome message text
@@ -62,15 +62,60 @@ class _HomeStudentState extends State<HomeStudent> {
 
   @override
   void initState() {
+    checkTokenOnStartup();
     super.initState();
     _profileManager = UserProfileManager(
       email: widget.email ?? UserPreferences.myUser.imagePath,
       user: UserPreferences.myUser,
     );
     _locationManager = LocationDataManager();
-    _notificationManager = NotificationManager(LoggedInDetails.getEmail());
+//    _notificationManager = NotificationManager(LoggedInDetails.getEmail());
     _initializeData();
   }
+
+  void checkTokenOnStartup() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('accessToken');
+    String? expiryStr = prefs.getString('accessTokenExpiry');
+    print("============================================================");
+    print("Token: ");
+    print(token);
+    print("Expiry: ");
+    print(expiryStr);
+    if (token != null && expiryStr != null) {
+      DateTime expiry = DateTime.parse(expiryStr);
+      if (DateTime.now().isBefore(expiry)) {
+        // Token is still valid
+        print("Valid token");
+        myglobals.auth!.login();
+      } else {
+        print("Invalid token");
+        print(DateTime.now());
+        // Token is expired → logout
+        await prefs.clear();
+        LoggedInDetails.setEmail("");
+        myglobals.auth!.logout();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const AuthScreen()),
+          (Route<dynamic> route) => false,
+        );
+
+      }
+    } else {
+      // No token → logout
+      print("No token");
+      LoggedInDetails.setEmail("");
+      myglobals.auth!.logout();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const AuthScreen()),
+        (Route<dynamic> route) => false,
+      );
+
+    }
+  }
+
 
   Future<void> _initializeData() async {
     setState(() => isLoading = true);
@@ -87,7 +132,7 @@ class _HomeStudentState extends State<HomeStudent> {
     await Future.wait([
       _loadWelcomeMessage(),
       _locationManager.loadData(LoggedInDetails.getEmail()),
-      _notificationManager.refreshCount(),
+  //    _notificationManager.refreshCount(),
       _profileManager.loadProfile(LoggedInDetails.getEmail()),
     ]);
 
@@ -124,12 +169,12 @@ class _HomeStudentState extends State<HomeStudent> {
       welcomeMessage: welcomeMessage,
       profileImage: _profileManager.profileImage,
       updateNotifier: _profileManager.updateNotifier,
-      notificationCount: _notificationManager.count,
-      notificationStream: _notificationManager.notificationStream,
+//      notificationCount: _notificationManager.count,
+//      notificationStream: _notificationManager.notificationStream,
       onProfilePressed: _navigateToProfile,
       onLogoutPressed: _navigateToLogout,
       onAboutUsPressed: _navigateToAboutUs,
-      onNotificationsPressed: _navigateToNotifications,
+//      onNotificationsPressed: _navigateToNotifications,
     );
   }
 
@@ -459,16 +504,16 @@ class _HomeStudentState extends State<HomeStudent> {
     });
   }
 
-  void _navigateToNotifications() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => NotificationsPage(
-          notificationCount: _notificationManager.count,
-        ),
-      ),
-    );
-  }
+//  void _navigateToNotifications() {
+//    Navigator.push(
+//      context,
+//      MaterialPageRoute(
+//        builder: (context) => NotificationsPage(
+//          notificationCount: _notificationManager.count,
+//        ),
+//      ),
+//    );
+//  }
 
   void _openQRScanner(BuildContext context) {
     final MobileScannerController controller = MobileScannerController(

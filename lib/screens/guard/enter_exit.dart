@@ -291,32 +291,32 @@ class _EntryExitState extends State<EntryExit> {
             children: [
               SizedBox(
                 height: kToolbarHeight,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.notifications,
-                    color: Colors.black,
-                  ),
-                  onPressed: () async {
+            //    child: IconButton(
+                //  icon: Icon(
+                //    Icons.notifications,
+                //    color: Colors.black,
+                //  ),
+                //  onPressed: () async {
 //                    List<List<String>> messages = await databaseInterface
 //                        .fetch_notification_guard(LoggedInDetails.getEmail());
 
                     // print(messages);
-                    print("messages printed in page");
+                //    print("messages printed in page");
                     // print(messages);
 
                     // await databaseInterface
                     //     .mark_stakeholder_notification_as_false(
                     //         LoggedInDetails.getEmail());
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NotificationsPage(
-                                  notificationCount: notificationCount,
-                                )));
-                  },
-                ),
+                //    Navigator.push(
+                 //       context,
+                 //       MaterialPageRoute(
+                 //           builder: (context) => NotificationsPage(
+                 //                 notificationCount: notificationCount,
+                 //               )));
+                 // },
+             //   ),
               ),
-              StreamBuilder<int>(
+           /*   StreamBuilder<int>(
                 stream: databaseInterface
                     .get_notification_count_stream(LoggedInDetails.getEmail()),
                 builder: (context, snapshot) {
@@ -351,7 +351,7 @@ class _EntryExitState extends State<EntryExit> {
                     return Container();
                   }
                 },
-              )
+              )*/
             ],
           ),
           PopupMenuButton<MenuItem>(
@@ -363,6 +363,8 @@ class _EntryExitState extends State<EntryExit> {
               ...MenuItems.itemsThird.map(buildItem),
               PopupMenuDivider(),
               ...MenuItems.itemsSecond.map(buildItem),
+              PopupMenuDivider(),
+              ...MenuItems.itemsFifth.map(buildItem),
             ],
           )
         ],
@@ -462,9 +464,14 @@ class _EntryExitState extends State<EntryExit> {
         value: item,
         child: Row(
           children: [
-            Icon(item.icon, size: 20),
+            Icon(item.icon, size: 20, color: item.color),
             const SizedBox(width: 12),
-            Text(item.text),
+            Text(
+              item.text,
+              style: TextStyle(
+                color: item.color,
+              )
+            ),
           ],
         ),
       );
@@ -494,8 +501,87 @@ class _EntryExitState extends State<EntryExit> {
           MaterialPageRoute(builder: (context) => AboutUsPage()),
         );
         break;
+      case MenuItems.itemDeleteAccount:
+        // Show confirmation dialog
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Delete Account'),
+            content: const Text(
+                'Are you sure you want to permanently delete your account? '
+                'This action cannot be undone.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context), // No button
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                  _deleteAccount(context); // Call your delete function
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(color: Colors.red), // Make "Yes" red for emphasis
+                ),
+              ),
+            ],
+          ),
+        );
+       break;
     }
   }
+  
+  Future<void> _deleteAccount(BuildContext context) async {
+    // Store navigator references BEFORE async operations
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final mainNavigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Deleting account..."),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    try {
+      print("Sending delete request");
+      await databaseInterface.delete_guard(LoggedInDetails.getEmail());
+      LoggedInDetails.setEmail('');
+      // Execute navigation in next frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Dismissing dialog and navigating");
+        rootNavigator.pop(); // Dismiss dialog
+        mainNavigator.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthScreen()),
+          (route) => false,
+        );
+      });
+
+    } catch (e) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Handling error: $e");
+        if (rootNavigator.canPop()) rootNavigator.pop();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      });
+    }
+  }  
+
 }
 
 class ImageWithText extends StatelessWidget {

@@ -15,6 +15,8 @@ import 'package:my_gate_app/screens/student/home_student.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/myglobals.dart' as myglobals;
 
+import 'package:jwt_decoder/jwt_decoder.dart';
+
 import 'dart:async';
 
 class AuthForm extends StatefulWidget {
@@ -204,22 +206,34 @@ class _AuthFormState extends State<AuthForm> {
     }
   }
 
-  Future<void> startauthentication() async {
+  Future<bool> startauthentication() async {  // Changed return type to bool
     final validity = _formkey.currentState?.validate();
     FocusScope.of(context).unfocus();
 
     if (validity != null && validity) {
       _formkey.currentState?.save();
-
+      
       String message = await databaseInterface.jwt_login(_email, _password);
       LoginScaffold(message);
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString("accessToken");
+      if (token == null) return false;  // Early exit if no token
+      
+      // Verify token hasn't expired
+      final expiry = DateTime.parse(prefs.getString('accessTokenExpiry')!);
+      if (expiry.isBefore(DateTime.now())) {
+        await prefs.remove('accessToken');
+        return false;
+      }
+
       String? type = prefs.getString("type");
       if (type != null) {
         is_authenticated.person_type = type;
+        return true;  // Only return true if everything succeeded
       }
     }
+    return false;
   }
 
   Future<void> guardLocation() async {
@@ -442,7 +456,17 @@ class _AuthFormState extends State<AuthForm> {
                           color: Color(0xFF827397),
                           onPressed: () async {
                             FocusScope.of(context).unfocus();
-                            await startauthentication();
+                            final success = await startauthentication();  // Get actual status
+                            print("Success?  : " + success.toString());
+                            if (!success) {
+                              // Clear invalid credentials
+                              final prefs = await SharedPreferences.getInstance();
+                              await prefs.remove('accessToken');
+                              await prefs.remove('type');
+                              return;  // Block navigation
+                            }
+
+                             
                             if (is_authenticated.person_type == "Student") {
                               Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(

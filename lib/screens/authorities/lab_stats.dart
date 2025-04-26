@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:my_gate_app/database/database_interface.dart';
+import 'package:excel/excel.dart' hide Border;
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
+import 'dart:typed_data'; // At top of file, if not already
+import 'package:file_picker/file_picker.dart';
+import 'package:open_file/open_file.dart';  // For opening the saved file
+import 'package:intl/intl.dart';  // For date formatting
+
+
 
 class LabStatsPage extends StatefulWidget {
   const LabStatsPage({super.key});
@@ -91,6 +101,108 @@ class _LabStatsPageState extends State<LabStatsPage> {
       });
     }
   }
+  
+  Future<void> _exportToExcel() async {
+    try {
+      // Create Excel workbook
+      final excel = Excel.createExcel();
+      
+      excel.rename('Sheet1', 'Lab Utilization Summary');
+
+      // Create and get references to our sheets
+      final summarySheet = excel['Lab Utilization Summary'];
+      final batchSheet = excel['Batch Utilization'];
+      final currentSessionsSheet = excel['Current Sessions'];
+
+      // Helper function to create properly typed cell values
+      TextCellValue text(String value) => TextCellValue(value);
+      DoubleCellValue number(num value) => DoubleCellValue(value.toDouble());
+
+      // Add timestamp
+      final now = DateTime.now();
+      summarySheet.appendRow([text('Lab Utilization Report')]);
+      summarySheet.appendRow([text('Generated on'), text(now.toString())]);
+      summarySheet.appendRow([]);
+
+      // Add current sessions data
+      currentSessionsSheet.appendRow([text('Current Lab Sessions')]);
+      currentSessionsSheet.appendRow([text('Lab'), text('Active Students')]);
+      for (final session in currentSessions) {
+        currentSessionsSheet.appendRow([
+          text(session['location_name']?.toString() ?? 'Unknown Lab'),
+          number(session['session_count'] ?? 0),
+        ]);
+      }
+      currentSessionsSheet.appendRow([]);
+
+      // Add utilization summary
+      summarySheet.appendRow([text('Lab Utilization (${selectedFilter.replaceAll('_', ' ')})')]);
+      summarySheet.appendRow([text('Lab'), text('Hours'), text('Percentage')]);
+      
+      final totalSeconds = labUtilization.fold<double>(
+          0, (sum, lab) => sum + (lab['utilization_seconds'] ?? 0).toDouble());
+      
+      for (final lab in labUtilization) {
+        final seconds = (lab['utilization_seconds'] ?? 0).toDouble();
+        final hours = seconds / 3600;
+        final percentage = totalSeconds > 0 ? (seconds / totalSeconds * 100) : 0;
+        
+        summarySheet.appendRow([
+          text(lab['lab']?.toString() ?? 'Unknown'),
+          number(hours),
+          text('${percentage.toStringAsFixed(1)}%'),
+        ]);
+      }
+      summarySheet.appendRow([]);
+
+      // Add batch utilization data
+      batchSheet.appendRow([text('Batch Utilization for $selectedLab')]);
+      batchSheet.appendRow([text('Batch'), text('Session Count')]);
+      for (final batch in batchStats) {
+        batchSheet.appendRow([
+          text(batch['batch']?.toString() ?? 'Unknown'),
+          number(batch['count'] ?? 0),
+        ]);
+      }
+
+
+      // Encode the Excel file to bytes
+      final bytes = excel.save()!;  // Note: .save() instead of .encode() in v4.0.6+
+      final Uint8List uint8listBytes = Uint8List.fromList(bytes);
+
+      // Save the file through file_picker
+      final String? outputFile = await FilePicker.platform.saveFile(
+        dialogTitle: 'Save Lab Utilization Report',
+        fileName: 'lab_utilization_${DateFormat('yyyyMMdd_HHmmss').format(now)}.xlsx',
+        allowedExtensions: ['xlsx'],
+        type: FileType.custom,
+        bytes: uint8listBytes,
+      );
+
+      if (outputFile != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Report saved successfully!'),
+            action: SnackBarAction(
+              label: '',
+              onPressed: () async {
+                await OpenFile.open(outputFile);
+              },
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to save report: ${e.toString()}'),
+          duration: const Duration(seconds: 4),
+        ),
+      );
+      debugPrint('Export error: $e');
+    }
+  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +225,10 @@ class _LabStatsPageState extends State<LabStatsPage> {
                 showPieChart = !showPieChart;
               });
             },
+          ),
+          IconButton(
+            icon: const Icon(Icons.download, color: Colors.black87),
+            onPressed: _exportToExcel,
           ),
         ],
       ),

@@ -295,6 +295,8 @@ class _AuthorityMainState extends State<AuthorityMain> {
               ...MenuItems.itemsFourth.map(buildItem),
               PopupMenuDivider(),
               ...MenuItems.itemsSecond.map(buildItem),
+              PopupMenuDivider(),
+              ...MenuItems.itemsFifth.map(buildItem),
             ],
           )
         ],
@@ -389,6 +391,85 @@ class _AuthorityMainState extends State<AuthorityMain> {
           MaterialPageRoute(builder: (context) => LabStatsPage()),
         );
         break;
+      case MenuItems.itemDeleteAccount:
+        // Show confirmation dialog
+        await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Delete Account'),
+            content: const Text(
+                'Are you sure you want to permanently delete your account? '
+                'This action cannot be undone.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context), // No button
+                child: const Text('No'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context); // Close the dialog
+                  _deleteAccount(context); // Call your delete function
+                },
+                child: const Text(
+                  'Yes',
+                  style: TextStyle(color: Colors.red), // Make "Yes" red for emphasis
+                ),
+              ),
+            ],
+          ),
+        );
+       break;
+
+    }
+  }
+  
+  Future<void> _deleteAccount(BuildContext context) async {
+    // Store navigator references BEFORE async operations
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final mainNavigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Deleting account..."),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    try {
+      print("Sending delete request");
+      await databaseInterface.delete_authority(LoggedInDetails.getEmail());
+      LoggedInDetails.setEmail('');
+      // Execute navigation in next frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Dismissing dialog and navigating");
+        rootNavigator.pop(); // Dismiss dialog
+        mainNavigator.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthScreen()),
+          (route) => false,
+        );
+      });
+
+    } catch (e) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Handling error: $e");
+        if (rootNavigator.canPop()) rootNavigator.pop();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      });
     }
   }
 }
