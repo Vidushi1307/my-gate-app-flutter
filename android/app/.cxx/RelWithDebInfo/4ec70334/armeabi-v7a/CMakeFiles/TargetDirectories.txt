@@ -1,0 +1,2 @@
+/Users/edith/Desktop/DESKTOP/MyGateflutter/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4ec70334/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/edith/Desktop/DESKTOP/MyGateflutter/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4ec70334/armeabi-v7a/CMakeFiles/rebuild_cache.dir

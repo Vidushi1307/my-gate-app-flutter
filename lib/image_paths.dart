@@ -20,4 +20,4 @@ const String lecture_room = 'assets/images/lecture-rooms.webp';
 const String conference_room = 'assets/images/conf-rooms.webp';
 const String statistics = "assets/images/Statistics.webp";
 const String visitor = 'assets/images/visitor.webp';
-const String splash = 'assets/images/new_splash_logo.webp';
+const String splash = 'assets/images/Logo_update.png';

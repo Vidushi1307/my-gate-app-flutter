@@ -14,6 +14,7 @@ import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/student/home_student.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/myglobals.dart' as myglobals;
+import 'package:flutter/services.dart';
 
 import 'dart:async';
 
@@ -240,284 +241,350 @@ class _AuthFormState extends State<AuthForm> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.white,
+        color: Colors.black,
         height: MediaQuery.of(context).size.height,
         child: ListView(
           children: [
             Container(
-              color: Color.fromARGB(255, 255, 255, 255),
+              color: Colors.black,//Color.fromARGB(255, 255, 255, 255),
               padding:
                   EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
               height: MediaQuery.of(context).size.height,
               child: Form(
                 key: _formkey,
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start, //.center
                   children: [
-                    Text(
-                      'Welcome ',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.kodchasan(
-                        fontSize: 30,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 50),
 
-                    Text(
-                      "Let's SignIn",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.kodchasan(
-                        fontSize: 20,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                    // // Optimized logo
+                    // Image.asset(
+                    //   'assets/images/new_splash_logo.webp',
+                    //   height: MediaQuery.of(context).size.height * 0.20,
+                    // ),
+                    // SizedBox(height: 15),
+                    // // ------
+
+                    Padding(
+                      padding: const EdgeInsets.only(top: 25), // Reduced from default
+                      child: Image.asset(
+                        //'assets/images/new_splash_logo.webp',
+                        'assets/images/Logo_update.png',
+                        height: MediaQuery.of(context).size.height * 0.20, // Smaller logo
+                        fit: BoxFit.contain,
                       ),
                     ),
-                    SizedBox(
-                      height: 50,
+                    const SizedBox(height: 10), // Reduced spacing
+
+                    // Text(
+                    //   'Welcome to Insight!',
+                    //   textAlign: TextAlign.center,
+                    //   style: GoogleFonts.gabarito(
+                    //     fontSize: 10,
+                    //     color: Colors.white,
+                    //     fontWeight: FontWeight.w800,
+                    //   ),
+                    // ),
+                    
+                    RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: GoogleFonts.gabarito(
+                          fontSize: 30,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      children: [
+                        TextSpan(text: 'Welcome to '),
+                        TextSpan(text: 'Insight', style: TextStyle(color: const Color.fromARGB(255, 53, 147, 254))), // Different style for exclamation
+                      ],
+                      ),
                     ),
+
+                    SizedBox(height: 60),
+
+                    // Text(
+                    //   "Your Department's Digital Gatekeeper",
+                    //   textAlign: TextAlign.center,
+                    //   style: GoogleFonts.notoSans(
+                    //     fontSize: 10,
+                    //     color: Colors.grey,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
+
+                    // SizedBox(
+                    //   height: 60,
+                    // ),
+                    
+
                     //marked1
-                    TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      key: const ValueKey('email'),
-                      validator: (value) {
-                        if (value!.isEmpty || !value.contains('@')) {
-                          return 'Invalid Email';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        fetchedemail = value;
-                      },
-                      onSaved: (value) {
-                        _email = value!;
-                      },
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold), //mark1 end
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: new BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(),
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.85, // 80% of screen width
+                      child: TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        key: const ValueKey('email'),
+                        validator: (value) {
+                          if (value!.isEmpty || !value.contains('@')) {
+                            return 'Invalid Email';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          fetchedemail = value;
+                        },
+                        onSaved: (value) {
+                          _email = value!;
+                        },
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold), //mark1 end
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: new BorderRadius.circular(30.0),
+                            borderSide: const BorderSide(),
+                          ),
+                          // enabledBorder: OutlineInputBorder(
+                          //   borderRadius: BorderRadius.circular(8.0),
+                          //   borderSide: const BorderSide(
+                          //       color: Colors.black), // Change border color here
+                          // ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: const BorderSide(
+                                 color: Colors.grey), // Change border color here
+                          ),
+                          labelText: "Email",
+                          labelStyle: TextStyle(
+                            // fontWeight: FontWeight.bold,
+                            color: Colors.grey[500],
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never, // Add this line
+                          filled: true,
+                          fillColor: Colors.grey[200], //Color.fromARGB(255, 241, 241, 241)
+                          hintStyle: TextStyle(
+                            color: Colors.grey[800],
+                          ),
+                          suffixStyle: TextStyle(
+                            color: Colors.grey[800],
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 17.0, horizontal: 16.0),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                              color: Colors.black), // Change border color here
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                              color: Colors.black), // Change border color here
-                        ),
-                        labelText: "Email",
-                        labelStyle: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black.withOpacity(0.7),
-                        ),
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 241, 241, 241),
-                        hintStyle: TextStyle(
-                          color: Colors.grey[800],
-                        ),
-                        suffixStyle: TextStyle(
-                          color: Colors.grey[800],
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 16.0),
                       ),
                     ),
-
                     SizedBox(
                       height: 20,
                     ),
                     //marked2
-                    TextFormField(
-                      obscureText: _obscureText,
-                      keyboardType: TextInputType.emailAddress,
-                      key: const ValueKey('password'),
-                      // how does this work?
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return 'Password is empty';
-                        }
-                        return null;
-                      },
-                      onChanged: (value) {
-                        _password = value;
-                      },
-                      onSaved: (value) {
-                        _password = value!;
-                      },
-                      //mark2end
-                      style: TextStyle(
-                          color: Colors.black, fontWeight: FontWeight.bold),
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                              color: Colors.black), // Change border color here
+
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.85, // 80% of screen width
+                      child: TextFormField(
+                        obscureText: _obscureText,
+                        keyboardType: TextInputType.emailAddress,
+                        key: const ValueKey('password'),
+                        // how does this work?
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Password is empty';
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          _password = value;
+                        },
+                        onSaved: (value) {
+                          _password = value!;
+                        },
+                        //mark2end
+                        style: TextStyle(
+                            color: Colors.black, fontWeight: FontWeight.bold),
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: const BorderSide(
+                            color: Colors.black), // Change border color here
+                          ),
+                          // enabledBorder: OutlineInputBorder(
+                          //   borderRadius: BorderRadius.circular(8.0),
+                          //   borderSide: const BorderSide(
+                          //       color: Colors.black), // Change border color here
+                          // ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: const BorderSide(
+                                color: Colors.grey), // Change border color here
+                          ),
+                          labelText: "Password",
+                          labelStyle: TextStyle(
+                            color: Colors.grey[500],
+                            // fontWeight: FontWeight.bold,
+                          ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never, // Add this line
+                          suffixIcon: GestureDetector(
+                            onTap: _toggle,
+                            child: new Icon(_obscureText
+                                ? Icons.visibility_off
+                                : Icons.visibility),
+                          ),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 241, 241, 241),
+                          hintStyle: TextStyle(
+                            color: Colors.grey[800],
+                          ),
+                          suffixStyle: TextStyle(
+                            color: Colors.grey[800],
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 17.0, horizontal: 16.0),
                         ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                              color: Colors.black), // Change border color here
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                          borderSide: const BorderSide(
-                              color: Colors.black), // Change border color here
-                        ),
-                        labelText: "Password",
-                        labelStyle: TextStyle(
-                          color: Colors.black.withOpacity(0.7),
-                          fontWeight: FontWeight.bold,
-                        ),
-                        suffixIcon: GestureDetector(
-                          onTap: _toggle,
-                          child: new Icon(_obscureText
-                              ? Icons.visibility_off
-                              : Icons.visibility),
-                        ),
-                        filled: true,
-                        fillColor: Color.fromARGB(255, 241, 241, 241),
-                        hintStyle: TextStyle(
-                          color: Colors.grey[800],
-                        ),
-                        suffixStyle: TextStyle(
-                          color: Colors.grey[800],
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 12.0, horizontal: 16.0),
                       ),
                     ),
 
-                    // SizedBox(
-                    //   height: 10,
-                    // ),
+                    SizedBox(
+                          height: 25,
+                        ),
+                    
 
-                    // SizedBox(
-                    //   height: 10,
-                    // ),
-                    // //mark3
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                    //mark4
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        SizedBox(width: 5),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => ForgotPassword(),
+                        SizedBox(
+                          width: 550.0,
+                          child: Container(
+                            padding: EdgeInsets.all(12),
+                            width: double.infinity,
+                            height: 75,
+                            child: MaterialButton(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30),
                               ),
-                            );
-                          },
-                          child: Text(
-                            'Forgot Password',
-                            style: GoogleFonts.kodchasan(
-                              fontSize: 13, // Set the font size here
-                              color: Colors.grey[700],
-                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 53, 147, 254),  //Color.fromARGB(255, 140, 63, 126),//Color.fromARGB(255, 62, 18, 87), // Color.fromARGB(255, 53, 147, 254), 
+                              onPressed: () async {
+                                FocusScope.of(context).unfocus();
+                                await startauthentication();
+                                if (is_authenticated.person_type == "Student") {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => HomeStudent(
+                                            email: LoggedInDetails.getEmail())),
+                                  );
+                                  myglobals.auth!.login();
+                                } else if (is_authenticated.person_type ==
+                                    "Guard") {
+                                  await guardLocation();
+                                  SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  await prefs.setString(
+                                      'guard_location', _guard_location);
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => EntryExit(
+                                              guard_location: _guard_location,
+                                            )),
+                                  );
+                                } else if (is_authenticated.person_type ==
+                                    "Authority") {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => AuthorityMain()),
+                                  );
+                                } else if (is_authenticated.person_type ==
+                                    "Admin") {
+                                  Navigator.of(context).pushReplacement(
+                                    MaterialPageRoute(
+                                        builder: (context) => HomeAdmin()),
+                                  );
+                                } else {
+                                  LoginScaffold("Login Failed");
+                                }
+                              },
+                              child: Text(
+                                'LOGIN',
+                                style: GoogleFonts.gabarito(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      
+
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            // SizedBox(width: 5),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ForgotPassword(),
+                                  ),
+                                );
+                              },
+                              child: Text(
+                                'Forgot Password?',
+                                style: GoogleFonts.gabarito(
+                                  fontSize: 17, // Set the font size here
+                                  color: const Color.fromARGB(255, 53, 147, 254), //Color.fromRGBO(140, 63, 126, 1), //Color.fromARGB(255, 62, 18, 87), //
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        //mark3end
+                        // SizedBox(
+                        //   height: 100,
+                        // ),
+
+                        // "Don't have an account?" text with Sign Up button
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 50.0),
+                          child: Center(
+                            child: RichText(
+                              text: TextSpan(
+                                style: GoogleFonts.mulish(
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold
+                                ),
+                                children: [
+                                  TextSpan(text: "Don't have an account? "),
+                                  WidgetSpan(
+                                    alignment: PlaceholderAlignment.middle,
+                                    child: TextButton(
+                                      style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size.zero,
+                                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => SignUpScreen(),
+                                          ),
+                                        );
+                                      },
+                                      child: Text(
+                                        'Register!',
+                                        style: GoogleFonts.mulish(
+                                          fontSize: 16,
+                                          color: const Color.fromARGB(255, 53, 147, 254), //Color.fromARGB(255, 140, 63, 126), //Color.fromARGB(255, 62, 18, 87), //Color.fromARGB(255, 53, 147, 254)
+                                          fontWeight: FontWeight.w800
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
                       ],
-                    ),
-                    //mark3end
-                    SizedBox(
-                      height: 20,
-                    ),
-                    //mark4
-                    SizedBox(
-                      width: 250.0,
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        width: double.infinity,
-                        height: 65,
-                        child: MaterialButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          color: Color(0xFF827397),
-                          onPressed: () async {
-                            FocusScope.of(context).unfocus();
-                            await startauthentication();
-                            if (is_authenticated.person_type == "Student") {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => HomeStudent(
-                                        email: LoggedInDetails.getEmail())),
-                              );
-                              myglobals.auth!.login();
-                            } else if (is_authenticated.person_type ==
-                                "Guard") {
-                              await guardLocation();
-                              SharedPreferences prefs =
-                                  await SharedPreferences.getInstance();
-                              await prefs.setString(
-                                  'guard_location', _guard_location);
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => EntryExit(
-                                          guard_location: _guard_location,
-                                        )),
-                              );
-                            } else if (is_authenticated.person_type ==
-                                "Authority") {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => AuthorityMain()),
-                              );
-                            } else if (is_authenticated.person_type ==
-                                "Admin") {
-                              Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => HomeAdmin()),
-                              );
-                            } else {
-                              LoginScaffold("Login Failed");
-                            }
-                          },
-                          child: Text(
-                            'SignIn',
-                            style: GoogleFonts.kodchasan(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    // SignUp Button
-                    SizedBox(
-                      width: 250.0,
-                      child: Container(
-                        padding: EdgeInsets.all(12),
-                        width: double.infinity,
-                        height: 65,
-                        child: MaterialButton(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          color: Color(0xFF827397), // Same color as SignIn
-                          onPressed: () {
-                             Navigator.of(context).push(
-                               MaterialPageRoute(
-                                 builder: (context) => SignUpScreen(),
-                               ),
-                             );
-                          },
-                          child: Text(
-                            'Sign Up',
-                            style: GoogleFonts.kodchasan(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ),
                     ),
                   ],
                 ),

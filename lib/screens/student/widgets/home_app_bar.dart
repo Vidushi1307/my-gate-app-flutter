@@ -31,11 +31,11 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       elevation: 0,
       title: _buildTitleRow(context),
       actions: [
-        _buildNotificationButton(),
+        // _buildNotificationButton(),
         _buildMenuButton(context),
       ],
     );
@@ -75,7 +75,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
           Text(
             'Hi,',
             style: GoogleFonts.poppins(
-              color: Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.w500,
               fontSize: 14,
             ),
@@ -85,7 +85,7 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
             overflow: TextOverflow.ellipsis,
             maxLines: 1,
             style: GoogleFonts.poppins(
-              color: Colors.black,
+              color: Colors.white,
               fontWeight: FontWeight.w600,
               fontSize: 18,
             ),
@@ -95,58 +95,58 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildNotificationButton() {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.notifications, color: Colors.black),
-          onPressed: onNotificationsPressed,
-        ),
-        Positioned(
-          right: 8,
-          top: 8,
-          child: StreamBuilder<int>(
-            stream: notificationStream,
-            initialData: notificationCount,
-            builder: (context, snapshot) {
-              final count = snapshot.data ?? notificationCount;
-              return count > 0
-                  ? _buildNotificationBadge(count)
-                  : const SizedBox.shrink();
-            },
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildNotificationButton() {
+  //   return Stack(
+  //     clipBehavior: Clip.none,
+  //     children: [
+  //       IconButton(
+  //         icon: const Icon(Icons.notifications, color: Colors.black),
+  //         onPressed: onNotificationsPressed,
+  //       ),
+  //       Positioned(
+  //         right: 8,
+  //         top: 8,
+  //         child: StreamBuilder<int>(
+  //           stream: notificationStream,
+  //           initialData: notificationCount,
+  //           builder: (context, snapshot) {
+  //             final count = snapshot.data ?? notificationCount;
+  //             return count > 0
+  //                 ? _buildNotificationBadge(count)
+  //                 : const SizedBox.shrink();
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildNotificationBadge(int count) {
-    return Container(
-      padding: const EdgeInsets.all(2),
-      decoration: const BoxDecoration(
-        color: Colors.red,
-        shape: BoxShape.circle,
-      ),
-      constraints: const BoxConstraints(
-        minWidth: 16,
-        minHeight: 16,
-      ),
-      child: Text(
-        '$count',
-        style: const TextStyle(
-          color: Colors.white,
-          fontSize: 10,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
+  // Widget _buildNotificationBadge(int count) {
+  //   return Container(
+  //     padding: const EdgeInsets.all(2),
+  //     decoration: const BoxDecoration(
+  //       color: Colors.red,
+  //       shape: BoxShape.circle,
+  //     ),
+  //     constraints: const BoxConstraints(
+  //       minWidth: 16,
+  //       minHeight: 16,
+  //     ),
+  //     child: Text(
+  //       '$count',
+  //       style: const TextStyle(
+  //         color: Colors.white,
+  //         fontSize: 10,
+  //       ),
+  //       textAlign: TextAlign.center,
+  //     ),
+  //   );
+  // }
 
   Widget _buildMenuButton(BuildContext context) {
     return PopupMenuButton<MenuItem>(
       onSelected: (item) => _handleMenuItemSelection(item, context),
-      icon: const Icon(Icons.more_vert, color: Colors.black),
+      icon: const Icon(Icons.more_vert, color: Colors.white),
       itemBuilder: (context) => [
         ...MenuItems.itemsFirst.map(_buildMenuItem),
         const PopupMenuDivider(),
