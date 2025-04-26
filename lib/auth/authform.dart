@@ -96,14 +96,14 @@ class _AuthFormState extends State<AuthForm> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.green,
+          backgroundColor: const Color.fromRGBO(255, 204, 53, 1),
         ),
       );
       return true;
     } else if (message == 'OTP Matched') {
       setState(() {
         snackbar_message = message;
-        snackbar_message_color = Colors.green;
+        snackbar_message_color = const Color.fromRGBO(255, 204, 53, 1);
       });
 
       return true;
@@ -159,7 +159,7 @@ class _AuthFormState extends State<AuthForm> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: Colors.green,
+          backgroundColor: const Color.fromRGBO(254,204,53,1),
         ),
       );
     } else if (message == "user not found") {

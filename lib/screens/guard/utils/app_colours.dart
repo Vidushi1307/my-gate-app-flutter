@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 
 class AppColors {
   // Primary colors from your guardColors

@@ -2741,4 +2741,21 @@ class databaseInterface {
       throw Exception("Error fetching lab utilization stats: $e");
     }
   }
+
+  static Future<Map<String, dynamic>> getCSBlockDailyUsage() async {
+  try {
+    final response = await http.get(
+      Uri.parse('$complete_base_url_static/csblock_daily_usage'),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Failed to load CS Block daily usage");
+    }
+  } catch (e) {
+    throw Exception("Error fetching CS Block usage: $e");
+  }
+}
 }
