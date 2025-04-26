@@ -1,0 +1,1 @@
+/Users/edith/Desktop/DESKTOP/MyGateflutter/my-gate-app-flutter/build/app/intermediates/cxx/RelWithDebInfo/4ec70334/obj/x86_64

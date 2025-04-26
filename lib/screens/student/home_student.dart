@@ -113,7 +113,7 @@ class _HomeStudentState extends State<HomeStudent> {
     if (isLoading) return LoadingScreen();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color.fromARGB(255, 0, 42, 76),     // CHANGED Colours.white 
       appBar: _buildAppBar(),
       body: _buildBody(),
     );
@@ -136,24 +136,25 @@ class _HomeStudentState extends State<HomeStudent> {
   Widget _buildHeader() {
     return Container(
       padding: const EdgeInsets.all(20),
-      color: Colors.white,
+      color: const Color.fromARGB(255, 0, 42, 76),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Your key to convenience,',
-            style: GoogleFonts.kodchasan(
+            style: GoogleFonts.quicksand
+            (
               fontSize: 20,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 10),
           Text(
             'Encoded in a scan!!',
-            style: GoogleFonts.kodchasan(
+            style: GoogleFonts.lato(
               fontSize: 30,
               fontWeight: FontWeight.bold,
-              color: Colors.black,
+              color: Colors.white,
             ),
           ),
           const SizedBox(height: 20),
@@ -185,7 +186,11 @@ class _HomeStudentState extends State<HomeStudent> {
         margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
-          color: const Color(0xff3E3E3E),
+          color: const Color.fromARGB(255, 0, 42, 76), // White background
+          border: Border.all(
+            color: const Color.fromARGB(255, 50, 121, 182), // Blue border
+            width: 3.0,
+          ),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -195,7 +200,7 @@ class _HomeStudentState extends State<HomeStudent> {
               children: [
                 Text(
                   "CS Block",
-                  style: GoogleFonts.mPlusRounded1c(
+                  style: GoogleFonts.sourceCodePro(
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
                     color: Colors.white,
@@ -227,15 +232,15 @@ class _HomeStudentState extends State<HomeStudent> {
           color: Colors.white,
           size: 28, // Increased icon size (default is 24)
         ),
-        label: const Text(
-          'SCAN GUARD\'S QR TO EXIT',
-          style: TextStyle(
+        label: Text(
+          'EXIT QR SCANNER',
+          style: GoogleFonts.lato( //GoogleFonts.sourceCodePr -> TextStyle
             fontSize: 18, // Increased font size (default is typically 14)
             fontWeight: FontWeight.bold, // Optional: makes text bolder
           ),
         ),
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
+          backgroundColor: const Color.fromARGB(255, 50, 121, 182),
           foregroundColor: Colors.white,
           minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
@@ -248,90 +253,122 @@ class _HomeStudentState extends State<HomeStudent> {
   }
 
   Widget _buildCurrentStatusCard() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-      child: Card(
-        elevation: 4,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            // Title Section
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0),
-              child: Text(
-                'You are currently in:',
+  return Container(
+    margin: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(16),
+      color: const Color.fromARGB(255, 0, 42, 76),
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Header Section (unchanged)
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: const Color.fromARGB(255, 50, 121, 182),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              topRight: Radius.circular(16),
+            
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.location_on, color: Colors.white, size: 24),
+              const SizedBox(width: 8),
+              Text(
+                'YOU ARE CURRENTLY IN',
                 style: GoogleFonts.mPlusRounded1c(
                   fontSize: 18,
-                  color: Colors.grey[600],
-                ),
-              ),
-            ),
-
-            // Location Name
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: Text(
-                _locationManager.currentLocation ?? 'No active location',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.mPlusRounded1c(
-                  fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  color: _locationManager.statusColor,
+                  color: Colors.white,
+                  letterSpacing: 1.2,
                 ),
               ),
-            ),
-
-            // Refresh current location:
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
-              child: IconButton(
-                icon: Icon(Icons.refresh, color: _locationManager.statusColor),
-                onPressed: () async {
-                  setState(() => isLoading = true);
-                  await _locationManager
-                      .updateCurrentStatus(LoggedInDetails.getEmail());
-                  setState(() => isLoading = false);
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Location refreshed'),
-                      duration: Duration(seconds: 1),
-                    ),
-                  );
-                },
-                tooltip: 'Refresh location status',
-                splashRadius: 20, // Smaller splash effect
-              ),
-            ),
-
-            // Location Image
-            if (_locationManager.currentLocation != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 16.0),
-                child: ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(12),
-                    bottomRight: Radius.circular(12),
-                  ),
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(maxHeight: 150), // Adjust as needed
-                    child: Image.asset(
-                      _getLocationImage(_locationManager.currentLocation!),
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              ),
-          ],
+            ],
+          ),
         ),
-      ),
-    );
-  }
+
+        // Main Content Row (Text left, Image right)
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Text Content (Left Side)
+              Expanded(
+                flex: 3,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      _locationManager.currentLocation ?? 'No active location',
+                      style: GoogleFonts.mPlusRounded1c(
+                        fontSize: 24, // Slightly reduced for better fit
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    // Refresh Button
+                    IconButton(
+                      icon: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white24,
+                        ),
+                        child: const Icon(
+                          Icons.refresh, 
+                          color: Colors.white, 
+                          size: 28,
+                        ),
+                      ),
+                      onPressed: () async {
+                        setState(() => isLoading = true);
+                        await _locationManager
+                            .updateCurrentStatus(LoggedInDetails.getEmail());
+                        setState(() => isLoading = false);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Location refreshed'),
+                            duration: Duration(seconds: 1),
+                          ),
+                        );
+                      },
+                      tooltip: 'Refresh location status',
+                    ),
+                  ],
+                ),
+              ),
+
+              // Image (Right Side)
+              if (_locationManager.currentLocation != null)
+                Expanded(
+                  flex: 2,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 10),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(16),
+                      child: AspectRatio(
+                        aspectRatio: 1/1.414, // Square image
+                        child: Image.asset(
+                          _getLocationImage(_locationManager.currentLocation!),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  );
+}
 
   // Helper function to get image path
   String _getLocationImage(String locationName) {
@@ -373,21 +410,23 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Widget _buildChangeLocationButton() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 40),
+      padding: const EdgeInsets.symmetric(vertical: 1.2, horizontal: 40),
       child: ElevatedButton(
         onPressed: _navigateToChangeLocation,
         style: ElevatedButton.styleFrom(
+          backgroundColor: const Color.fromARGB(255, 50, 121, 182),
           padding: const EdgeInsets.all(15),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: BorderRadius.circular(8),
           ),
         ),
         child: Text(
-          'Change location',
-          style: GoogleFonts.mPlusRounded1c(
-            fontSize: 20,
+          'CHANGE  LOCATION',
+          style: GoogleFonts.lato(
+            fontSize: 18,
             color: Colors.white,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w800,
+            // letterSpacing: 1.0, // Improved readability
           ),
         ),
       ),

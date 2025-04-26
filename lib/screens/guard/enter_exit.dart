@@ -1,5 +1,10 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, deprecated_member_use, non_constant_identifier_names
-
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:my_gate_app/screens/guard/utils/UI_statics.dart'; // Adjusted import path
+import 'package:my_gate_app/image_paths.dart' as image_paths;
+import 'package:my_gate_app/database/database_interface.dart';
+import 'package:my_gate_app/screens/guard/current_students_page.dart'; 
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/material.dart';
@@ -25,6 +30,7 @@ import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/guard/visitors/inviteeValidationPage.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/screens/guard/location_detail_page.dart';
+import 'package:my_gate_app/screens/guard/CS_block_stats.dart';
 
 class QRScannerScreen extends StatelessWidget {
   const QRScannerScreen({super.key});
@@ -83,6 +89,70 @@ class _EntryExitState extends State<EntryExit> {
     });
   }
 
+  void _viewCurrentStudents(String locationName) async {
+    final students = await databaseInterface.getCurrentStudents(locationName);
+
+    print(students);
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CurrentStudentsPage(
+          locationName: locationName,
+          students: students,
+        ),
+      ),
+    );
+  }
+
+  
+
+    void _markLocationAsEmpty(BuildContext context,String locationName) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            "Confirm",
+            style: GoogleFonts.poppins(color: Colors.red),
+          ),
+          content: Text(
+            "Mark $locationName as empty?",
+            style: GoogleFonts.poppins(),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pop(context, true),
+              child: Text(
+                "Confirm",
+                style: GoogleFonts.poppins(color: Colors.green),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      final success = await databaseInterface.markLocationEmpty(locationName);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            success
+                ? "$locationName marked as empty"
+                : "Failed to mark location",
+            style: GoogleFonts.poppins(color: Colors.white),
+          ),
+          backgroundColor: success ? hexToColor(guardColors[2]) : Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<String?> _qrScanner(BuildContext context) async {
     var cameraStatus = await Permission.camera.status;
     if (!cameraStatus.isGranted) {
@@ -110,9 +180,9 @@ class _EntryExitState extends State<EntryExit> {
 
   final List<Map<String, String>> locations = [
     {"name": "Lab 101", "image": image_paths.cs_lab},
-    {"name": "Lab 102", "image": image_paths.research_lab},
-    {"name": "Lab 202", "image": image_paths.lecture_room},
-    {"name": "Lab 203", "image": image_paths.conference_room},
+    {"name": "Lab 102", "image": image_paths.cs_lab},
+    {"name": "Lab 202", "image": image_paths.cs_lab},
+    {"name": "Lab 203", "image": image_paths.cs_lab},
   ];
 
   void generateQRButton() {
@@ -125,7 +195,7 @@ class _EntryExitState extends State<EntryExit> {
       context: context,
       builder: (builder) {
         return Container(
-          color: Colors.transparent, // Set the container's color to transparent
+          color: Colors.black, // Set the container's color to transparent
           child: Container(
             padding: EdgeInsets.all(16.0),
             decoration: BoxDecoration(
@@ -172,59 +242,140 @@ class _EntryExitState extends State<EntryExit> {
   Widget _buildLocationCard(
       BuildContext context, String locationName, String imagePath) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
       child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => LocationDetailPage(
-                  locationName: locationName, imagePath: imagePath),
-            ),
-          );
-        },
+        borderRadius: BorderRadius.circular(50),
+        
         child: Container(
-          width: 160,
+          height: 190, // Increased height
+          width: MediaQuery.of(context).size.width * 0.9, // 90% of screen width
           decoration: BoxDecoration(
-            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
+            gradient: RadialGradient(
+              center: Alignment.center, // Center of the gradient
+              radius: 1.0, // Extends to full width/height of the container
+              colors: [
+                Color(0xFFE6F4FF), // Very light blue (inner color)
+                Color.fromARGB(255, 189, 239,
+                    251), // Slightly darker light blue (outer color)
+              ],
+              stops: [0.0, 1.0], // Smooth transition from center to edge
+            ),
+            
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.3),
+                color: Colors.grey.withOpacity(0.2),
                 spreadRadius: 2,
-                blurRadius: 5,
+                blurRadius: 8,
                 offset: Offset(0, 3),
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
-                child: Image.asset(
-                  imagePath,
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Text(
-                  locationName,
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87,
+          child: Row(
+  children: [
+    Expanded(
+      flex: 2, // Text takes 2/3 of space
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Button Row
+            Column(
+              children: [
+      
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Add your onPressed functionality
+                    _markLocationAsEmpty(context,locationName);
+                  },
+                  icon: Icon(Icons.cleaning_services, size: 16,color:Colors.black),
+                  label: Text(
+                    "Mark Empty",
+                    style: GoogleFonts.poppins(fontSize: 12,color:Colors.black),
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightBlue[100],
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+                
+                SizedBox(height: 1), // Space between buttons
+                
+                // View Students Button
+                ElevatedButton.icon(
+                  onPressed: () {
+                    // Add your onPressed functionality
+                    _viewCurrentStudents(locationName);
+                  },
+                  icon: Icon(Icons.people_alt, size: 16, color:Colors.black),
+                  label: Text(
+                    "View Students",
+                    style: GoogleFonts.poppins(fontSize: 12, color:Colors.black),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightBlue[100],
+                    
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                ),
+              ],
+            ),
+            
+            Spacer(), // Pushes the location name to bottom
+            
+            Text(
+              locationName,
+              style: GoogleFonts.poppins(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
+    ),
+    Expanded(
+                
+                flex: 2,
+                child: Container(
+                  margin:
+                      EdgeInsets.all(5), // Space outside container (optional)
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.horizontal(right: Radius.circular(12)),
+                    color: Colors.transparent, // Optional background
+                  ),
+                  child: ClipRRect(
+                    borderRadius:
+                        BorderRadius.horizontal(right: Radius.circular(12)),
+                    child: Container(
+                      padding:
+                          EdgeInsets.all(8), // Space inside, around the image
+                      color: Colors.white
+                          .withOpacity(0.1), // Optional inner background
+                      child: Image.asset(
+                        imagePath,
+                        fit: BoxFit
+                            .contain, // Changed from 'cover' to respect boundaries
+                      ),
+                    ),
+                  ),
                 ),
               ),
-            ],
-          ),
+    // Your image Expanded widget goes here
+  ],
+),
         ),
       ),
     );
@@ -235,12 +386,34 @@ class _EntryExitState extends State<EntryExit> {
     return Scaffold(
       // backgroundColor: Color.fromARGB(255, 253, 253, 255),
       appBar: AppBar(
-        backgroundColor: hexToColor(guardColors[0]),
+        backgroundColor: Colors.black,
         centerTitle: true,
         title: Padding(
           padding: EdgeInsets.only(top: 35.0, bottom: 35.0),
           child: Row(
             children: [
+              SizedBox(width: MediaQuery.of(context).size.width * 0.04),
+              Expanded(
+                child: Container(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        cur_guard.name,
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        style: GoogleFonts.poppins(
+                          // color: Color.fromARGB(221, 255, 255, 255),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+
+                          fontSize: 30,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               Padding(
                 padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
                 child: SizedBox(
@@ -251,121 +424,23 @@ class _EntryExitState extends State<EntryExit> {
                   ),
                 ),
               ),
-              SizedBox(width: MediaQuery.of(context).size.width * 0.04),
-              Expanded(
-                child: Container(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(
-                          height: MediaQuery.of(context).size.width * 0.022),
-                      Text(
-                        'Welcome',
-                        style: GoogleFonts.lato(
-                          // color: Color.fromARGB(221, 255, 255, 255),
-                          color: Color(0xFF636060),
-                          fontWeight: FontWeight.w600,
-                          fontSize: MediaQuery.of(context).size.width * 0.036,
-                        ),
-                      ),
-                      Text(
-                        cur_guard.name,
-                        overflow: TextOverflow.fade,
-                        maxLines: 1,
-                        style: GoogleFonts.poppins(
-                          // color: Color.fromARGB(221, 255, 255, 255),
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                          fontSize: MediaQuery.of(context).size.width * 0.040,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),
-        actions: [
-          Stack(
-            children: [
-              SizedBox(
-                height: kToolbarHeight,
-                child: IconButton(
-                  icon: Icon(
-                    Icons.notifications,
-                    color: Colors.black,
-                  ),
-                  onPressed: () async {
-//                    List<List<String>> messages = await databaseInterface
-//                        .fetch_notification_guard(LoggedInDetails.getEmail());
+        // actions: [
 
-                    // print(messages);
-                    print("messages printed in page");
-                    // print(messages);
-
-                    // await databaseInterface
-                    //     .mark_stakeholder_notification_as_false(
-                    //         LoggedInDetails.getEmail());
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => NotificationsPage(
-                                  notificationCount: notificationCount,
-                                )));
-                  },
-                ),
-              ),
-              StreamBuilder<int>(
-                stream: databaseInterface
-                    .get_notification_count_stream(LoggedInDetails.getEmail()),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    int notificationCount = snapshot.data ?? 0;
-                    return Positioned(
-                      right: 0,
-                      top: 10,
-                      child: notificationCount > 0
-                          ? Container(
-                              padding: EdgeInsets.all(1),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              constraints: BoxConstraints(
-                                minWidth: 16,
-                                minHeight: 16,
-                              ),
-                              child: Text(
-                                '$notificationCount',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  fontSize: 10,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          : Container(),
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              )
-            ],
-          ),
-          PopupMenuButton<MenuItem>(
-            onSelected: (item) => onSelected(context, item),
-            icon: Icon(Icons.menu, color: Colors.black),
-            itemBuilder: (context) => [
-              ...MenuItems.itemsFirst.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsThird.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsSecond.map(buildItem),
-            ],
-          )
-        ],
+        //   PopupMenuButton<MenuItem>(
+        //     onSelected: (item) => onSelected(context, item),
+        //     icon: Icon(Icons.menu, color: Colors.white),
+        //     itemBuilder: (context) => [
+        //       ...MenuItems.itemsFirst.map(buildItem),
+        //       PopupMenuDivider(),
+        //       ...MenuItems.itemsThird.map(buildItem),
+        //       PopupMenuDivider(),
+        //       ...MenuItems.itemsSecond.map(buildItem),
+        //     ],
+        //   )
+        // ],
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -376,28 +451,203 @@ class _EntryExitState extends State<EntryExit> {
               // image: DecorationImage(
               // image: AssetImage("assets/images/bulb.jpg"),
               // fit: BoxFit.cover,
-              color: Colors.white,
+              // gradient: LinearGradient(
+              //   colors: [
+              //     const Color(0xFFFFFFFF),
+              //     const Color(0xFFF3E8FF),
+              //     // const Color(0xFFD6B4FC),
+
+              //   ], // Start and end colors of the gradient
+              //   begin: Alignment.topLeft, // Gradient start point
+              //   end: Alignment.bottomRight, // Gradient end point
+              //   stops: [0.0, 1.0], // Control where each color starts
+              // ),
+              color: Colors.black,
             ),
             child: Column(
               // add Column
               // mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                // Image.asset('assets/images/enter_exit.webp'),
-                SizedBox(height: MediaQuery.of(context).size.width * 0.15),
-                ImageWithText(
-                  imagePath: image_paths.cs_block,
-                  imageHeight: MediaQuery.of(context).size.width * 0.60,
-                  imageWidth: MediaQuery.of(context).size.width * 0.70,
-                  textContent: "CS Block",
-                  locationName: "CS Block",
+                SizedBox(height: MediaQuery.of(context).size.width * 0.1),
+
+                Container(
+                  width: double.infinity,
+                  padding: EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Color.fromARGB(255, 65, 65, 67),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: Row(
+                    // Changed from Column to Row
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Left side content (your existing text and icon)
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(Icons.bar_chart,
+                                    color: Colors.white70, size: 20),
+                                SizedBox(width: 8),
+                                Text(
+                                  "Stats",
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 12,
+                                    color: Colors.white70,
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 80),
+                            Text(
+                              "CS Block",
+                              style: GoogleFonts.poppins(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w600,
+                                fontStyle: FontStyle.italic,
+                                color: Colors.white,
+                              ),
+                            ),
+                            SizedBox(height: 0.5),
+                            // Add any additional text or metrics here
+                            Text(
+                              "Weekly Usage",
+                              style: GoogleFonts.poppins(
+                                fontSize: 14,
+                                color: Colors.white70,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // Right side (chart)
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          height: 160, // Adjust height as needed
+                          padding: EdgeInsets.only(left: 8),
+                          child:
+                              CSBlockChart(), // The chart widget we created earlier
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
 
+                SizedBox(height: 12),
+
+                // Small info cards
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // Today's Students Card
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(right: 8),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 71, 71, 72),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: FutureBuilder<Map<String, dynamic>>(
+                          future: databaseInterface.getCSBlockDailyUsage(),
+                          builder: (context, snapshot) {
+                            int studentCount = 0;
+                            if (snapshot.hasData &&
+                                snapshot.data!['days'].isNotEmpty) {
+                              studentCount =
+                                  snapshot.data!['days'][6]['student_count'];
+                              print(snapshot.data!['days'][0]);
+                            }
+
+                            return Column(
+                              children: [
+                                Icon(Icons.people_alt,
+                                    color: Colors.white, size: 32),
+                                SizedBox(height: 8),
+                                Text(
+                                  "$studentCount Students",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+
+                    // Hours Used Today Card
+                    Expanded(
+                      child: Container(
+                        margin: EdgeInsets.only(left: 8),
+                        padding: EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Color.fromARGB(255, 65, 65, 67),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: FutureBuilder<Map<String, dynamic>>(
+                          future: databaseInterface.getCSBlockDailyUsage(),
+                          builder: (context, snapshot) {
+                            double hoursUsed = 0.0;
+                            if (snapshot.hasData &&
+                                snapshot.data!['days'].isNotEmpty) {
+                              // You'll need to modify your backend to also return hours data
+                              // This is just a placeholder calculation
+                              hoursUsed = snapshot.data!['days'][6]
+                                      ['student_count'] *
+                                  1.5;
+                            }
+
+                            return Column(
+                              children: [
+                                Icon(Icons.access_time,
+                                    color: Colors.white, size: 32),
+                                SizedBox(height: 8),
+                                Text(
+                                  "${hoursUsed.toStringAsFixed(1)} Hours",
+                                  textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Individual labs",
+                      style: GoogleFonts.poppins(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
                 SingleChildScrollView(
                   padding: EdgeInsets.symmetric(vertical: 12),
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      SizedBox(width: 16),
                       ...locations
                           .map((location) => _buildLocationCard(
                               context, location["name"]!, location["image"]!))
@@ -407,46 +657,46 @@ class _EntryExitState extends State<EntryExit> {
                   ),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.width * 0.08),
-                Row(
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    MaterialButton(
-                      onPressed: () {
-                        generateQRButton();
-                      },
-                      padding: EdgeInsets.all(0.0),
-                      child: Ink(
-                        decoration: BoxDecoration(
-                          color: hexToColor(guardColors[2]),
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        child: Container(
-                          constraints: BoxConstraints(
-                              maxWidth: MediaQuery.of(context).size.width * 0.9,
-                              minHeight: 70.0),
-                          alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(width: 12),
-                              Text(
-                                "Generate Exit QR",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-
+                // Row(
+                //   children: [
+                //     SizedBox(
+                //       width: MediaQuery.of(context).size.width * 0.05,
+                //     ),
+                //     MaterialButton(
+                //       onPressed: () {
+                //         generateQRButton();
+                //       },
+                //       padding: EdgeInsets.all(0.0),
+                //       child: Ink(
+                //         decoration: BoxDecoration(
+                //           color: Colors.black,
+                //           borderRadius: BorderRadius.circular(10.0),
+                //         ),
+                //         child: Container(
+                //           constraints: BoxConstraints(
+                //               maxWidth: MediaQuery.of(context).size.width * 0.9,
+                //               minHeight: 70.0),
+                //           alignment: Alignment.center,
+                //           child: Row(
+                //             mainAxisAlignment: MainAxisAlignment.center,
+                //             children: [
+                //               SizedBox(width: 12),
+                //               Text(
+                //                 "Generate Exit QR",
+                //                 textAlign: TextAlign.center,
+                //                 style: TextStyle(
+                //                     color: Colors.white,
+                //                     fontWeight: FontWeight.bold,
+                //                     fontSize: 20),
+                //               ),
+                //             ],
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
+                
                 SizedBox(height: 20),
 
                 // RaisedButton(onPressed: () {}, child: Text('Raise Ticket for Authorities'),), // your button beneath text
@@ -455,6 +705,72 @@ class _EntryExitState extends State<EntryExit> {
           ),
         ),
       ),
+
+      bottomNavigationBar: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 10.0),
+         
+          child: Container(
+            height: 60,
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 65, 65, 67),
+              borderRadius: BorderRadius.circular(25),
+            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // Select All Button
+                IconButton(
+                  icon: const Icon(Icons.qr_code, color: Colors.white, size: 35),
+                  onPressed: generateQRButton,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.info_outline, color: Colors.white, size: 35),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AboutUsPage(),
+                      ),
+                    );
+                  },
+                ),
+                // Home Button
+                IconButton(
+                  icon: const Icon(Icons.home, color: Colors.white, size: 35),
+                  onPressed: () {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => EntryExit(guard_location: "CS Block")),
+                    );
+                  },
+                ),
+                IconButton(
+                  icon: const Icon(Icons.account_circle, color: Colors.white, size: 35),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail())),
+                      ),
+                    );
+                  },
+                ),
+              IconButton(
+                  icon: const Icon(Icons.logout, color: Colors.white, size: 35),
+                  onPressed: () {
+                    Navigator.of(context).pop(); // pop the current page
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (context) => AuthScreen()),
+        );
+                  },
+                ),
+                // Sort Button
+                
+              ],
+            ),
+          ),
+        ),
     );
   }
 
@@ -517,6 +833,7 @@ class ImageWithText extends StatelessWidget {
     this.onTap,
     this.locationName,
   });
+
 
   @override
   Widget build(BuildContext context) {
