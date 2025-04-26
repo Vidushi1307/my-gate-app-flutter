@@ -1,5 +1,5 @@
-import 'package:my_gate_app/database/database_interface.dart';
 
+import 'package:my_gate_app/database/database_interface.dart';
 class OTPService {
   final databaseInterface db;
 

@@ -58,8 +58,8 @@ class _HomeStudentState extends State<HomeStudent> {
   Future<void> init() async {
     String? curr_email = widget.email;
     print("Current Email: $curr_email");
-    databaseInterface db = databaseInterface();
-    User result = await db.get_student_by_email(curr_email);
+    //databaseInterface db = databaseInterface();
+    User result = await databaseInterface.get_student_by_email(curr_email);
     // print("result obj image path" + result.imagePath);
     setState(() {
       user = result;
@@ -671,8 +671,8 @@ class _HomeStudentState extends State<HomeStudent> {
         )
             .then((value) async {
           String? curr_email = widget.email;
-          databaseInterface db = databaseInterface();
-          User result = await db.get_student_by_email(curr_email);
+          //databaseInterface db = databaseInterface();
+          User result = await databaseInterface.get_student_by_email(curr_email);
           pic = result.profileImage;
           updateColor.value = !updateColor.value;
           print(isLoading);
