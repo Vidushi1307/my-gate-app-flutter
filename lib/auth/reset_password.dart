@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:my_gate_app/auth/authscreen.dart';
 import 'package:my_gate_app/database/database_objects.dart';
 import 'package:my_gate_app/database/database_interface.dart';
+import 'package:my_gate_app/image_paths.dart';
 
 class ResetPassword extends StatefulWidget {
   const ResetPassword({super.key, required this.email});
@@ -55,38 +56,45 @@ class _ResetPasswordState extends State<ResetPassword> {
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
-            color: Colors.white,
+            color: Colors.black,
           ),
           child: ListView(
             children: [
+              SizedBox(height: 40),
+              Container(
+                height: 150,
+                child: Image.asset(
+                  logo,
+                  fit: BoxFit.contain,
+                ),
+              ),
+              SizedBox(height: 30),
               Text(
                 'Reset Your \n Password!',
                 textAlign: TextAlign.center,
-                style: GoogleFonts.kodchasan(
+                style: GoogleFonts.mulish(
                   fontSize: 35.0,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: Color.fromARGB(255, 53, 147, 254),
                 ),
               ),
               Container(
                 padding: EdgeInsets.only(
                   left: 10,
                   right: 10,
-                  top: 140,
+                  top: 50,
                 ),
                 child: Form(
                   key: _formkey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                       TextFormField(
+                        cursorColor: Color.fromARGB(255, 53, 147, 254),
                         obscureText: _obscureText1,
                         keyboardType: TextInputType.emailAddress,
                         key: const ValueKey('password'),
-                        // how does this work?
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Password is empty';
@@ -100,26 +108,25 @@ class _ResetPasswordState extends State<ResetPassword> {
                           _password = value!;
                         },
                         style: TextStyle(
-                            color: Colors.black, fontWeight: FontWeight.bold
-                        ),
+                            color: Colors.black, fontWeight: FontWeight.bold),
                         decoration: InputDecoration(
-
                           contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.black), // Change border color here
+                                color: Colors.black),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.black), // Change border color here
+                                color: Colors.black),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.black), // Change border color here
+                                color: Colors.black),
                           ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
                           labelText: "Enter New Password",
                           labelStyle: TextStyle(
                             color: Colors.black.withOpacity(0.6),
@@ -139,22 +146,39 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 ? Icons.visibility_off
                                 : Icons.visibility),
                           ),
+                          errorStyle: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide(
+                              color: Colors.redAccent,
+                              width: 1.5,
+                            ),
+                          ),
+
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide(
+                              color: Colors.redAccent,
+                              width: 1.5,
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 20,
-                      ),
+                      SizedBox(height: 20),
                       TextFormField(
+                        cursorColor: Color.fromARGB(255, 53, 147, 254),
                         obscureText: _obscureText2,
                         keyboardType: TextInputType.emailAddress,
                         key: const ValueKey('confirmPassword'),
-                        // how does this work?
                         validator: (value) {
                           if (value!.isEmpty) {
                             return 'Password is empty';
                           }
                           if (value != _password) {
-                            //return value;
                             return 'Password does not match';
                           }
                           return null;
@@ -169,32 +193,32 @@ class _ResetPasswordState extends State<ResetPassword> {
                             color: Colors.black, fontWeight: FontWeight.bold),
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
-
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.black), // Change border color here
+                                color: Colors.black),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.black), // Change border color here
+                                color: Colors.black),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(8.0),
+                            borderRadius: BorderRadius.circular(30.0),
                             borderSide: const BorderSide(
-                                color: Colors.black), // Change border color here
+                                color: Colors.black),
                           ),
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
                           labelText: "Re-Enter New Password",
                           labelStyle: TextStyle(
                             color: Colors.black.withOpacity(0.6),
                             fontWeight: FontWeight.bold,
                           ),
+                          filled: true,
+                          fillColor: Color.fromARGB(255, 241, 241, 241),
                           hintStyle: TextStyle(
                             color: Colors.grey[800],
                           ),
-                          filled: true,
-                          fillColor: Color.fromARGB(255, 241, 241, 241),
                           suffixStyle: TextStyle(
                             color: Colors.grey[800],
                           ),
@@ -204,11 +228,29 @@ class _ResetPasswordState extends State<ResetPassword> {
                                 ? Icons.visibility_off
                                 : Icons.visibility),
                           ),
+                          errorStyle: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                          ),
+
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide(
+                              color: Colors.redAccent,
+                              width: 1.5,
+                            ),
+                          ),
+
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(30.0),
+                            borderSide: BorderSide(
+                              color: Colors.redAccent,
+                              width: 1.5,
+                            ),
+                          ),
                         ),
                       ),
-                      SizedBox(
-                        height: 50,
-                      ),
+                      SizedBox(height: 30),
                       SizedBox(
                         width: 250.0,
                         child: Container(
@@ -217,9 +259,9 @@ class _ResetPasswordState extends State<ResetPassword> {
                           height: 65,
                           child: MaterialButton(
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(30),
                             ),
-                            color: Color(0xFF827397),
+                            color: Color.fromARGB(255, 53, 147, 254),
                             onPressed: () async {
                               print("RESET Password pressed");
                               String message = await reset_password();
@@ -250,4 +292,3 @@ class _ResetPasswordState extends State<ResetPassword> {
     );
   }
 }
-

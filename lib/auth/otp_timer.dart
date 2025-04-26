@@ -44,14 +44,14 @@ class _OtpTimerState extends State<OtpTimer> {
       children: <Widget>[
         const Icon(
           Icons.timer,
-          color: Colors.blue,
+          color: Color.fromARGB(255, 53, 147, 254),
         ),
         const SizedBox(
           width: 5,
         ),
         Text(
           timerText,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
         )
       ],
     );
