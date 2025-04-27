@@ -36,10 +36,10 @@ class _UserData {
 class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
-//  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
+  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
 //  static String complete_base_url_static = "https://69.62.84.91:8000";
-  static String complete_base_url_static =
-      "https://83b8-164-100-193-243.ngrok-free.app";
+//  static String complete_base_url_static =
+//      "https://83b8-164-100-193-243.ngrok-free.app";
 
   static Map<String, dynamic> retry = {"try": 1, "ifretry": false};
   databaseInterface();

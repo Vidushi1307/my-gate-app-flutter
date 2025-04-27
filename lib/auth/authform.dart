@@ -162,7 +162,7 @@ class _AuthFormState extends State<AuthForm> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: const Color.fromRGBO(254,204,53,1),
+          backgroundColor: const Color.green,
         ),
       );
     } else if (message == "user not found") {
