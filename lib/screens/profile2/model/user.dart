@@ -1,8 +1,8 @@
 import 'package:flutter/widgets.dart';
 
 class User {
-  final String imagePath;
   final ImageProvider<Object>? profileImage;
+  final String imagePath;
   final String name;
   final String email;
   final String phone;
@@ -11,11 +11,12 @@ class User {
   final String year_of_entry;
   final String gender;
   final bool isDarkMode;
+  final String? entry_no;
 
   const User({
-    required this.imagePath,
     required this.profileImage,
     required this.name,
+    required this.imagePath,
     required this.email,
     required this.phone,
     required this.department,
@@ -23,7 +24,28 @@ class User {
     required this.year_of_entry,
     required this.gender,
     required this.isDarkMode,
+    this.entry_no,
   });
+
+  User copyWith({
+    String? name,
+    String? email,
+    String? entry_no,
+  }) {
+    return User(
+      name: name ?? this.name,
+      imagePath: this.imagePath,
+      profileImage: this.profileImage,
+      email: email ?? this.email,
+      phone: this.phone,
+      department: this.department,
+      degree: this.degree,
+      year_of_entry: this.year_of_entry,
+      gender: this.gender,
+      isDarkMode: this.isDarkMode,
+      entry_no: entry_no,
+    );
+  }
 }
 
 class GuardUser {
@@ -71,3 +93,4 @@ class AdminUser {
     required this.isDarkMode,
   });
 }
+

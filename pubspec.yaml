@@ -65,7 +65,6 @@ dependencies:
   badges: ^3.1.2
   qr_flutter: ^4.1.0
   mobile_scanner: ^3.2.0
-  # mobile_scanner : ^3.0.0
   permission_handler: ^11.3.0
   url_launcher: ^6.2.4
   flutter_datetime_picker: ^1.5.1

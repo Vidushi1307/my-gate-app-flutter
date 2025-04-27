@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,10 +9,14 @@ import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
+import 'package:my_gate_app/auth/authscreen.dart';
+import 'package:my_gate_app/screens/student/home_student.dart';
+import 'package:my_gate_app/get_email.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? email;
   final bool isEditable;
+
   const ProfilePage({super.key, required this.email, required this.isEditable});
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -17,6 +24,10 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool editAccess = true;
+  bool _isEditing = false;
+
+  XFile? _pickedFile; // For storing the picked image
+  bool _isUploading = false;
   var user = UserPreferences.myUser;
 
   late String imagePath;
@@ -26,13 +37,14 @@ class _ProfilePageState extends State<ProfilePage> {
   late final TextEditingController controller_year_of_entry;
   late final TextEditingController controller_degree;
   late final TextEditingController controller_gender;
+  late final TextEditingController controller_entry_no;
+  final TextEditingController _nameController = TextEditingController();
 
   var imagePicker;
   var pic;
 
   Future<void> init() async {
     String? currEmail = widget.email;
-    databaseInterface db = databaseInterface();
     User result = await databaseInterface.get_student_by_email(currEmail);
     setState(() {
       user = result;
@@ -41,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
       controller_year_of_entry.text = result.year_of_entry;
       controller_degree.text = result.degree;
       controller_gender.text = result.gender;
+      controller_entry_no.text = result.entry_no ?? "Loading...";
     });
 
     setState(() {
@@ -56,6 +69,8 @@ class _ProfilePageState extends State<ProfilePage> {
     controller_year_of_entry = TextEditingController();
     controller_degree = TextEditingController();
     controller_gender = TextEditingController();
+    controller_entry_no = TextEditingController();
+    _nameController.text = user.name;
 
     imagePath = UserPreferences.myUser.imagePath;
     pic = NetworkImage(imagePath);
@@ -63,207 +78,323 @@ class _ProfilePageState extends State<ProfilePage> {
     init();
   }
 
+  // Updated row builder with horizontal scrolling and compact spacing
+  Widget _buildProfileSection(String label, String value) {
+    return Container(
+      /* decoration: const BoxDecoration(
+        border: Border(
+          bottom: BorderSide(color: Colors.grey, width: 0.5),
+        ),
+      ),*/
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            label,
+            style: GoogleFonts.mPlusRounded1c(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.white70,
+            ),
+          ),
+          const SizedBox(height: 8),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Text(
+              value,
+              style: const TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Simplified divider row
+  Widget _buildDivider() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Divider(
+        color: Colors.white,
+        thickness: 0.5,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color.fromARGB(255, 0, 89, 190),
       appBar: AppBar(
-        backgroundColor: Colors.black, // Set the background color to black
-        centerTitle: true, // Center-align the title
-        iconTheme: const IconThemeData(
-            color: Color.fromARGB(
-                221, 255, 255, 255)), // Set the back arrow color to white
-        flexibleSpace: Container(
-          decoration: const BoxDecoration(
-            color: Colors.black,
-          ),
-        ),
+        backgroundColor: Color.fromARGB(255, 0, 89, 190),
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.white),
         title: const Text(
           "Profile Page",
-          style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold), // Set the text color to white
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
+      body: Column(
+        children: [
+          // Top section with profile image
 
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color.fromARGB(255, 232, 232, 234),
-              Color.fromARGB(255, 255, 255, 255)
+          // White container that extends to bottom
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
+                ),
+              ),
+              child: SingleChildScrollView(
+                child: Column(children: [
+                  Column(
+                    children: [
+                      const SizedBox(height: 24),
+                      ImageWidget(),
+                      const SizedBox(height: 24),
+                    ],
+                  ),
+                  SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        _buildProfileSection("Name",
+                            _isEditing ? _nameController.text : user.name),
+                        _buildDivider(),
+                        _buildProfileSection("Email", user.email),
+                        _buildDivider(),
+                        _buildProfileSection(
+                            "Entry No", user.entry_no ?? "N/A"),
+                        _buildDivider(),
+                      ],
+                    ),
+                  ),
+                  _buildBottomNavigationBar()
+                ]),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    // Store navigator references BEFORE async operations
+    final rootNavigator = Navigator.of(context, rootNavigator: true);
+    final mainNavigator = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    // Show loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => WillPopScope(
+        onWillPop: () async => false,
+        child: const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(height: 16),
+              Text("Deleting account..."),
             ],
-            begin: Alignment.bottomLeft,
-            end: Alignment.topRight,
           ),
         ),
-        child: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          physics: const BouncingScrollPhysics(),
+      ),
+    );
+
+    try {
+      print("Sending delete request");
+      await databaseInterface.delete_authority(LoggedInDetails.getEmail());
+      LoggedInDetails.setEmail('');
+      // Execute navigation in next frame
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Dismissing dialog and navigating");
+        rootNavigator.pop(); // Dismiss dialog
+        mainNavigator.pushAndRemoveUntil(
+          MaterialPageRoute(builder: (_) => const AuthScreen()),
+          (route) => false,
+        );
+      });
+    } catch (e) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        print("Handling error: $e");
+        if (rootNavigator.canPop()) rootNavigator.pop();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      });
+    }
+  }
+
+  Widget _buildBottomNavigationBar() {
+    return Padding(
+      padding:
+          const EdgeInsets.only(left: 0.0, top: 40.0, right: 5.0, bottom: 10.0),
+      child: Container(
+        height: 60,
+        decoration: BoxDecoration(
+          color: Color.fromARGB(255, 0, 89, 190),
+          borderRadius: BorderRadius.circular(25),
+        ),
+
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            const SizedBox(height: 24),
-            ImageWidget(),
-            const SizedBox(height: 24),
-            buildName(user),
-            const SizedBox(height: 24),
-            builText_phone(controller_phone, "Phone", widget.isEditable, 1),
-            const SizedBox(height: 24),
-            builText(controller_department, "Department", false, 1),
-            const SizedBox(height: 24),
-            builText(controller_degree, "Degree", false, 1),
-            const SizedBox(height: 24),
-            builText(controller_year_of_entry, "Year of Entry", false, 1),
-            const SizedBox(height: 24),
-            builText(controller_gender, "Gender", false, 1),
-            const SizedBox(height: 24),
+            //Select
+            IconButton(
+              icon: Icon(
+                Icons.add_a_photo,
+                color: Colors.white,
+                size: 40,
+              ),
+              onPressed: _pickImage,
+            ),
+
+            // Home Button
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white, size: 40),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          HomeStudent(email: LoggedInDetails.getEmail())),
+                );
+              },
+            ),
+
+            // Delete Button
+            IconButton(
+                icon: const Icon(Icons.delete, color: Colors.red, size: 40),
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Delete Account'),
+                      content: const Text(
+                          'Are you sure you want to permanently delete your account? '
+                          'This action cannot be undone.'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context), // No button
+                          child: const Text('No'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context); // Close the dialog
+                            _deleteAccount(
+                                context); // Call your delete function
+                          },
+                          child: const Text(
+                            'Yes',
+                            style: TextStyle(
+                                color:
+                                    Colors.red), // Make "Yes" red for emphasis
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
           ],
         ),
       ),
     );
   }
 
-  Widget buildName(User user) => Column(
-        children: [
-          Text(
-            user.name,
-            style:  GoogleFonts.mPlusRounded1c(
-                fontWeight: FontWeight.bold, fontSize: 24, color: Colors.black),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user.email,
-            style: TextStyle(
-                color: Colors.black.withOpacity(0.7)
-            ),
-          )
-        ],
+  Future<void> _pickImage() async {
+    try {
+      final XFile? pickedFile = await ImagePicker().pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 800,
+        imageQuality: 85,
       );
 
-  Widget builText(TextEditingController controller, String label,
-          final bool enabled, int maxLines) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.mPlusRounded1c(
-                fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            style: const TextStyle(color: Colors.black),
-            enabled: enabled,
-            controller: controller,
+      if (pickedFile != null) {
+        setState(() {
+          _pickedFile = pickedFile;
+          _isUploading = true;
+        });
 
-            decoration: InputDecoration(
+        // Convert XFile to File if your backend requires it
+        final File imageFile = File(pickedFile.path);
+        await _uploadProfileImage(imageFile);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Image selection failed: ${e.toString()}')));
+    } finally {
+      setState(() => _isUploading = false);
+    }
+  }
 
-              disabledBorder: OutlineInputBorder(
-                borderSide: const BorderSide(color: Colors.black, width: 1.0),
-                borderRadius: BorderRadius.circular(12),
+  Widget ImageWidget() {
+    ImageProvider backgroundImg;
 
-              ),
-
-              labelStyle: TextStyle(
-                color: Color(int.parse("0xFF344953")),
-              ),
-            ),
-            maxLines: maxLines,
-          ),
-        ],
-      );
-
-  Widget builText_phone(TextEditingController controller, String label,
-          bool enabled, int maxLines) =>
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            label,
-            style: GoogleFonts.mPlusRounded1c(
-                fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              Expanded(
-                child: Stack(
-                  children: [
-                    TextField(
-                      style: const TextStyle(color: Colors.black),
-                      enabled: enabled, // Use the 'enabled' parameter here
-                      controller: controller,
-                      decoration: InputDecoration(
-                        disabledBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(color: Colors.black, width: 1.0),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        labelStyle: TextStyle(
-                          color: Color(int.parse("0xFF344953")),
-                        ),
-                      ),
-                      maxLines: maxLines,
-                    ),
-                    if (enabled) // Only show the edit button if enabled is true
-                      Positioned(
-                        right: 0,
-                        top: 10,
-                        child: TextButton(
-                          onPressed: () async {
-                            // Handle button press here
-                            await databaseInterface
-                                .update_number(controller.text, user.email)
-                                .then((res) => {
-                                      if (res == true)
-                                        {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(get_snack_bar(
-                                                  "Phone number updated",
-                                                  Colors.green))
-                                        }
-                                      else
-                                        {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(get_snack_bar(
-                                                  "Failed to Update Phone Number",
-                                                  Colors.red))
-                                        }
-                                    });
-                          },
-                          child: const Text(
-                            'Edit',
-                            style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ],
-          )
-        ],
-      );
-
-  Future<void> pick_image() async {
-    print("edit profile page image clicked 2");
-    var source = ImageSource.gallery;
-    print(source);
-    XFile image = await imagePicker.pickImage(source: source);
-    var widgetEmail = widget.email;
-    print("image is picked");
-    print(image.path);
-    if (widgetEmail != null) {
-      await databaseInterface.send_image(
-          image, "/students/change_profile_picture_of_student", widgetEmail);
+    if (_pickedFile != null) {
+      // 1. Local file picked but not yet uploaded
+      backgroundImg = FileImage(File(_pickedFile!.path));
+    } else if (pic != null) {
+      // 2. Base64 image from server
+      backgroundImg = pic!;
+    } else {
+      // 3. Fallback dummy image
+      backgroundImg = AssetImage(image_paths.dummy_person);
     }
 
-    databaseInterface db = databaseInterface();
-    User result = await databaseInterface.get_student_by_email(widget.email);
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CircleAvatar(
+          radius: 90,
+          backgroundImage: backgroundImg,
+        ),
+        if (_isUploading)
+          Container(
+            width: 180,
+            height: 180,
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.5),
+              shape: BoxShape.circle,
+            ),
+            child: const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            ),
+          ),
+      ],
+    );
+  }
 
-    var picLocal = result.profileImage;
-    setState(() {
-      pic = picLocal;
-    });
+  Future<void> _uploadProfileImage(File image) async {
+    try {
+      //     final success = true;
+      final success = await databaseInterface().uploadProfileImage(
+        image,
+        user.email,
+      );
+
+      if (success) {
+        // Refresh user data
+        final updatedUser =
+            await databaseInterface.get_student_by_email(user.email);
+        setState(() => user = updatedUser);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Upload failed: ${e.toString()}')));
+    }
   }
 
   Future<void> pick_image_blank() async {
@@ -278,7 +409,6 @@ class _ProfilePageState extends State<ProfilePage> {
           image, "/students/change_profile_picture_of_student", widgetEmail);
     }
 
-    databaseInterface db = databaseInterface();
     User result = await databaseInterface.get_student_by_email(widget.email);
 
     var picLocal = NetworkImage(result.imagePath);
@@ -288,69 +418,13 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
-  Widget ImageWidget() {
-    print("edit 1");
-    return ViewProfilePage();
-    /* if(widget.isEditable){
-      print("edit 2");
-      /* return EditableProfilePage(); */
-    } */
-    /* return ViewProfilePage(); */
-  }
-
-  Widget EditableProfilePage() {
-    return Center(
-      child: Stack(
-        children: [
-          Container(
-            width: 180,
-            height: 180,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.5),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: ClipOval(
-              child: Material(
-                color: Colors.transparent,
-                child: Ink.image(
-                  // image: AssetImage(image),
-                  // image: NetworkImage(widget.imagePath),
-                  image: pic,
-                  fit: BoxFit.cover,
-                  width: 180,
-                  height: 180,
-                  child: InkWell(
-                    onTap: () async {
-                      pick_image();
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            bottom: 0,
-            right: 4,
-            child: buildEditIcon(Color(int.parse("0xFF344953"))),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget ViewProfilePage() {
     return Center(
       child: Stack(
         children: [
           ClipOval(
             child: Material(
-              color: Colors.transparent,
+              color: Colors.black,
               child: Ink.image(
                 image: pic,
                 fit: BoxFit.cover,
@@ -404,4 +478,21 @@ class _ProfilePageState extends State<ProfilePage> {
           child: child,
         ),
       );
+
+  @override
+  void dispose() {
+    // Dispose all your controllers:
+    controller_phone.dispose();
+    controller_department.dispose();
+    controller_year_of_entry.dispose();
+    controller_degree.dispose();
+    controller_gender.dispose();
+    controller_entry_no.dispose();
+
+    // Also dispose the name controller if you added it:
+    _nameController?.dispose(); // The ? is optional but safe
+
+    // Don't forget to call super.dispose()
+    super.dispose();
+  }
 }

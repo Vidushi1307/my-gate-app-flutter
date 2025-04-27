@@ -37,8 +37,9 @@ class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
 //  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-//  static String complete_base_url_static = "https://69.62.84.91:8000";  
-  static String complete_base_url_static = "https://e1fc-164-100-193-243.ngrok-free.app";
+//  static String complete_base_url_static = "https://69.62.84.91:8000";
+  static String complete_base_url_static =
+      "https://83b8-164-100-193-243.ngrok-free.app";
 
   static Map<String, dynamic> retry = {"try": 1, "ifretry": false};
   databaseInterface();
@@ -48,6 +49,7 @@ class databaseInterface {
 
     var url = Uri.parse(uri);
     try {
+      ;
       var response = await http.post(url, body: {'email': email});
       var data = json.decode(response.body);
       String welcome_message = data['welcome_message'];
@@ -1493,29 +1495,26 @@ class databaseInterface {
         Uri.parse(uri),
         HttpMethod.POST,
         body: {"email": email_},
-      ).timeout(const Duration(seconds: 10));
+      );
 
-      
       if (response.statusCode == 401) {
         print("Error: ${response.statusCode}");
         print("Response body: ${response.body}");
-        
       }
-      
-      
+
       if (response.statusCode != 200) {
         print("Error: ${response.statusCode}");
         print("Response body: ${response.body}");
 
         throw Exception("Failed to load user data");
       }
-      
 
       // 2. Move JSON parsing and image decoding to a background isolate
       final processedData = await compute(_parseUserData, response.body);
 
       return User(
         profileImage: MemoryImage(processedData.bytes),
+        entry_no: processedData.data["entry_no"],
         imagePath: processedData.data["image_path"],
         name: processedData.data["name"],
         email: processedData.data["email"],
@@ -1551,6 +1550,58 @@ class databaseInterface {
       return data['parent_location'];
     } catch (e) {
       return "";
+    }
+  }
+
+  Future<bool> uploadProfileImage(File imageFile, String email) async {
+    try {
+      // 1. Validate inputs
+      if (!await imageFile.exists()) {
+        print('Error: Image file does not exist');
+        return false;
+      }
+
+      print('Starting upload for: ${imageFile.path}');
+
+      // 2. Create request
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(
+            '${complete_base_url_static}/change_profile_picture_of_student'), // Must match Django URL
+      );
+
+      // 3. Add file
+      request.files.add(await http.MultipartFile.fromPath(
+        'profile_picture', // Must match Django's expected key
+        imageFile.path,
+        filename:
+            'profile_${DateTime.now().millisecondsSinceEpoch}.jpg', // Optional but helpful
+      ));
+
+      // 4. Add email as form field
+      request.fields['email'] = email;
+
+      // 5. Add headers if needed
+      request.headers.addAll({
+        'Accept': 'application/json',
+      });
+
+      // 6. Send and track request
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception(
+            'Failed with status ${response.statusCode}: ${response.body}');
+      }
+    } catch (e) {
+      print('Upload error: $e');
+      return false;
     }
   }
 
@@ -1805,8 +1856,22 @@ class databaseInterface {
       return "Failed to add guard";
     }
   }
-  
-  
+
+/*TODO: All these delete functions do the exact same damn thing. Replace them all with one function*/
+  static Future<String> delete_student(String email) async {
+    String uri = "$complete_base_url_static/forms/delete_student_form";
+    try {
+      print("Sending request to backend:  ");
+      print(email);
+      var response = await http.post(Uri.parse(uri), body: {'email': email});
+      print("Received response from backend");
+      print(response.toString());
+      return response.body.toString();
+    } catch (e) {
+      return "Failed to remove authority";
+    }
+  }
+
   static Future<String> delete_authority(String email) async {
     String uri = "$complete_base_url_static/forms/delete_authority_form";
     try {
@@ -1820,10 +1885,6 @@ class databaseInterface {
       return "Failed to remove authority";
     }
   }
-
-
-
-
 
   static Future<String> delete_guard(String email) async {
     String uri = "$complete_base_url_static/forms/delete_guard_form";
@@ -2381,7 +2442,7 @@ class databaseInterface {
         // Save tokens to shared preferences
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', accessToken);
-        await prefs.setString('accessTokenExpiry',expiry.toIso8601String());
+        await prefs.setString('accessTokenExpiry', expiry.toIso8601String());
         await prefs.setString('refreshToken', refreshToken);
         await prefs.setString('email', email);
         await prefs.setString('type', type);
