@@ -5,19 +5,20 @@ import 'package:my_gate_app/screens/authorities/authority_main.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 
-class CurrentStudentsPage extends StatefulWidget {
+class CurrentStudentsPageAuthority extends StatefulWidget {
   final String locationName;
 
-  const CurrentStudentsPage({
+  const CurrentStudentsPageAuthority({
     Key? key,
     required this.locationName,
   }) : super(key: key);
 
   @override
-  State<CurrentStudentsPage> createState() => _CurrentStudentsPageState();
+  State<CurrentStudentsPageAuthority> createState() =>
+      _CurrentStudentsPageState();
 }
 
-class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
+class _CurrentStudentsPageState extends State<CurrentStudentsPageAuthority> {
   final Set<String> selectedEmails = {};
   List<Map<String, dynamic>> _students = [];
   List<Map<String, dynamic>> _sortedStudents = [];
@@ -76,9 +77,9 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
   }
 
   void _clearSelection() => setState(() {
-    selectedEmails.clear();
-    _allSelected = false;
-  });
+        selectedEmails.clear();
+        _allSelected = false;
+      });
 
   void _selectAllToggle() {
     setState(() {
@@ -182,7 +183,9 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
   ListTile _buildFilterOption(String title, String value) {
     return ListTile(
       leading: Icon(
-        _currentFilter == value ? Icons.radio_button_checked : Icons.radio_button_off,
+        _currentFilter == value
+            ? Icons.radio_button_checked
+            : Icons.radio_button_off,
         color: Colors.white,
       ),
       title: Text(
@@ -254,7 +257,8 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
                 ? Center(
                     child: Text(
                       'No students found',
-                      style: GoogleFonts.poppins(fontSize: 18, color: Colors.white),
+                      style: GoogleFonts.poppins(
+                          fontSize: 18, color: Colors.white),
                     ),
                   )
                 : ListView.builder(
@@ -262,19 +266,19 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
                     itemCount: _sortedStudents.length,
                     itemBuilder: (context, index) {
                       final student = _sortedStudents[index];
-                      final isSelected = selectedEmails.contains(student['email']);
+                      final isSelected =
+                          selectedEmails.contains(student['email']);
 
                       return GestureDetector(
-                        onTap: () => isSelectionMode 
-                            ? _toggleSelection(student['email']!) 
+                        onTap: () => isSelectionMode
+                            ? _toggleSelection(student['email']!)
                             : null,
                         onLongPress: () => _toggleSelection(student['email']!),
                         child: Card(
                           margin: const EdgeInsets.only(bottom: 12),
                           elevation: 2,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12)),
-                          
+                              borderRadius: BorderRadius.circular(12)),
                           child: Container(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(12),
@@ -356,11 +360,13 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.select_all, color: Colors.white, size: 35),
+                  icon: const Icon(Icons.select_all,
+                      color: Colors.white, size: 35),
                   onPressed: _selectAllToggle,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.filter_alt, color: Colors.white, size: 35),
+                  icon: const Icon(Icons.filter_alt,
+                      color: Colors.white, size: 35),
                   onPressed: _showFilterDialog,
                 ),
                 IconButton(
@@ -379,7 +385,8 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
                       context: context,
                       backgroundColor: Colors.grey[900],
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(25)),
                       ),
                       builder: (context) {
                         return Padding(

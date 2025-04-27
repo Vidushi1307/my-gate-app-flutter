@@ -526,7 +526,14 @@ class _LabStatsPageState extends State<LabStatsPage> {
             sideTitles: SideTitles(
               showTitles: true,
               getTitlesWidget: (value, _) {
-                return Text('${value.toInt()}h');
+                // return Text('${value.toInt()}');
+                return Padding(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    child: Text(
+                      '${value.toInt()}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  );
               },
             ),
           ),
@@ -548,7 +555,7 @@ class _LabStatsPageState extends State<LabStatsPage> {
               BarChartRodData(
                 toY: hours,
                 color: blueShades[index % blueShades.length],
-                width: 22,
+                width: 25,
                 borderRadius: BorderRadius.circular(4),
               ),
             ],
@@ -569,15 +576,19 @@ class _LabStatsPageState extends State<LabStatsPage> {
     }
 
     return BarChart(
+      
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
+        
         barTouchData: BarTouchData(enabled: true),
         titlesData: FlTitlesData(
           leftTitles: const AxisTitles(
-            sideTitles: SideTitles(showTitles: true),
+            axisNameSize: 40,
+            sideTitles: SideTitles(showTitles: false),
           ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
+              
               showTitles: true,
               reservedSize: 40, // Increased reserved space for vertical text
               getTitlesWidget: (value, meta) {
