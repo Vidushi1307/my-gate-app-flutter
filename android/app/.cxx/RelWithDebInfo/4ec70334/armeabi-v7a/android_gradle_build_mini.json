@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/edith/development/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/edith/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/edith/Desktop/DESKTOP/MyGateflutter/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4ec70334/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/edith/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/edith/Desktop/DESKTOP/MyGateflutter/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/4ec70334/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}

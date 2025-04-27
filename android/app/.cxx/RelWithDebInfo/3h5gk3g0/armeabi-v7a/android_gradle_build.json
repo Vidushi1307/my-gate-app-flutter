@@ -1,0 +1,28 @@
+{
+  "buildFiles": [
+    "/Users/vidushi/fvm/versions/3.29.0/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/vidushi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/vidushi/Desktop/development/MYApps/LabUtil/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/3h5gk3g0/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/vidushi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/vidushi/Desktop/development/MYApps/LabUtil/my-gate-app-flutter/android/app/.cxx/RelWithDebInfo/3h5gk3g0/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {},
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/vidushi/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/vidushi/Library/Android/sdk/ndk/26.1.10909125/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": []
+}

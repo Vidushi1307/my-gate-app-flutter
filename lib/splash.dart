@@ -28,7 +28,7 @@ class _SplashState extends State<Splash> {
 
   _navigatetohome() async {
     if (!_mounted) return;
-    await Future.delayed(const Duration(milliseconds: 1500), () {});
+    await Future.delayed(const Duration(milliseconds: 2000), () {});
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
@@ -37,31 +37,24 @@ class _SplashState extends State<Splash> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              image_paths.splash,
-              height: 300,
-            ),
-            Text(
-              "SWIFT ENTRY",
-              style: GoogleFonts.kodchasan(
-                fontSize: 30,
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            SizedBox(height: MediaQuery.of(context).size.height * 0.2),
-          ],
-        ),
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.black,
+    body: SizedBox.expand(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            image_paths.splash,
+            height: 300,
+          ),
+
+          SizedBox(height: MediaQuery.of(context).size.height * 0.2),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 }

@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/vidushi/fvm/versions/3.29.0/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/vidushi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/vidushi/Desktop/development/MYApps/LabUtil/my-gate-app-flutter/android/app/.cxx/Debug/6f4e1i45/x86_64",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/vidushi/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/vidushi/Desktop/development/MYApps/LabUtil/my-gate-app-flutter/android/app/.cxx/Debug/6f4e1i45/x86_64",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
