@@ -95,7 +95,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-<<<<<<< HEAD
 /*  Widget _buildNotificationButton() {
     return Stack(
       clipBehavior: Clip.none,
@@ -143,55 +142,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
     );
   }*/
-=======
-  // Widget _buildNotificationButton() {
-  //   return Stack(
-  //     clipBehavior: Clip.none,
-  //     children: [
-  //       IconButton(
-  //         icon: const Icon(Icons.notifications, color: Colors.black),
-  //         onPressed: onNotificationsPressed,
-  //       ),
-  //       Positioned(
-  //         right: 8,
-  //         top: 8,
-  //         child: StreamBuilder<int>(
-  //           stream: notificationStream,
-  //           initialData: notificationCount,
-  //           builder: (context, snapshot) {
-  //             final count = snapshot.data ?? notificationCount;
-  //             return count > 0
-  //                 ? _buildNotificationBadge(count)
-  //                 : const SizedBox.shrink();
-  //           },
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget _buildNotificationBadge(int count) {
-  //   return Container(
-  //     padding: const EdgeInsets.all(2),
-  //     decoration: const BoxDecoration(
-  //       color: Colors.red,
-  //       shape: BoxShape.circle,
-  //     ),
-  //     constraints: const BoxConstraints(
-  //       minWidth: 16,
-  //       minHeight: 16,
-  //     ),
-  //     child: Text(
-  //       '$count',
-  //       style: const TextStyle(
-  //         color: Colors.white,
-  //         fontSize: 10,
-  //       ),
-  //       textAlign: TextAlign.center,
-  //     ),
-  //   );
-  // }
->>>>>>> 4549ebae733edd2426c86b97cf68dae56a8ab076
 
   Widget _buildMenuButton(BuildContext context) {
     return PopupMenuButton<MenuItem>(
