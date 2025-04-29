@@ -99,7 +99,7 @@ class _AuthFormState extends State<AuthForm> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          backgroundColor: const Color.fromRGBO(255, 204, 53, 1),
+          backgroundColor: Colors.green,
         ),
       );
       return true;

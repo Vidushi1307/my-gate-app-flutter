@@ -2,6 +2,7 @@
 import 'dart:io';
 import 'dart:core';
 import 'package:flutter/foundation.dart'; // Required for compute()
+import 'package:intl/intl.dart';
 import 'package:my_gate_app/myglobals.dart' as myglobals;
 import 'package:flutter/material.dart';
 import 'package:my_gate_app/get_email.dart';
@@ -2783,24 +2784,40 @@ class databaseInterface {
     }
   }
 
-  static Future<List<Map<String, dynamic>>> getCurrentStudents(
-    String locationName,
-  ) async {
-    var url = "$complete_base_url_static/guards/get_students_in_location";
-    try {
-      var response = await http.post(
-        Uri.parse(url),
-        body: {'location': locationName},
-      );
-      print("VGGGGGGGG");
+static Future<List<Map<String, dynamic>>> getStudentsInLocation(
+  String locationName, {
+  String filterType = 'current',
+  DateTime? customDate,
+}) async {
+  var url = "$complete_base_url_static/guards/get_students_in_location";
+  try {
+    var body = {
+      'location': locationName,
+      'filter_type': filterType,
+    };
+    
+    if (filterType == 'custom' && customDate != null) {
+      body['custom_date'] = DateFormat('yyyy-MM-dd').format(customDate);
+    }
+
+    var response = await http.post(
+      Uri.parse(url),
+      body: jsonEncode(body),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
       var data = json.decode(response.body);
-      print(data);
       return List<Map<String, dynamic>>.from(data['students']);
-    } catch (e) {
-      debugPrint("Error getting current students: $e");
+    } else {
+      debugPrint("Error getting students: ${response.statusCode}");
       return [];
     }
+  } catch (e) {
+    debugPrint("Error getting students: $e");
+    return [];
   }
+}
 
   // static Future<List<Map<String, dynamic>>> fetchLabStats() async {
   //   try {

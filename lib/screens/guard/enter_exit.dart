@@ -89,20 +89,16 @@ class _EntryExitState extends State<EntryExit> {
     });
   }
 
-  void _viewCurrentStudents(String locationName) async {
-    final students = await databaseInterface.getCurrentStudents(locationName);
-
-    print(students);
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CurrentStudentsPage(
-          locationName: locationName,
-          students: students,
-        ),
+  void _viewCurrentStudents(String locationName) {
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => CurrentStudentsPage(
+        locationName: locationName,
       ),
-    );
-  }
+    ),
+  );
+}
 
   
 
@@ -290,7 +286,7 @@ class _EntryExitState extends State<EntryExit> {
                     // Add your onPressed functionality
                     _markLocationAsEmpty(context,locationName);
                   },
-                  icon: Icon(Icons.cleaning_services, size: 16,color:Colors.black),
+                  icon: Icon(Icons.cleaning_services, size: 14,color:Colors.black),
                   label: Text(
                     "Mark Empty",
                     style: GoogleFonts.poppins(fontSize: 12,color:Colors.black),
@@ -304,7 +300,7 @@ class _EntryExitState extends State<EntryExit> {
                   ),
                 ),
                 
-                SizedBox(height: 1), // Space between buttons
+                SizedBox(height: 3), // Space between buttons
                 
                 // View Students Button
                 ElevatedButton.icon(
@@ -313,7 +309,7 @@ class _EntryExitState extends State<EntryExit> {
                     _viewCurrentStudents(locationName);
                    
                   },
-                  icon: Icon(Icons.people_alt, size: 16, color:Colors.black),
+                  icon: Icon(Icons.people_alt, size: 14, color:Colors.black),
                   label: Text(
                     "View Students",
                     style: GoogleFonts.poppins(fontSize: 12, color:Colors.black),
@@ -335,7 +331,7 @@ class _EntryExitState extends State<EntryExit> {
             Text(
               locationName,
               style: GoogleFonts.poppins(
-                fontSize: 30,
+                fontSize: 25,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
               ),
@@ -1006,20 +1002,7 @@ class ImageWithText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ??
-          () {
-            if (locationName != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => LocationDetailPage(
-                    locationName: locationName!,
-                    imagePath: imagePath,
-                  ),
-                ),
-              );
-            }
-          },
+      
       child: SizedBox(
         width: imageWidth,
         height: imageHeight,
