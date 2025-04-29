@@ -86,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
           bottom: BorderSide(color: Colors.grey, width: 0.5),
         ),
       ),*/
-      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
@@ -140,6 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
+      bottomNavigationBar: _buildBottomNavigationBar(),
       body: Column(
         children: [
           // Top section with profile image
@@ -179,7 +180,6 @@ class _ProfilePageState extends State<ProfilePage> {
                       ],
                     ),
                   ),
-                  _buildBottomNavigationBar()
                 ]),
               ),
             ),
@@ -241,7 +241,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildBottomNavigationBar() {
     return Padding(
       padding:
-          const EdgeInsets.only(left: 0.0, top: 40.0, right: 5.0, bottom: 10.0),
+          const EdgeInsets.only(left: 0.0, top: 0.0, right: 0.0, bottom: 0.0),
       child: Container(
         height: 60,
         decoration: BoxDecoration(
@@ -383,6 +383,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final success = await databaseInterface().uploadProfileImage(
         image,
         user.email,
+        "Student",
       );
 
       if (success) {

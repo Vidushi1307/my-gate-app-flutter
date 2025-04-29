@@ -36,10 +36,9 @@ class _UserData {
 class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
-  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
+//  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
 //  static String complete_base_url_static = "https://69.62.84.91:8000";
-//  static String complete_base_url_static =
-//      "https://83b8-164-100-193-243.ngrok-free.app";
+  static String complete_base_url_static = "https://4be2-117-220-161-118.ngrok-free.app";
 
   static Map<String, dynamic> retry = {"try": 1, "ifretry": false};
   databaseInterface();
@@ -1534,7 +1533,7 @@ class databaseInterface {
   // Helper function to run in isolate
   static _UserData _parseUserData(String responseBody) {
     final data = jsonDecode(responseBody);
-    return _UserData(data, base64.decode(data["profile_img"]));
+    return _UserData(data, base64.decode(data["profile_img"] ?? ""));
   }
 
   static Future<String> get_parent_location_name(String location) async {
@@ -1553,7 +1552,7 @@ class databaseInterface {
     }
   }
 
-  Future<bool> uploadProfileImage(File imageFile, String email) async {
+  Future<bool> uploadProfileImage(File imageFile, String email, String type) async {
     try {
       // 1. Validate inputs
       if (!await imageFile.exists()) {
@@ -1562,14 +1561,24 @@ class databaseInterface {
       }
 
       print('Starting upload for: ${imageFile.path}');
-
-      // 2. Create request
-      var request = http.MultipartRequest(
-        'POST',
-        Uri.parse(
-            '${complete_base_url_static}/change_profile_picture_of_student'), // Must match Django URL
-      );
-
+      var request;
+      if (type == "Student")
+      {
+        // 2. Create request
+        request = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              '${complete_base_url_static}/change_profile_picture_of_student'), // Must match Django URL
+        );
+      }
+      else {
+        // 2. Create request
+        request = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              '${complete_base_url_static}/guards/change_profile_picture_of_guard'), // Must match Django URL
+        );
+      }
       // 3. Add file
       request.files.add(await http.MultipartFile.fromPath(
         'profile_picture', // Must match Django's expected key
@@ -1608,24 +1617,48 @@ class databaseInterface {
   Future<GuardUser> get_guard_by_email(String? email_) async {
     var uri = "$complete_base_url_static/guards/get_guard_by_email";
     try {
-      var response = await http.post(Uri.parse(uri), body: {"email": email_});
+      final response = await makeAuthenticatedRequest(
+        Uri.parse(uri),
+        HttpMethod.POST,
+        body: {"email": email_},
+      );
+
+      // Handle auth errors
+      if (response.statusCode == 401) {
+        print("Auth Error: ${response.statusCode}");
+        print("Response: ${response.body}");
+        throw Exception("Unauthorized - Check token/session");
+      }
+
+      // Handle other errors
+      if (response.statusCode != 200) {
+        print("API Error: ${response.statusCode}");
+        print("Response: ${response.body}");
+        throw Exception("Failed to load guard data");
+      }
+
+      // Process in background isolate (for performance)
+      print(response.body);
       var data = json.decode(response.body);
-      String img_base_url = complete_base_url_static;
-      GuardUser user = GuardUser(
-        imagePath: img_base_url + data['profile_img'],
-        name: data["name"],
-        email: data["email"],
-        location: data['location'],
+      print("dat; $data");
+      final processedData = await compute(_parseUserData, response.body);
+      return GuardUser(
+        profileImage: processedData.bytes != null 
+            ? MemoryImage(processedData.bytes!) 
+            : null,
+        imagePath: data["image_path"] ?? "",
+        name: data["name"] ??  "",
+        email: data["email"] ??  "",
+        location: data["location_name"] ?? "",
         isDarkMode: true,
       );
-      return user;
     } catch (e) {
-      print("post request error");
-      print(e.toString());
-      GuardUser user = UserPreferences.myGuardUser;
-      return user;
+      print("Error in get_guard_by_email: $e");
+      return UserPreferences.myGuardUser; // Fallback
+  //    return UserPreferences.myUser; // Fallback
     }
   }
+
 
   Future<AdminUser> get_admin_by_email(String? email_) async {
     var uri = "$complete_base_url_static/admins/get_admin_by_email";

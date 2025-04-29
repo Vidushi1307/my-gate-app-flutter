@@ -42,6 +42,7 @@ final List<Map<String, String>> locations = [
 class _AuthorityMainState extends State<AuthorityMain> {
   int notificationCount = 0;
   String welcome_message = "Dr.Ravi Kant";
+  GuardUser authority_converted_to_guard = UserPreferences.myGuardUser;
 
   var user = UserPreferences.myAuthorityUser;
 
@@ -79,6 +80,16 @@ class _AuthorityMainState extends State<AuthorityMain> {
     databaseInterface db = databaseInterface();
     AuthorityUser result =
         await db.get_authority_by_email(LoggedInDetails.getEmail());
+    authority_converted_to_guard = GuardUser(
+      profileImage: null,
+      imagePath: result.imagePath,
+      name: result.name,
+      email: result.email,
+      location: result.designation,
+      isDarkMode: true,
+    );
+
+    
     setState(() {
       user = result;
       welcome_message = welcome_message_local;
@@ -370,7 +381,7 @@ class _AuthorityMainState extends State<AuthorityMain> {
           // MaterialPageRoute(builder: (context) => GuardProfilePage(email: LoggedInDetails.getEmail())),
           MaterialPageRoute(
               builder: (context) =>
-                  GuardProfilePage(email: LoggedInDetails.getEmail())),
+                  GuardProfilePage(email: LoggedInDetails.getEmail(), guard: authority_converted_to_guard)),
         );
         break;
       case MenuItems.itemLogOut:

@@ -9,6 +9,8 @@ import 'package:my_gate_app/screens/profile2/guard_profile/guard_profile_page.da
 import 'package:my_gate_app/screens/profile2/profile_page.dart';
 import 'package:my_gate_app/screens/utils/scrollable_widget.dart';
 
+import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
+
 // We pass to this class the value of "is_approved" which takes the value "Accepted"|"Rejected"
 
 class AdminDataTable extends StatefulWidget {
@@ -123,7 +125,7 @@ class _AdminDataTableState extends State<AdminDataTable> {
           Navigator.of(context).push(
             MaterialPageRoute(
                 builder: (context) =>
-                    GuardProfilePage(email: ticket.email.toString())),
+                    GuardProfilePage(email: ticket.email.toString(), guard: UserPreferences.myGuardUser)),
           );
         },
         child: Text(ticket.name.toString()),

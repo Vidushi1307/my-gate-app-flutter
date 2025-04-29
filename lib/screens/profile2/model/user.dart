@@ -49,6 +49,7 @@ class User {
 }
 
 class GuardUser {
+  final ImageProvider<Object>? profileImage;
   final String imagePath;
   final String name;
   final String email;
@@ -61,6 +62,7 @@ class GuardUser {
     required this.email,
     required this.location,
     required this.isDarkMode,
+    this.profileImage,  
   });
 }
 

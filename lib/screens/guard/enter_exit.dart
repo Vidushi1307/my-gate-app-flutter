@@ -73,18 +73,18 @@ class _EntryExitState extends State<EntryExit> {
   GuardUser cur_guard = UserPreferences.myGuardUser;
 
   Future<void> get_welcome_message() async {
-    String welcome_message_local =
-        await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
+//    String welcome_message_local =
+//        await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
 //    notificationCount = await databaseInterface
 //        .return_total_notification_count_guard(LoggedInDetails.getEmail());
     // getting the details of the guard
     databaseInterface db = databaseInterface();
     GuardUser result = await db.get_guard_by_email(LoggedInDetails.getEmail());
     print("result obj image path${result.imagePath}");
-    print("welcome_message_local :$welcome_message_local");
+    print("welcome_message_local :${result.name}");
     print("result :${result.name}");
     setState(() {
-      welcome_message = welcome_message_local;
+      welcome_message = result.name;
       cur_guard = result;
     });
   }
@@ -309,8 +309,9 @@ class _EntryExitState extends State<EntryExit> {
                 // View Students Button
                 ElevatedButton.icon(
                   onPressed: () {
-                    // Add your onPressed functionality
+
                     _viewCurrentStudents(locationName);
+                   
                   },
                   icon: Icon(Icons.people_alt, size: 16, color:Colors.black),
                   label: Text(
@@ -380,6 +381,21 @@ class _EntryExitState extends State<EntryExit> {
       ),
     );
   }
+  
+    Widget ImageWidget() {
+    ImageProvider backgroundImg = cur_guard.profileImage ??  AssetImage(image_paths.dummy_person);
+
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CircleAvatar(
+          radius: 100,
+          backgroundImage: backgroundImg,
+        ),
+      ],
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -420,7 +436,7 @@ class _EntryExitState extends State<EntryExit> {
                   width: MediaQuery.of(context).size.width * 0.07,
                   height: MediaQuery.of(context).size.width * 0.07,
                   child: ClipOval(
-                    child: Image.asset(image_paths.dummy_person),
+                    child: ImageWidget(),
                   ),
                 ),
               ),
@@ -495,7 +511,7 @@ class _EntryExitState extends State<EntryExit> {
               )*/
             ],
           ),
-          PopupMenuButton<MenuItem>(
+      /*    PopupMenuButton<MenuItem>(
             onSelected: (item) => onSelected(context, item),
             icon: Icon(Icons.menu, color: Colors.black),
             itemBuilder: (context) => [
@@ -507,7 +523,7 @@ class _EntryExitState extends State<EntryExit> {
               PopupMenuDivider(),
               ...MenuItems.itemsFifth.map(buildItem),
             ],
-          )
+          )*/
         ],
       ),
       body: SingleChildScrollView(
@@ -819,7 +835,7 @@ class _EntryExitState extends State<EntryExit> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail())),
+                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail(), guard: cur_guard)),
                       ),
                     );
                   },
@@ -866,7 +882,7 @@ class _EntryExitState extends State<EntryExit> {
           // MaterialPageRoute(builder: (context) => GuardProfilePage(email: LoggedInDetails.getEmail())),
           MaterialPageRoute(
               builder: (context) =>
-                  GuardProfilePage(email: LoggedInDetails.getEmail())),
+                  GuardProfilePage(email: LoggedInDetails.getEmail(), guard: cur_guard)),
         );
         break;
       case MenuItems.itemLogOut:
