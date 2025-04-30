@@ -18,7 +18,6 @@ import 'package:my_gate_app/screens/profile2/model/menu_item.dart';
 import 'package:my_gate_app/screens/profile2/utils/menu_items.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'guard_tabs.dart';
-import 'package:my_gate_app/database/database_interface.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:my_gate_app/screens/notificationPage/notification.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' as scanner;
@@ -31,6 +30,7 @@ import 'package:my_gate_app/screens/guard/visitors/inviteeValidationPage.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/screens/guard/location_detail_page.dart';
 import 'package:my_gate_app/screens/guard/CS_block_stats.dart';
+import 'package:my_gate_app/screens/guard/student_count.dart';
 
 class QRScannerScreen extends StatelessWidget {
   const QRScannerScreen({super.key});
@@ -342,33 +342,34 @@ class _EntryExitState extends State<EntryExit> {
       ),
     ),
     Expanded(
-                
-                flex: 2,
-                child: Container(
-                  margin:
-                      EdgeInsets.all(5), // Space outside container (optional)
-                  decoration: BoxDecoration(
+              flex: 2,
+              child: Container(
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.horizontal(right: Radius.circular(12)),
                     color: Colors.transparent, // Optional background
                   ),
-                  child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.horizontal(right: Radius.circular(12)),
-                    child: Container(
-                      padding:
-                          EdgeInsets.all(8), // Space inside, around the image
-                      color: Colors.white
-                          .withOpacity(0.1), // Optional inner background
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit
-                            .contain, // Changed from 'cover' to respect boundaries
-                      ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(12)),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    color: Colors.white.withOpacity(0.1),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Image
+                        Expanded(
+                          child: Image.asset(imagePath, fit: BoxFit.contain),
+                        ),
+                        // Student count (loaded lazily)
+                        StudentCountText(locationName: locationName),
+                      ],
                     ),
                   ),
                 ),
               ),
+    )
     // Your image Expanded widget goes here
   ],
 ),
@@ -491,19 +492,7 @@ class _EntryExitState extends State<EntryExit> {
               )*/
             ],
           ),
-          PopupMenuButton<MenuItem>(
-            onSelected: (item) => onSelected(context, item),
-            icon: Icon(Icons.menu, color: Colors.black),
-            itemBuilder: (context) => [
-              ...MenuItems.itemsFirst.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsThird.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsSecond.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsFifth.map(buildItem),
-            ],
-          )
+
         ],
       ),
       body: SingleChildScrollView(

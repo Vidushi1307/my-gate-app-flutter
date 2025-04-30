@@ -14,14 +14,14 @@ class LocationDataManager {
       databaseInterface.getLocationImagesPaths();
 
   Future<void> loadData(String email) async {
-    final result = await databaseInterface.getLoctionsAndPreApprovals();
-    locations = result.locations;
-    locationIds = result.location_id;
-    preApprovals = result.preApprovals;
+    // final result = await databaseInterface.getLoctionsAndPreApprovals();
+    // locations = result.locations;
+    // locationIds = result.location_id;
+    // preApprovals = result.preApprovals;
 
-    // Load counts
-    occupantCounts = await Future.wait(
-        locationIds.map((id) => databaseInterface.count_inside_Location(id)));
+    // // Load counts
+    // occupantCounts = await Future.wait(
+    //     locationIds.map((id) => databaseInterface.count_inside_Location(id)));
 
     // Load statuses
     final statusMap = await databaseInterface
