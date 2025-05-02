@@ -25,7 +25,8 @@ import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/screens/profile2/model/user.dart';
 import 'package:my_gate_app/screens/authorities/lab_stats.dart';
 import 'package:my_gate_app/screens/guard/current_students_page.dart'; // Adjusted import path
-import 'package:my_gate_app/screens/authorities/forced_exited_students.dart'; // Adjusted import path
+import 'package:my_gate_app/screens/authorities/forced_exited_students.dart'; 
+import 'package:my_gate_app/screens/guard/student_count.dart'; // Adjusted import path  
 
 class AuthorityMain extends StatefulWidget {
   const AuthorityMain({super.key});
@@ -301,33 +302,34 @@ void _viewCurrentStudents(String locationName) {
       ),
     ),
     Expanded(
-                
-                flex: 2,
-                child: Container(
-                  margin:
-                      EdgeInsets.all(5), // Space outside container (optional)
-                  decoration: BoxDecoration(
+              flex: 2,
+              child: Container(
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
                     borderRadius:
                         BorderRadius.horizontal(right: Radius.circular(12)),
                     color: Colors.transparent, // Optional background
                   ),
-                  child: ClipRRect(
-                    borderRadius:
-                        BorderRadius.horizontal(right: Radius.circular(12)),
-                    child: Container(
-                      padding:
-                          EdgeInsets.all(8), // Space inside, around the image
-                      color: Colors.white
-                          .withOpacity(0.1), // Optional inner background
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit
-                            .contain, // Changed from 'cover' to respect boundaries
-                      ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.horizontal(right: Radius.circular(12)),
+                  child: Container(
+                    padding: EdgeInsets.all(8),
+                    color: Colors.white.withOpacity(0.1),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        // Image
+                        Expanded(
+                          child: Image.asset(imagePath, fit: BoxFit.contain),
+                        ),
+                        // Student count (loaded lazily)
+                        StudentCountText(locationName: locationName),
+                      ],
                     ),
                   ),
                 ),
               ),
+    )
     // Your image Expanded widget goes here
   ],
 ),

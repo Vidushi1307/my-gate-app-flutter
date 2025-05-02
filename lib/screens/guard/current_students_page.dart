@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:my_gate_app/screens/authorities/authority_main.dart';
+import 'package:my_gate_app/screens/guard/enter_exit.dart';
 import 'package:my_gate_app/screens/guard/utils/UI_statics.dart';
 import 'package:my_gate_app/database/database_interface.dart';
 
@@ -368,7 +369,7 @@ class _CurrentStudentsPageState extends State<CurrentStudentsPage> {
                   onPressed: () {
                     Navigator.pushReplacement(
                       context,
-                      MaterialPageRoute(builder: (context) => AuthorityMain()),
+                      MaterialPageRoute(builder: (context) => EntryExit(guard_location: widget.locationName)),
                     );
                   },
                 ),

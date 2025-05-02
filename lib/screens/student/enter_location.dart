@@ -112,7 +112,7 @@ late final _locationManager= LocationDataManager();
       appBar: AppBar(
         backgroundColor: Colors.black, // White header
         title: Text(
-          'Change Location',
+          'Enter Location',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold), // Black title text
         ),
         iconTheme:
