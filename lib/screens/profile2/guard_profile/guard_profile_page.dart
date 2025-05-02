@@ -17,8 +17,9 @@ import 'package:my_gate_app/get_email.dart';
 class GuardProfilePage extends StatefulWidget {
   final String? email;
   final GuardUser guard;
+  final String type;
 
-  const GuardProfilePage({super.key, required this.email, required this.guard});
+  const GuardProfilePage({super.key, required this.email, required this.guard, required this.type});
   @override
   _GuardProfilePageState createState() => _GuardProfilePageState();
 }
@@ -267,12 +268,13 @@ class _GuardProfilePageState extends State<GuardProfilePage> {
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white, size: 40),
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          EntryExit(guard_location: "CS Block")),
-                );
+//                Navigator.pushReplacement(
+//                  context,
+//                  MaterialPageRoute(
+//                      builder: (context) =>
+//                          EntryExit(guard_location: "CS Block")),
+//                );
+                  Navigator.pop(context);
               },
             ),
 
@@ -331,7 +333,7 @@ class _GuardProfilePageState extends State<GuardProfilePage> {
 
         // Convert XFile to File if your backend requires it
         final File imageFile = File(pickedFile.path);
-        await _uploadProfileImage(imageFile);
+        await _uploadProfileImage(imageFile, widget.type);
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -378,20 +380,35 @@ class _GuardProfilePageState extends State<GuardProfilePage> {
     );
   }
 
-  Future<void> _uploadProfileImage(File image) async {
+  Future<void> _uploadProfileImage(File image, String type) async {
     try {
       //     final success = true;
       final success = await databaseInterface().uploadProfileImage(
         image,
         user.email,
-        "Guard",
+        type,
       );
 
       if (success) {
+        if (type  == "Guard") {
         // Refresh user data
-        final updatedUser =
-            await databaseInterface().get_guard_by_email(user.email);
-        setState(() => user = updatedUser);
+          final updatedUser =
+              await databaseInterface().get_guard_by_email(user.email);
+          setState(() => user = updatedUser);
+        }
+        else {
+          final result =
+              await databaseInterface().get_authority_by_email(user.email);
+              GuardUser authority_converted_to_guard = GuardUser(
+                profileImage: result.profileImage,
+                imagePath: result.imagePath,
+                name: result.name,
+                email: result.email,
+                location: result.designation,
+                isDarkMode: true,
+              );
+          setState(() => user = authority_converted_to_guard);
+        }
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(

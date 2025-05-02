@@ -33,13 +33,13 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           theme: ThemeData(
             brightness: Brightness.dark,
-            primaryColor: Colors.blueAccent,
+            primaryColor: Colors.green,
             appBarTheme: const AppBarTheme(
-              backgroundColor: Colors.blueAccent, //use your hex code here
+              backgroundColor: Colors.red, //use your hex code here
             ),
           ),
           home: Home(),
-          debugShowCheckedModeBanner: false),
+          debugShowCheckedModeBanner: true),
     );
   }
 }

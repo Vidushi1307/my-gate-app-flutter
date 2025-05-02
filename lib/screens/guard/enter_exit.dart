@@ -385,7 +385,7 @@ class _EntryExitState extends State<EntryExit> {
       alignment: Alignment.center,
       children: [
         CircleAvatar(
-          radius: 100,
+          radius: 27,
           backgroundImage: backgroundImg,
         ),
       ],
@@ -398,6 +398,7 @@ class _EntryExitState extends State<EntryExit> {
     return Scaffold(
       // backgroundColor: Color.fromARGB(255, 253, 253, 255),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
         centerTitle: true,
         title: Padding(
@@ -427,10 +428,10 @@ class _EntryExitState extends State<EntryExit> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
+                padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.07,
-                  height: MediaQuery.of(context).size.width * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  height: MediaQuery.of(context).size.width * 0.25,
                   child: ClipOval(
                     child: ImageWidget(),
                   ),
@@ -444,82 +445,9 @@ class _EntryExitState extends State<EntryExit> {
             children: [
               SizedBox(
                 height: kToolbarHeight,
-            //    child: IconButton(
-                //  icon: Icon(
-                //    Icons.notifications,
-                //    color: Colors.black,
-                //  ),
-                //  onPressed: () async {
-//                    List<List<String>> messages = await databaseInterface
-//                        .fetch_notification_guard(LoggedInDetails.getEmail());
-
-                    // print(messages);
-                //    print("messages printed in page");
-                    // print(messages);
-
-                    // await databaseInterface
-                    //     .mark_stakeholder_notification_as_false(
-                    //         LoggedInDetails.getEmail());
-                //    Navigator.push(
-                 //       context,
-                 //       MaterialPageRoute(
-                 //           builder: (context) => NotificationsPage(
-                 //                 notificationCount: notificationCount,
-                 //               )));
-                 // },
-             //   ),
               ),
-           /*   StreamBuilder<int>(
-                stream: databaseInterface
-                    .get_notification_count_stream(LoggedInDetails.getEmail()),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    int notificationCount = snapshot.data ?? 0;
-                    return Positioned(
-                      right: 0,
-                      top: 10,
-                      child: notificationCount > 0
-                          ? Container(
-                              padding: EdgeInsets.all(1),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              constraints: BoxConstraints(
-                                minWidth: 16,
-                                minHeight: 16,
-                              ),
-                              child: Text(
-                                '$notificationCount',
-                                style: TextStyle(
-                                  color: Color.fromARGB(255, 255, 255, 255),
-                                  fontSize: 10,
-                                ),
-                                textAlign: TextAlign.center,
-                              ),
-                            )
-                          : Container(),
-                    );
-                  } else {
-                    return Container();
-                  }
-                },
-              )*/
             ],
           ),
-      /*    PopupMenuButton<MenuItem>(
-            onSelected: (item) => onSelected(context, item),
-            icon: Icon(Icons.menu, color: Colors.black),
-            itemBuilder: (context) => [
-              ...MenuItems.itemsFirst.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsThird.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsSecond.map(buildItem),
-              PopupMenuDivider(),
-              ...MenuItems.itemsFifth.map(buildItem),
-            ],
-          )*/
         ],
       ),
       body: SingleChildScrollView(
@@ -528,25 +456,9 @@ class _EntryExitState extends State<EntryExit> {
               BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
           child: Container(
             decoration: BoxDecoration(
-              // image: DecorationImage(
-              // image: AssetImage("assets/images/bulb.jpg"),
-              // fit: BoxFit.cover,
-              // gradient: LinearGradient(
-              //   colors: [
-              //     const Color(0xFFFFFFFF),
-              //     const Color(0xFFF3E8FF),
-              //     // const Color(0xFFD6B4FC),
-
-              //   ], // Start and end colors of the gradient
-              //   begin: Alignment.topLeft, // Gradient start point
-              //   end: Alignment.bottomRight, // Gradient end point
-              //   stops: [0.0, 1.0], // Control where each color starts
-              // ),
               color: Colors.black,
             ),
             child: Column(
-              // add Column
-              // mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: MediaQuery.of(context).size.width * 0.1),
 
@@ -679,14 +591,20 @@ class _EntryExitState extends State<EntryExit> {
                           future: databaseInterface.getCSBlockDailyUsage(),
                           builder: (context, snapshot) {
                             double hoursUsed = 0.0;
-                            if (snapshot.hasData &&
-                                snapshot.data!['days'].isNotEmpty) {
-                              // You'll need to modify your backend to also return hours data
-                              // This is just a placeholder calculation
-                              hoursUsed = snapshot.data!['days'][6]
-                                      ['student_count'] *
-                                  1.5;
+                            if (snapshot.hasData && snapshot.data!['days'].isNotEmpty) {
+                              final today = DateTime.now();
+                              final todayString = "${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+
+                              final todayEntry = snapshot.data!['days'].firstWhere(
+                                (day) => day['date'] == todayString,
+                                orElse: () => null,
+                              );
+
+                              if (todayEntry != null && todayEntry['total_hours'] != null) {
+                                hoursUsed = (todayEntry['total_hours'] as num).toDouble();
+                              }
                             }
+
 
                             return Column(
                               children: [
@@ -694,7 +612,7 @@ class _EntryExitState extends State<EntryExit> {
                                     color: Colors.white, size: 32),
                                 SizedBox(height: 8),
                                 Text(
-                                  "${hoursUsed.toStringAsFixed(1)} Hours",
+                                  "${hoursUsed.toStringAsFixed(1)} Total Hours",
                                   textAlign: TextAlign.center,
                                   style: GoogleFonts.poppins(
                                     color: Colors.white,
@@ -831,7 +749,7 @@ class _EntryExitState extends State<EntryExit> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail(), guard: cur_guard)),
+                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail(), guard: cur_guard, type: "Guard")),
                       ),
                     );
                   },
@@ -839,10 +757,7 @@ class _EntryExitState extends State<EntryExit> {
               IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white, size: 35),
                   onPressed: () {
-                    Navigator.of(context).pop(); // pop the current page
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AuthScreen()),
-        );
+                    _logout(context);
                   },
                 ),
                 // Sort Button
@@ -851,6 +766,17 @@ class _EntryExitState extends State<EntryExit> {
             ),
           ),
         ),
+    );
+  }
+  
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+     cur_guard = UserPreferences.myGuardUser;
+
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => AuthScreen()),
+      (Route<dynamic> route) => false, // removes all previous routes
     );
   }
 
@@ -878,7 +804,7 @@ class _EntryExitState extends State<EntryExit> {
           // MaterialPageRoute(builder: (context) => GuardProfilePage(email: LoggedInDetails.getEmail())),
           MaterialPageRoute(
               builder: (context) =>
-                  GuardProfilePage(email: LoggedInDetails.getEmail(), guard: cur_guard)),
+                  GuardProfilePage(email: LoggedInDetails.getEmail(), guard: cur_guard, type: "Guard")),
         );
         break;
       case MenuItems.itemLogOut:

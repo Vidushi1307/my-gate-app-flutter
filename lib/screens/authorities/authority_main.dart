@@ -85,6 +85,8 @@ void _viewCurrentStudents(String locationName) {
 
 
   Future<void> get_welcome_message() async {
+
+    
     String welcome_message_local =
         await databaseInterface.get_welcome_message(LoggedInDetails.getEmail());
 
@@ -94,7 +96,7 @@ void _viewCurrentStudents(String locationName) {
     AuthorityUser result =
         await db.get_authority_by_email(LoggedInDetails.getEmail());
     authority_converted_to_guard = GuardUser(
-      profileImage: null,
+      profileImage: result.profileImage,
       imagePath: result.imagePath,
       name: result.name,
       email: result.email,
@@ -113,6 +115,14 @@ void _viewCurrentStudents(String locationName) {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (LoggedInDetails.getEmail() == '') {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => AuthScreen()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    });
     get_welcome_message();
 
     imagePath = UserPreferences.myUser.imagePath;
@@ -331,6 +341,7 @@ void _viewCurrentStudents(String locationName) {
     return Scaffold(
       // backgroundColor: Color.fromARGB(255, 253, 253, 255),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.black,
         centerTitle: true,
         title: Padding(
@@ -360,32 +371,18 @@ void _viewCurrentStudents(String locationName) {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(top: 40.0, bottom: 40.0),
+                padding: EdgeInsets.only(top: 0.0, bottom: 0.0),
                 child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.07,
-                  height: MediaQuery.of(context).size.width * 0.07,
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  height: MediaQuery.of(context).size.width * 0.25,
                   child: ClipOval(
-                    child: Image.asset(image_paths.dummy_person),
+                    child: ImageWidget(),
                   ),
                 ),
               ),
             ],
           ),
         ),
-        // actions: [
-
-        //   PopupMenuButton<MenuItem>(
-        //     onSelected: (item) => onSelected(context, item),
-        //     icon: Icon(Icons.menu, color: Colors.white),
-        //     itemBuilder: (context) => [
-        //       ...MenuItems.itemsFirst.map(buildItem),
-        //       PopupMenuDivider(),
-        //       ...MenuItems.itemsThird.map(buildItem),
-        //       PopupMenuDivider(),
-        //       ...MenuItems.itemsSecond.map(buildItem),
-        //     ],
-        //   )
-        // ],
       ),
       body: SingleChildScrollView(
         child: ConstrainedBox(
@@ -544,14 +541,20 @@ void _viewCurrentStudents(String locationName) {
                           future: databaseInterface.getCSBlockDailyUsage(),
                           builder: (context, snapshot) {
                             double hoursUsed = 0.0;
-                            if (snapshot.hasData &&
-                                snapshot.data!['days'].isNotEmpty) {
-                              // You'll need to modify your backend to also return hours data
-                              // This is just a placeholder calculation
-                              hoursUsed = snapshot.data!['days'][6]
-                                      ['student_count'] *
-                                  1.5;
+                            if (snapshot.hasData && snapshot.data!['days'].isNotEmpty) {
+                              final today = DateTime.now();
+                              final todayString = "${today.year.toString().padLeft(4, '0')}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}";
+
+                              final todayEntry = snapshot.data!['days'].firstWhere(
+                                (day) => day['date'] == todayString,
+                                orElse: () => null,
+                              );
+
+                              if (todayEntry != null && todayEntry['total_hours'] != null) {
+                                hoursUsed = (todayEntry['total_hours'] as num).toDouble();
+                              }
                             }
+
 
                             return Column(
                               children: [
@@ -713,7 +716,6 @@ void _viewCurrentStudents(String locationName) {
                 IconButton(
                   icon: const Icon(Icons.home, color: Colors.white, size: 35),
                   onPressed: () {
-                    Navigator.pop(context); // Close the current page
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(builder: (context) => AuthorityMain()),
@@ -726,7 +728,7 @@ void _viewCurrentStudents(String locationName) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail())),
+                        builder: (context) => (GuardProfilePage(email: LoggedInDetails.getEmail(), guard: authority_converted_to_guard, type: "Authority")),
                       ),
                     );
                   },
@@ -734,10 +736,7 @@ void _viewCurrentStudents(String locationName) {
               IconButton(
                   icon: const Icon(Icons.logout, color: Colors.white, size: 35),
                   onPressed: () {
-                    Navigator.of(context).pop(); // pop the current page
-        Navigator.of(context).push(
-          MaterialPageRoute(builder: (context) => AuthScreen()),
-        );
+                    _logout(context);
                   },
                 ),
                 // Sort Button
@@ -748,6 +747,18 @@ void _viewCurrentStudents(String locationName) {
         ),
     );
   }
+  
+  Future<void> _logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+      user = UserPreferences.myAuthorityUser;
+      authority_converted_to_guard = UserPreferences.myGuardUser;
+
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => AuthScreen()),
+        (Route<dynamic> route) => false, // removes all previous routes
+      );
+   }
 
 
   PopupMenuItem<MenuItem> buildItem(MenuItem item) => PopupMenuItem<MenuItem>(
@@ -769,7 +780,7 @@ void _viewCurrentStudents(String locationName) {
           // MaterialPageRoute(builder: (context) => GuardProfilePage(email: LoggedInDetails.getEmail())),
           MaterialPageRoute(
               builder: (context) =>
-                  GuardProfilePage(email: LoggedInDetails.getEmail(), guard: authority_converted_to_guard)),
+                  GuardProfilePage(email: LoggedInDetails.getEmail(), guard: authority_converted_to_guard, type: "Authority")),
         );
         break;
       case MenuItems.itemLogOut:
@@ -820,6 +831,21 @@ void _viewCurrentStudents(String locationName) {
        break;
 
     }
+  }
+  
+  
+  Widget ImageWidget() {
+    ImageProvider backgroundImg = authority_converted_to_guard.profileImage ??  AssetImage(image_paths.dummy_person);
+    print("==================ICON!!=====================");
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        CircleAvatar(
+          radius: 27,
+          backgroundImage: backgroundImg,
+        ),
+      ],
+    );
   }
   
   Future<void> _deleteAccount(BuildContext context) async {

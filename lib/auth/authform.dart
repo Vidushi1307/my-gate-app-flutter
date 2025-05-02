@@ -309,7 +309,7 @@ class _AuthFormState extends State<AuthForm> {
                         ),
                       children: [
                         TextSpan(text: 'Welcome to '),
-                        TextSpan(text: 'Insight', style: TextStyle(color: const Color.fromARGB(255, 53, 147, 254))), // Different style for exclamation
+                        TextSpan(text: 'InSight', style: TextStyle(color: const Color.fromARGB(255, 53, 147, 254))), // Different style for exclamation
                       ],
                       ),
                     ),

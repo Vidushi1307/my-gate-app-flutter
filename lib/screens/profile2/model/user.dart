@@ -67,6 +67,7 @@ class GuardUser {
 }
 
 class AuthorityUser {
+  final ImageProvider<Object>? profileImage;
   final String imagePath;
   final String name;
   final String email;
@@ -74,6 +75,7 @@ class AuthorityUser {
   final bool isDarkMode;
 
   const AuthorityUser({
+    this.profileImage,
     required this.imagePath,
     required this.name,
     required this.email,

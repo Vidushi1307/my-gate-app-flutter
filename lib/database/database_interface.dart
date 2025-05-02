@@ -1572,13 +1572,23 @@ class databaseInterface {
               '${complete_base_url_static}/change_profile_picture_of_student'), // Must match Django URL
         );
       }
-      else {
+      else if (type == "Guard") {
         // 2. Create request
         request = http.MultipartRequest(
           'POST',
           Uri.parse(
               '${complete_base_url_static}/guards/change_profile_picture_of_guard'), // Must match Django URL
         );
+      } else if (type == "Authority") {
+        // 2. Create request
+        request = http.MultipartRequest(
+          'POST',
+          Uri.parse(
+              '${complete_base_url_static}/authorities/change_profile_picture_of_authority'), // Must match Django URL
+        );
+      } else  {
+        print("Invalid type in uploadProfileImage");
+        return false;
       }
       // 3. Add file
       request.files.add(await http.MultipartFile.fromPath(
@@ -1641,7 +1651,6 @@ class databaseInterface {
       // Process in background isolate (for performance)
       print(response.body);
       var data = json.decode(response.body);
-      print("dat; $data");
       final processedData = await compute(_parseUserData, response.body);
       return GuardUser(
         profileImage: processedData.bytes != null 
@@ -1687,20 +1696,21 @@ class databaseInterface {
     try {
       var response = await http.post(Uri.parse(uri), body: {"email": email_});
       var data = json.decode(response.body);
-      String img_base_url = complete_base_url_static;
-      AuthorityUser user = AuthorityUser(
-        imagePath: img_base_url + data['profile_img'],
-        name: data["name"],
-        email: data["email"],
-        designation: data['designation'],
+      final processedData = await compute(_parseUserData, response.body);
+      return AuthorityUser(
+        profileImage: processedData.bytes != null 
+            ? MemoryImage(processedData.bytes!) 
+            : null,
+        imagePath: data["image_path"] ?? "",
+        name: data["name"] ??  "",
+        email: data["email"] ??  "",
+        designation: data["designation"] ?? "",
         isDarkMode: true,
       );
-      return user;
     } catch (e) {
-      print("post request error");
+      print("Exception in get_authority_by_email: ${e.toString()}");
       print(e.toString());
-      AuthorityUser user = UserPreferences.myAuthorityUser;
-      return user;
+      return UserPreferences.myAuthorityUser;
     }
   }
 

@@ -18,6 +18,10 @@ class LoggedInDetails{
     return email;
   }
 
+  static void clearEmail(){
+    LoggedInDetails.email = "";
+  }
+
   static void setEmail(String email){
     LoggedInDetails.email = email;
   }
