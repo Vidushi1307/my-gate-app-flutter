@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:my_gate_app/screens/student/managers/location_data_manager.dart';
+import 'package:my_gate_app/screens/profile2/model/user.dart';
 //import 'package:my_gate_app/screens/student/managers/notification_manager.dart';
 import 'package:my_gate_app/screens/student/managers/user_profile_manager.dart';
 import 'package:my_gate_app/screens/student/widgets/home_app_bar.dart';
@@ -31,7 +32,8 @@ import 'package:my_gate_app/myglobals.dart' as myglobals;
 
 class HomeStudent extends StatefulWidget {
   final String? email;
-  const HomeStudent({super.key, required this.email});
+  final User? updated_user;
+  const HomeStudent({super.key, required this.email, this.updated_user});
 
   @override
   _HomeStudentState createState() => _HomeStudentState();
@@ -51,6 +53,7 @@ Color getColorFromHex(String hexColor) {
 class _HomeStudentState extends State<HomeStudent> {
   late final UserProfileManager _profileManager;
   late final LocationDataManager _locationManager;
+  late final User? updated_user;
 //  late final NotificationManager _notificationManager;
   final db = databaseInterface();
   final PageController _pageController = PageController();
@@ -63,6 +66,7 @@ class _HomeStudentState extends State<HomeStudent> {
 
   @override
   void initState() {
+    updated_user = widget.updated_user;
     checkTokenOnStartup();
     super.initState();
     _profileManager = UserProfileManager(
@@ -70,7 +74,6 @@ class _HomeStudentState extends State<HomeStudent> {
       user: UserPreferences.myUser,
     );
     _locationManager = LocationDataManager();
-//    _notificationManager = NotificationManager(LoggedInDetails.getEmail());
     _initializeData();
   }
 
@@ -117,26 +120,21 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Future<void> _initializeData() async {
     setState(() => isLoading = true);
-
+    
     // First load the user data since other managers might depend on it
-    final user = await databaseInterface
-        .get_student_by_email(widget.email ?? UserPreferences.myUser.email);
+    final email = widget.email ?? UserPreferences.myUser.email;
+
+    final results = await Future.wait([
+      databaseInterface.get_student_by_email(email),
+      _locationManager.updateCurrentStatus(email),
+    ]);
+    
+    final user = results[0] as User;
 
     setState(() {
       _profileManager.user = user;
     });
-
-    // Run all independent initialization tasks in parallel
-    await Future.wait([
-      _loadWelcomeMessage(),
-      _locationManager.loadData(LoggedInDetails.getEmail()),
-      //    _notificationManager.refreshCount(),
-      _profileManager.loadProfile(LoggedInDetails.getEmail()),
-    ]);
-
-    // This depends on location data being loaded first
-    await _locationManager.updateCurrentStatus(LoggedInDetails.getEmail());
-
+    welcomeMessage = user.name;
     if (!mounted) return;
     setState(() => isLoading = false);
   }
@@ -148,7 +146,7 @@ class _HomeStudentState extends State<HomeStudent> {
   }
 
   Future<void> _refreshData() async {
-    await _initializeData();
+    await _locationManager.updateCurrentStatus(LoggedInDetails.getEmail());
   }
 
   @override
@@ -178,7 +176,7 @@ class _HomeStudentState extends State<HomeStudent> {
         Padding(
           padding: const EdgeInsets.only(right: 16.0),
           child: CircleAvatar(
-            backgroundImage: _profileManager.profileImage,
+            backgroundImage: _profileManager.user.profileImage,
             radius: 18,
           ),
         ),
@@ -186,35 +184,6 @@ class _HomeStudentState extends State<HomeStudent> {
     );
   }
 
-  // Widget _buildHeader() {
-  //   return Container(
-  //     padding: const EdgeInsets.all(20),
-  //     color: const Color.fromARGB(255, 0, 42, 76),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       children: [
-  //         Text(
-  //           'Your key to convenience,',
-  //           style: GoogleFonts.quicksand
-  //           (
-  //             fontSize: 20,
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //         const SizedBox(height: 10),
-  //         Text(
-  //           'Encoded in a scan!!',
-  //           style: GoogleFonts.lato(
-  //             fontSize: 30,
-  //             fontWeight: FontWeight.bold,
-  //             color: Colors.white,
-  //           ),
-  //         ),
-  //         const SizedBox(height: 20),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildBody() {
     return Container(
@@ -318,55 +287,6 @@ class _HomeStudentState extends State<HomeStudent> {
 
   Widget _buildCSBlockCard() {
     return GestureDetector(
-        //     onTap: () => _navigateToLocation(0),
-        // child: Container(
-        //   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-        //   margin: const EdgeInsets.symmetric(horizontal: 15.0, vertical: 0.0),
-        //   decoration: BoxDecoration(
-        //     borderRadius: BorderRadius.circular(10),
-        //    color: Color.fromARGB(255, 65, 65, 67), // White background
-        //     // gradient: RadialGradient(
-        //     //     center: Alignment.center, // Center of the gradient
-        //     //     radius: 1.0, // Extends to full width/height of the container
-        //     //     colors: [
-        //     //       Color.fromARGB(255, 214, 214, 214), // Very light blue (inner color)
-        //     //       const Color.fromARGB(255, 71, 71, 71),// Slightly darker light blue (outer color)
-        //     //     ],
-        //     //     stops: [0.0, 1.0], // Smooth transition from center to edge
-        //     //   ),
-        //     // border: Border.all(
-        //     //   color: const Color.fromARGB(255, 50, 121, 182), // Blue border
-        //     //   width: 3.0,
-        //     // ),
-        //   ),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       Column(
-        //         crossAxisAlignment: CrossAxisAlignment.start,
-        //         children: [
-        //           Text(
-        //             "CS Block",
-        //             style: GoogleFonts.sourceCodePro(
-        //               fontSize: 27,
-        //               fontWeight: FontWeight.bold,
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //           const SizedBox(height: 10),
-        //           Text(
-        //             "Status: ${_locationManager.statuses[0].toUpperCase()}",
-        //             style: GoogleFonts.mPlusRounded1c(
-        //               fontSize: 16,
-        //               color: Colors.white,
-        //             ),
-        //           ),
-        //         ],
-        //       ),
-        //       _buildLocationImage(image_paths.cs_block),
-        //     ],
-        //   ),
-        // ),
         child: Column(children: [
       Container(
         width: double.infinity,
@@ -419,14 +339,6 @@ class _HomeStudentState extends State<HomeStudent> {
                     ),
                   ),
                   SizedBox(width: 50),
-                  // Add any additional text or metrics here
-                  // Text(
-                  //   "Weekly Usage",
-                  //   style: GoogleFonts.poppins(
-                  //     fontSize: 14,
-                  //     color: Colors.white70,
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -889,25 +801,38 @@ class _HomeStudentState extends State<HomeStudent> {
         ));
   }
 
-  void _navigateToProfile() {
-    Navigator.of(context)
-        .push(
+  void _navigateToProfile() async {
+    final result = await Navigator.push(
+      context,
       MaterialPageRoute(
         builder: (context) => ProfilePage(
           email: LoggedInDetails.getEmail(),
           isEditable: false,
-        ),
+          user: _profileManager.user,
+        ), // or wherever the change happens
       ),
-    )
-        .then((_) async {
-      final result =
-          await databaseInterface.get_student_by_email(widget.email ?? '');
-      setState(() {
-        _profileManager.updateProfileImage(); // Then update the image provider
-        _profileManager.updateNotifier.value =
-            !_profileManager.updateNotifier.value;
-      });
-    });
+    );
+//    Navigator.of(context)
+//        .push(
+//      MaterialPageRoute(
+//        builder: (context) => ProfilePage(
+//          email: LoggedInDetails.getEmail(),
+//          isEditable: false,
+//          user: _profileManager.user,
+//        ),
+//      ),
+//    );
+    if (result != null)
+        setState(() => {_profileManager.user = updated_user!});
+ //       .then((_) async {
+ //     final result =
+ //         await databaseInterface.get_student_by_email(widget.email ?? '');
+ //     setState(() {
+ //       _profileManager.updateProfileImage(); // Then update the image provider
+ //       _profileManager.updateNotifier.value =
+ //           !_profileManager.updateNotifier.value;
+ //     });
+ //   });
   }
 
 //  void _navigateToNotifications() {

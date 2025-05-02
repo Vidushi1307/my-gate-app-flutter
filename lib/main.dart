@@ -65,7 +65,7 @@ class Home extends StatelessWidget {
             return Splash();
           } else if (type == "Student" && email != null) {
             LoggedInDetails.setEmail(email);
-            return HomeStudent(email: LoggedInDetails.getEmail());
+            return HomeStudent(email: email);
           } else if (type == "Authority" && email != null) {
             LoggedInDetails.setEmail(email);
             return AuthorityMain();

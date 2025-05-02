@@ -6,6 +6,7 @@ import 'package:my_gate_app/database/database_objects.dart';
 import 'package:my_gate_app/get_email.dart';
 import 'package:my_gate_app/screens/profile2/profile_page.dart';
 import 'package:my_gate_app/screens/utils/custom_snack_bar.dart';
+import 'package:my_gate_app/screens/profile2/utils/user_preferences.dart';
 
 class PendingAuthorityTicketTable extends StatefulWidget {
   const PendingAuthorityTicketTable({super.key});
@@ -580,7 +581,7 @@ class _PendingAuthorityTicketTableState
                 Navigator.of(context).push(
                   MaterialPageRoute(
                       builder: (context) =>
-                          ProfilePage(email: ticket.email, isEditable: false)),
+                          ProfilePage(email: ticket.email, isEditable: false, user: UserPreferences.myUser)),
                 );
               },
               child: Text(

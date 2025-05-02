@@ -38,8 +38,8 @@ class databaseInterface {
   static int REFRESH_RATE = 1;
   static int PORT_NO_static = 8000;
 //  static String complete_base_url_static = "https://mygate-vercel.vercel.app";
-//  static String complete_base_url_static = "https://69.62.84.91:8000";
-  static String complete_base_url_static = "https://4be2-117-220-161-118.ngrok-free.app";
+//  static String complete_base_url_static = "http://69.62.84.91:8000";
+  static String complete_base_url_static = "https://debb-117-220-161-118.ngrok-free.app";
 
   static Map<String, dynamic> retry = {"try": 1, "ifretry": false};
   databaseInterface();
@@ -49,7 +49,7 @@ class databaseInterface {
 
     var url = Uri.parse(uri);
     try {
-      ;
+      
       var response = await http.post(url, body: {'email': email});
       var data = json.decode(response.body);
       String welcome_message = data['welcome_message'];
@@ -2090,7 +2090,7 @@ class databaseInterface {
 
   static Future<Map<String, String>> get_student_status_for_all_locations_2(
     String email,
-    List<int> location_ids,
+    List<int>  location_ids,
   ) async {
     var uri = "$complete_base_url_static/students/get_status_for_all_locations";
     //TODO: Avoid hardcoding this map.
@@ -2106,7 +2106,7 @@ class databaseInterface {
       final response = await makeAuthenticatedRequest(
         Uri.parse(uri),
         HttpMethod.POST,
-        body: {'email': email, 'location_ids': json.encode(location_ids)},
+        body: {'email': email, 'location_ids': ""},
       ).timeout(Duration(seconds: 10));
 
       if (response.statusCode != 200) return errorMap;

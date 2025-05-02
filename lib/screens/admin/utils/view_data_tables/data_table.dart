@@ -105,7 +105,7 @@ class _AdminDataTableState extends State<AdminDataTable> {
           Navigator.of(context).push(
             MaterialPageRoute(
                 builder: (context) =>
-                    ProfilePage(email: ticket.email.toString() , isEditable: false)),
+                    ProfilePage(email: ticket.email.toString() , isEditable: false, user: UserPreferences.myUser)),
           );
         },
         child: Text(ticket.name.toString()),

@@ -86,11 +86,11 @@ flutter_icons:
   image_path: "assets/images/icon.png"
 
 flutter_native_splash:
-  background_image: assets/images/splash.png  
-  image: assets/images/splash.png
+  color: "#000000"  # Black background
+  image: "assets/images/ic_launcher.png"  # Your centered logo
   android: true
   ios: false
-  android_gravity: center
+  fullscreen: true  # Removes status bar
    
 dev_dependencies:
   flutter_test:

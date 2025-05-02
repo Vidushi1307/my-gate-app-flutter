@@ -231,6 +231,7 @@ class _AuthFormState extends State<AuthForm> {
       String? type = prefs.getString("type");
       if (type != null) {
         is_authenticated.person_type = type;
+        LoggedInDetails.setEmail(_email);
         return true;  // Only return true if everything succeeded
       }
     }
@@ -270,13 +271,6 @@ class _AuthFormState extends State<AuthForm> {
                   mainAxisAlignment: MainAxisAlignment.start, //.center
                   children: [
 
-                    // // Optimized logo
-                    // Image.asset(
-                    //   'assets/images/new_splash_logo.webp',
-                    //   height: MediaQuery.of(context).size.height * 0.20,
-                    // ),
-                    // SizedBox(height: 15),
-                    // // ------
 
                     Padding(
                       padding: const EdgeInsets.only(top: 25), // Reduced from default
@@ -289,15 +283,6 @@ class _AuthFormState extends State<AuthForm> {
                     ),
                     const SizedBox(height: 10), // Reduced spacing
 
-                    // Text(
-                    //   'Welcome to Insight!',
-                    //   textAlign: TextAlign.center,
-                    //   style: GoogleFonts.gabarito(
-                    //     fontSize: 10,
-                    //     color: Colors.white,
-                    //     fontWeight: FontWeight.w800,
-                    //   ),
-                    // ),
                     
                     RichText(
                       textAlign: TextAlign.center,
@@ -316,19 +301,6 @@ class _AuthFormState extends State<AuthForm> {
 
                     SizedBox(height: 60),
 
-                    // Text(
-                    //   "Your Department's Digital Gatekeeper",
-                    //   textAlign: TextAlign.center,
-                    //   style: GoogleFonts.notoSans(
-                    //     fontSize: 10,
-                    //     color: Colors.grey,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-
-                    // SizedBox(
-                    //   height: 60,
-                    // ),
                     
 
                     //marked1

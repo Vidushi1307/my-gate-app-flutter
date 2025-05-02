@@ -34,6 +34,15 @@ class LocationDataManager {
       statusMap['Lab 202'] ?? 'NOT FOUND',
       statusMap['Lab 203'] ?? 'NOT FOUND'
     ];
+    if (statusMap['Lab 101'] == 'in')
+      currentLocation = "Lab 101";
+    else if (statusMap['Lab 102']  == 'in')
+      currentLocation = "Lab 102";
+    else if (statusMap['Lab 202']  == 'in')
+      currentLocation = "Lab 202";
+    else if (statusMap['Lab 203']  == 'in')
+      currentLocation = "Lab 203";
+
     print("Loading location data done");
   }
 
@@ -50,17 +59,48 @@ class LocationDataManager {
     try {
       final statusMap = await databaseInterface
           .get_student_status_for_all_locations_2(email, locationIds);
-
-      final activeEntry = statusMap.entries.firstWhere(
-        (e) => e.key != 'CS Block' && e.value.toString() == 'in',
-        orElse: () => const MapEntry<String, String>(
-            'No Registered Location', 'Not checked in'),
-      );
-
-      currentLocation = activeEntry.key;
-      currentStatus = activeEntry.value;
-      statusColor = _getStatusColor(activeEntry.value);
+      print("db call successful:");
+      print(statusMap);
+      statuses = [
+        statusMap['CS Block'] ?? 'NOT FOUND',
+        statusMap['Lab 101'] ?? 'NOT FOUND',
+        statusMap['Lab 102'] ?? 'NOT FOUND',
+        statusMap['Lab 202'] ?? 'NOT FOUND',
+        statusMap['Lab 203'] ?? 'NOT FOUND'
+      ];      
+      
       statuses[0] = statusMap['CS Block'] ?? "UNKNOWN";
+      if (statusMap['CS Block'] == 'in'){
+        print("Inside CS Block");
+        if (statusMap['Lab 101'] == 'in'){
+          currentLocation = 'Lab 101';
+          print("Checked for 101");
+          return;          
+        } 
+        if (statusMap['Lab 102'] == 'in'){
+          currentLocation = 'Lab 102';
+          print("Checked for 102");        
+          return;
+        } 
+        if (statusMap['Lab 202'] == 'in'){
+          currentLocation = 'Lab 202';
+          print("Checked for 202");
+          return;
+        } 
+        if (statusMap['Lab 203'] == 'in'){
+          currentLocation = 'Lab 203';
+          print("Checked for 203");        
+          return;
+        }
+        print("Not in any location though");
+        print(statusMap);
+        return;
+      }
+      else {
+        currentLocation = 'No Registered Location';
+        currentStatus = 'Not checked in';
+        statusColor = Colors.grey;
+      }
     } catch (e) {
       print("Error updating current status: $e");
       currentLocation = 'No Registered Location';

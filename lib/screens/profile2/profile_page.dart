@@ -12,23 +12,27 @@ import 'package:my_gate_app/image_paths.dart' as image_paths;
 import 'package:my_gate_app/auth/authscreen.dart';
 import 'package:my_gate_app/screens/student/home_student.dart';
 import 'package:my_gate_app/get_email.dart';
+//import 'package:my_gate_app/screens/student/managers/user_profile_manager.dart';
 
 class ProfilePage extends StatefulWidget {
   final String? email;
   final bool isEditable;
+  final User user;
 
-  const ProfilePage({super.key, required this.email, required this.isEditable});
+  const ProfilePage({super.key, required this.email, required this.isEditable, required this.user});
   @override
   _ProfilePageState createState() => _ProfilePageState();
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  User user = UserPreferences.myUser;
   bool editAccess = true;
   bool _isEditing = false;
+  bool updated_profile = false;
 
   XFile? _pickedFile; // For storing the picked image
   bool _isUploading = false;
-  var user = UserPreferences.myUser;
+//  var user = UserPreferences.myUser;
 
   late String imagePath;
 
@@ -45,19 +49,20 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Future<void> init() async {
     String? currEmail = widget.email;
-    User result = await databaseInterface.get_student_by_email(currEmail);
+//    User result = await databaseInterface.get_student_by_email(currEmail);
+    user = widget.user;
     setState(() {
-      user = result;
-      controller_phone.text = result.phone;
-      controller_department.text = result.department;
-      controller_year_of_entry.text = result.year_of_entry;
-      controller_degree.text = result.degree;
-      controller_gender.text = result.gender;
-      controller_entry_no.text = result.entry_no ?? "Loading...";
+//      user = result;
+      controller_phone.text = user.phone;
+      controller_department.text = user.department;
+      controller_year_of_entry.text = user.year_of_entry;
+      controller_degree.text = user.degree;
+      controller_gender.text = user.gender;
+      controller_entry_no.text = user.entry_no ?? "Loading...";
     });
 
     setState(() {
-      pic = result.profileImage;
+      pic = user.profileImage;
     });
   }
 
@@ -266,12 +271,13 @@ class _ProfilePageState extends State<ProfilePage> {
             IconButton(
               icon: const Icon(Icons.home, color: Colors.white, size: 40),
               onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          HomeStudent(email: LoggedInDetails.getEmail())),
-                );
+//                Navigator.pushReplacement(
+//                  context,
+//                  MaterialPageRoute(
+//                      builder: (context) =>
+//                          HomeStudent(email: LoggedInDetails.getEmail(), updated_user: user)),
+//                );
+                 Navigator.pop(context, updated_profile ? user : null);
               },
             ),
 
@@ -331,6 +337,7 @@ class _ProfilePageState extends State<ProfilePage> {
         // Convert XFile to File if your backend requires it
         final File imageFile = File(pickedFile.path);
         await _uploadProfileImage(imageFile);
+        updated_profile = true;
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
