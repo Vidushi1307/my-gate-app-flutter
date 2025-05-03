@@ -1,87 +1,107 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 import 'package:my_gate_app/image_paths.dart' as image_paths;
 
-class AboutUsPage extends StatelessWidget {
+class AboutUsPage extends StatefulWidget {
   const AboutUsPage({super.key});
+
+  @override
+  State<AboutUsPage> createState() => _AboutUsPageState();
+}
+
+class _AboutUsPageState extends State<AboutUsPage> {
+  bool showFullDetails = false;
+
+  final String briefIntro =
+      'InSight automates and simplifies lab entry/exit for CS block at IIT Ropar, '
+      'offering real-time tracking and efficient lab monitoring.';
+
+  final String fullIntro =
+      'Our app InSight is designed to automate and streamline the process of student entry and exit in the Computer Science block labs at IIT Ropar. '
+      'By eliminating manual tracking methods like physical registers, InSight enables a more secure, efficient, and transparent system for monitoring lab usage. '
+      'The application logs each student\'s entry and exit time automatically using smart authentication, and provides real-time data to lab guards, faculty advisors, and administrators.\n\n'
+      'InSight not only ensures proper utilization of lab infrastructure but also assists in generating comprehensive lab usage statistics. '
+      'Admins and authorized staff can view active lab sessions, analyze lab occupancy trends, and even force-exit students if needed. '
+      'With features like time-based filtering, visual dashboards, and batch-wise utilization insights, InSight helps improve accountability and optimize resource allocation in academic labs. '
+      'This app was developed as a part of our academic project to address real-world challenges in campus operations.';
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('About Us'),
-        backgroundColor:
-            const Color.fromARGB(255, 0, 0, 0), // Set the background color to white
-        iconTheme: const IconThemeData(
-            color: Color.fromARGB(
-                255, 255, 255, 255)), // Set the icon color to black
+        backgroundColor: Colors.black,
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Container(
-        color: Colors.white, // Set the background color to white
+        color: Colors.white,
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
-              image_paths.iit_ropar,
-              width: 200,
-              height: 200,
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'About Campus-InOutMgmt',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black, // Set the text color to black
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Image.asset(
+                image_paths.iit_ropar,
+                width: 200,
+                height: 200,
               ),
-            ),
-            const SizedBox(height: 16.0),
-            const Text(
-              'This app is developed as part of our DEP course project to manage entry and exit in campus locations. It helps streamline the process and ensure the safety and security of everyone on campus.',
-              style: TextStyle(
+              const SizedBox(height: 16.0),
+              const Text(
+                'About InSight',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              Text(
+                briefIntro,
+                style: const TextStyle(fontSize: 16,color: Colors.black),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8.0),
+              TextButton(
+                onPressed: () {
+                  setState(() {
+                    showFullDetails = !showFullDetails;
+                  });
+                },
+                child: Text(
+                  showFullDetails ? 'Hide Details' : 'More Details',
+                  style: const TextStyle(fontSize: 16,color: Colors.blue),
+                ),
+              ),
+              if (showFullDetails)
+                Container(
+                  padding: const EdgeInsets.all(12.0),
+                  margin: const EdgeInsets.only(top: 8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[100],
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    fullIntro,
+                    style: const TextStyle(fontSize: 15,color: Colors.black),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              const SizedBox(height: 24.0),
+              const Text(
+                'Contributors:\n\n'
+                'Primary Developers:\n'
+                'Vidushi Goyal (2022CSB1142), Thekkepat Sankalp Shashi (2022CSB1137)\n\n'
+
+                'Mentor and Coordinator: Dr. Puneet Goyal (IIT Ropar)',
+                textAlign: TextAlign.center,
+                style: TextStyle(
                   fontSize: 16,
-                  color: Colors.black), // Set the text color to black
-            ),
-            const SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    // Handle the action when "Privacy Policy" is clicked
-                    await launchUrlString(
-                        'https://sites.google.com/view/goyalpuneet/campus-inoutmgmt');
-                  },
-                  child: const Text(
-                    'Contributors',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
                 ),
-                GestureDetector(
-                  onTap: () async {
-                    // Handle the action when "Privacy Policy" is clicked
-                    await launchUrlString(
-                        'https://campusinoutmgmt.blogspot.com/2023/05/campus-inoutmgmt.html');
-                  },
-                  child: const Text(
-                    'Privacy Policy',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                      decoration: TextDecoration.underline,
-                    ),
-                  ),
-                ),
-              ],
-            )
-          ],
+              ),
+            ],
+          ),
         ),
       ),
     );
